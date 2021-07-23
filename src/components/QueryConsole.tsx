@@ -1,11 +1,11 @@
 import React from "react";
-import { useEditor } from "../hooks/useEditor";
 
-import { useTSWorker } from "../hooks/useTSWorker";
+import { useEditor } from "../hooks/useEditor";
 
 const code = `// Demo code
 
 type User = {
+  // ID of the User
   id: number
   name: string
   email: string
@@ -19,12 +19,17 @@ type Account = {
 
 const user: User = {
 
+    accounts: [{
+      provider: "",
+       user: {
+
+       }
+    }]
 };
 `;
 
 export function QueryConsole() {
-  useTSWorker();
-  useEditor(code);
+  useEditor("#editor", code);
 
   return <div id="editor" style={{ width: "100%", height: "100%" }}></div>;
 }
