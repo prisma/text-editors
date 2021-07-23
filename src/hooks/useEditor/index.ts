@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-
 import { EditorState } from "@codemirror/state";
 import { EditorView, highlightSpecialChars, keymap } from "@codemirror/view";
 import { defaultKeymap, defaultTabBinding } from "@codemirror/commands";
@@ -18,10 +17,18 @@ import { lintKeymap } from "@codemirror/lint";
 import { bracketMatching } from "@codemirror/matchbrackets";
 import { javascript } from "@codemirror/lang-javascript";
 
-export function useEditor(code: string) {
+import { useTSServer } from "../useTSServer";
+
+export function useEditor(domSelector: string, code: string) {
   useEffect(() => {
+    const tsserver = useTSServer(code);
     const view = new EditorView({
-      parent: document.querySelector("#editor")!,
+      parent: document.querySelector(domSelector)!,
+      dispatch: transaction => {
+        view.update([transaction]);
+        // TODO:: Send messages to tsserver to keep it in sync with editor content here
+        // console.log(transaction.changes);
+      },
       state: EditorState.create({
         doc: code,
 
@@ -29,8 +36,28 @@ export function useEditor(code: string) {
           // Code
           autocompletion({
             override: [
-              ctx => {
-                return null;
+              async ctx => {
+                const line = ctx.state.doc.lineAt(ctx.pos);
+                const firstCursor = ctx.state.selection.ranges.filter(
+                  r => r.empty
+                )[0];
+                const columnNumber = firstCursor.head - line.from;
+
+                const completions = await tsserver.getCompletions(
+                  "index.ts",
+                  line.number,
+                  columnNumber
+                );
+
+                return {
+                  from: line.from,
+                  options:
+                    completions.body?.map(c => ({
+                      type: c.kind, // TSServer `kind`s match up with CodeMirror `type`s
+                      label: c.name,
+                      info: c.displayParts.map(p => p.text).join(""),
+                    })) || [],
+                };
               },
             ],
           }),
