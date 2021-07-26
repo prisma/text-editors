@@ -1,4 +1,5 @@
 import TSServerWorker from "typescript/lib/tsserver?worker";
+import { log } from "./log";
 import type { Command, Response, RequestArgs, ResponseArgs } from "./types";
 
 type ReplyQueueItem = {
@@ -7,6 +8,7 @@ type ReplyQueueItem = {
 };
 
 let seqCounter = 0;
+let file = "index.ts";
 
 export class TSServer {
   private tsserver: Worker;
@@ -22,7 +24,7 @@ export class TSServer {
   private onTSServerMessage = <T extends Command>(
     msg: MessageEvent<Response<T>>
   ) => {
-    console.log("[ts-worker] Received message", msg.data);
+    log("Received message", msg.data);
     const response = this._responseQueue.get(msg.data.request_seq);
 
     if (!response) {
@@ -37,7 +39,7 @@ export class TSServer {
     command: T,
     args: RequestArgs<T>
   ): Promise<ResponseArgs<T>> {
-    console.log("[ts-worker] sendMessage:", { command, args });
+    log("sendMessage:", { command, args });
     return new Promise((resolve, reject) => {
       const seq = ++seqCounter;
 
@@ -51,11 +53,13 @@ export class TSServer {
     });
   }
 
-  init() {
-    console.log("[ts-worker] Initializing");
+  async init() {
+    log("Initializing");
 
     // Initialize tsserver with arguments. This must always be the first message.
     this.tsserver.postMessage([
+      "--serverMode",
+      "partialsemantic", // syntactic, partialsemantic or semantic (unsupported in webworkers)
       "--logVerbosity",
       "3", // 0 = terse, 1 = normal, 2 = requestTime, 3 = verbose
     ]);
@@ -71,7 +75,7 @@ export class TSServer {
     });
   }
 
-  updateFile(file: string, line: number, offset: number) {
+  updateFile(line: number, offset: number) {
     return this.sendMessage("change", {
       file,
       line,
@@ -79,7 +83,8 @@ export class TSServer {
     });
   }
 
-  async getCompletions(file: string, line: number, offset: number) {
+  /** Returns a list of possible words / phrases that you might want to type, given a location in a file */
+  async getCompletions(line: number, offset: number) {
     const completions = await this.sendMessage("completionInfo", {
       file,
       line,
@@ -87,14 +92,15 @@ export class TSServer {
     });
 
     if (!completions.body || completions.body.entries.length === 0) {
+      log("Unable to get completions", { completions });
       throw new Error("[tsserver] Unable to get completions");
     }
 
-    return await this.sendMessage("completionEntryDetails", {
+    return this.sendMessage("completionEntryDetails", {
       file,
       line,
       offset,
-      entryNames: completions.body?.entries.map(e => ({
+      entryNames: completions.body?.entries.map((e) => ({
         name: e.name,
         source: e.source,
         data: e.data,
