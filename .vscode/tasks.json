@@ -6,7 +6,7 @@
       "script": "dev",
       "problemMatcher": [],
       "label": "dev",
-      "detail": "Start the Vite server"
+      "detail": "Start development server"
     }
   ]
 }
