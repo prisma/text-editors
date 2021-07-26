@@ -1,15 +1,40 @@
 import {
   ChangeRequestArgs,
+  CloseRequest,
   CompletionDetailsRequestArgs,
   CompletionDetailsResponse,
   CompletionInfoResponse,
   CompletionsRequestArgs,
+  ConfigureRequestArguments,
+  ConfigureResponse,
+  GeterrForProjectRequestArgs,
   OpenRequestArgs,
+  QuickInfoRequest,
+  QuickInfoResponse,
+  SetCompilerOptionsForInferredProjectsArgs,
+  SetCompilerOptionsForInferredProjectsResponse,
+  UpdateOpenRequestArgs,
 } from "typescript/lib/protocol";
 
 type Protocol = {
+  configure: {
+    request: ConfigureRequestArguments;
+    response: ConfigureResponse;
+  };
+  compilerOptionsForInferredProjects: {
+    request: SetCompilerOptionsForInferredProjectsArgs;
+    response: SetCompilerOptionsForInferredProjectsResponse;
+  };
+
   open: { request: OpenRequestArgs; response: void };
+  updateOpen: { request: UpdateOpenRequestArgs; response: void };
   change: { request: ChangeRequestArgs; response: void };
+  close: { request: CloseRequest["arguments"]; response: void };
+
+  quickinfo: {
+    request: QuickInfoRequest["arguments"];
+    response: QuickInfoResponse;
+  };
   completionInfo: {
     request: CompletionsRequestArgs;
     response: CompletionInfoResponse;

@@ -5,11 +5,17 @@ import { TSServer } from "./tsserver";
 export function useTSServer(code: string) {
   const tsserver = new TSServer();
 
-  tsserver.init();
-  // TODO:: Await openFile
-  tsserver.openFile({
-    name: "index.ts",
-    content: code,
+  useEffect(() => {
+    (async () => {
+      await tsserver.init();
+      await tsserver.openFile({
+        content: code,
+      });
+    })();
+
+    return () => {
+      tsserver.destroy();
+    };
   });
 
   return tsserver;

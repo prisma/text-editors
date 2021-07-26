@@ -18,17 +18,26 @@ import { bracketMatching } from "@codemirror/matchbrackets";
 import { javascript } from "@codemirror/lang-javascript";
 
 import { useTSServer } from "../useTSServer";
+import { lineAndColumnFromPos } from "./lineAndColumnFromPos";
 import { log } from "./log";
 
 export function useEditor(domSelector: string, code: string) {
+  const tsserver = useTSServer(code);
+
   useEffect(() => {
-    const tsserver = useTSServer(code);
     const view = new EditorView({
       parent: document.querySelector(domSelector)!,
       dispatch: transaction => {
         view.update([transaction]);
         // TODO:: Send messages to tsserver to keep it in sync with editor content here
-        // console.log(transaction.changes);
+        transaction.changes.iterChanges((fromA, toA, fromB, toB, inserted) => {
+          const { line, column } = lineAndColumnFromPos(
+            transaction.state,
+            fromA
+          );
+
+          log(line, column);
+        });
       },
       state: EditorState.create({
         doc: code,
@@ -36,27 +45,26 @@ export function useEditor(domSelector: string, code: string) {
         extensions: [
           // Code
           autocompletion({
+            activateOnTyping: true,
             override: [
               async ctx => {
-                const line = ctx.state.doc.lineAt(ctx.pos);
-                const firstCursor = ctx.state.selection.ranges.filter(
-                  r => r.empty
-                )[0];
-                const columnNumber = firstCursor.head - line.from;
-
-                const completions = await tsserver.getCompletions(
-                  "index.ts",
-                  line.number,
-                  columnNumber
+                const { line, column } = lineAndColumnFromPos(
+                  ctx.state,
+                  ctx.pos
                 );
 
+                await tsserver.updateOpen(code);
+                const completions = await tsserver.getCompletions(line, column);
+
                 return {
-                  from: line.from,
+                  from: ctx.pos,
                   options:
                     completions.body?.map(c => ({
-                      type: c.kind, // TSServer `kind`s match up with CodeMirror `type`s
+                      type: "property", // TODO:: Return correct `type`
                       label: c.name,
-                      info: c.displayParts.map(p => p.text).join(""),
+                      info:
+                        c.displayParts.map(p => p.text).join("") +
+                        (c.documentation || ""),
                     })) || [],
                 };
               },
