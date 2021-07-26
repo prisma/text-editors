@@ -63,16 +63,32 @@ export class TSServer {
       "--logVerbosity",
       "3", // 0 = terse, 1 = normal, 2 = requestTime, 3 = verbose
     ]);
+
+    await this.sendMessage("configure", {
+      hostInfo: "Prisma Query Console v0.0.1",
+    });
+    await this.sendMessage("compilerOptionsForInferredProjects", {
+      options: {
+        strict: true,
+        lib: ["lib.dom.d.ts", "lib.dom.iterable.d.ts", "lib.esnext.d.ts"],
+        allowJs: false,
+        skipLibCheck: true,
+        allowSyntheticDefaultImports: true,
+        isolatedModules: true,
+        noEmit: true,
+      },
+    });
   }
 
-  openFile({ name, content }: { name: string; content: string }) {
-    return this.sendMessage("open", {
-      file: name,
+  async openFile({ content }: { content: string }) {
+    // tsserver does not respond for an `open` request, which means this will always stay in `_responseQueue`, but that's okay
+    this.sendMessage("open", {
+      file,
       fileContent: content,
-      projectFileName: "queryConsole",
       scriptKindName: "TS",
-      // projectRootPath: "",
     });
+
+    return Promise.resolve();
   }
 
   updateFile(line: number, offset: number) {

@@ -18,11 +18,13 @@ import { bracketMatching } from "@codemirror/matchbrackets";
 import { javascript } from "@codemirror/lang-javascript";
 
 import { useTSServer } from "../useTSServer";
+import { lineAndColumnFromPos } from "./lineAndColumnFromPos";
 import { log } from "./log";
 
 export function useEditor(domSelector: string, code: string) {
+  const tsserver = useTSServer(code);
+
   useEffect(() => {
-    const tsserver = useTSServer(code);
     const view = new EditorView({
       parent: document.querySelector(domSelector)!,
       dispatch: transaction => {
@@ -36,18 +38,18 @@ export function useEditor(domSelector: string, code: string) {
         extensions: [
           // Code
           autocompletion({
+            activateOnTyping: false,
             override: [
               async ctx => {
-                const line = ctx.state.doc.lineAt(ctx.pos);
-                const firstCursor = ctx.state.selection.ranges.filter(
-                  r => r.empty
-                )[0];
-                const columnNumber = firstCursor.head - line.from;
+                const { line, column } = lineAndColumnFromPos(
+                  ctx.state,
+                  ctx.pos
+                );
 
+                await tsserver.updateOpen(code);
                 const completions = await tsserver.getCompletions(
-                  "index.ts",
                   line.number,
-                  columnNumber
+                  column
                 );
 
                 return {
