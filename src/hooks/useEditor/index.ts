@@ -18,6 +18,7 @@ import { bracketMatching } from "@codemirror/matchbrackets";
 import { javascript } from "@codemirror/lang-javascript";
 
 import { useTSServer } from "../useTSServer";
+import { log } from "./log";
 
 export function useEditor(domSelector: string, code: string) {
   useEffect(() => {

@@ -5,7 +5,6 @@ import { useEditor } from "../hooks/useEditor";
 const code = `// Demo code
 
 type User = {
-  // ID of the User
   id: number
   name: string
   email: string
