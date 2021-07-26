@@ -118,11 +118,13 @@ export class TSServer {
       file,
       line,
       offset,
-      entryNames: completions.body?.entries.map((e) => ({
-        name: e.name,
-        source: e.source,
-        data: e.data,
-      })),
+      entryNames: completions.body?.entries
+        .filter(e => e.kind !== "keyword" && e.kind !== "module")
+        .map(e => ({
+          name: e.name,
+          source: e.source,
+          data: e.data,
+        })),
     });
   }
 }
