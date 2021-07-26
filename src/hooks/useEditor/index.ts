@@ -30,7 +30,14 @@ export function useEditor(domSelector: string, code: string) {
       dispatch: transaction => {
         view.update([transaction]);
         // TODO:: Send messages to tsserver to keep it in sync with editor content here
-        // console.log(transaction.changes);
+        transaction.changes.iterChanges((fromA, toA, fromB, toB, inserted) => {
+          const { line, column } = lineAndColumnFromPos(
+            transaction.state,
+            fromA
+          );
+
+          log(line, column);
+        });
       },
       state: EditorState.create({
         doc: code,
