@@ -39,17 +39,19 @@ export class TSServer {
     command: T,
     args: RequestArgs<T>
   ): Promise<ResponseArgs<T>> {
-    log("sendMessage:", { command, args });
     return new Promise((resolve, reject) => {
       const seq = ++seqCounter;
-
       this._responseQueue.set(seq, { resolve, reject });
-      this.tsserver.postMessage({
+
+      const message = {
         seq,
         type: "request",
         command,
         arguments: args,
-      });
+      };
+
+      log("sendMessage:", message);
+      this.tsserver.postMessage(message);
     });
   }
 

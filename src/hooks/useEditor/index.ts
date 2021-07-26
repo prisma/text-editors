@@ -38,7 +38,7 @@ export function useEditor(domSelector: string, code: string) {
         extensions: [
           // Code
           autocompletion({
-            activateOnTyping: false,
+            activateOnTyping: true,
             override: [
               async ctx => {
                 const { line, column } = lineAndColumnFromPos(
@@ -47,18 +47,17 @@ export function useEditor(domSelector: string, code: string) {
                 );
 
                 await tsserver.updateOpen(code);
-                const completions = await tsserver.getCompletions(
-                  line.number,
-                  column
-                );
+                const completions = await tsserver.getCompletions(line, column);
 
                 return {
-                  from: line.from,
+                  from: ctx.pos,
                   options:
                     completions.body?.map(c => ({
-                      type: c.kind, // TSServer `kind`s match up with CodeMirror `type`s
+                      type: "property", // TODO:: Return correct `type`
                       label: c.name,
-                      info: c.displayParts.map(p => p.text).join(""),
+                      info:
+                        c.displayParts.map(p => p.text).join("") +
+                        (c.documentation || ""),
                     })) || [],
                 };
               },

@@ -12,6 +12,10 @@ export function useTSServer(code: string) {
         content: code,
       });
     })();
+
+    return () => {
+      tsserver.destroy();
+    };
   });
 
   return tsserver;
