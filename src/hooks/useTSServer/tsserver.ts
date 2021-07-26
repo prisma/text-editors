@@ -61,7 +61,7 @@ export class TSServer {
     // Initialize tsserver with arguments. This must always be the first message.
     this.tsserver.postMessage([
       "--serverMode",
-      "partialsemantic", // syntactic, partialsemantic or semantic (unsupported in webworkers)
+      "partialsemantic", // `syntactic`, `partialsemantic` or `semantic` (unsupported in webworkers)
       "--logVerbosity",
       "3", // 0 = terse, 1 = normal, 2 = requestTime, 3 = verbose
     ]);
@@ -82,7 +82,13 @@ export class TSServer {
     });
   }
 
-  async openFile({ content }: { content: string }) {
+  destroy() {
+    return this.sendMessage("close", {
+      file,
+    });
+  }
+
+  openFile({ content }: { content: string }) {
     // tsserver does not respond for an `open` request, which means this will always stay in `_responseQueue`, but that's okay
     this.sendMessage("open", {
       file,
@@ -95,6 +101,29 @@ export class TSServer {
 
   updateFile(line: number, offset: number) {
     return this.sendMessage("change", {
+      file,
+      line,
+      offset,
+      endLine: line,
+      endOffset: offset,
+      insertString: "",
+    });
+  }
+
+  updateOpen(content: string) {
+    return this.sendMessage("updateOpen", {
+      openFiles: [
+        {
+          file,
+          fileContent: content,
+        },
+      ],
+    });
+  }
+
+  /** Returns method definitions, variable types, or other things that are supposed to show up when you hover over an identifier, keyword, or anythng really */
+  getQuickInfo(line: number, offset: number) {
+    return this.sendMessage("quickinfo", {
       file,
       line,
       offset,
