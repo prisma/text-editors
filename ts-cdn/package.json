@@ -2,10 +2,7 @@
   "name": "ts-cdn",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "serve": "vite preview",
-    "format": "prettier -w ."
+    "build": "./build.sh"
   },
   "dependencies": {
     "typescript": "4.3.5"
