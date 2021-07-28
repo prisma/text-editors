@@ -4,4 +4,4 @@ dist
 dist-ssr
 *.local
 
-ts-cdn/public
+ts-cdn/public/typescript
