@@ -31,12 +31,7 @@ export function useEditor(domSelector: string, code: string) {
         view.update([transaction]);
         // TODO:: Send messages to ts to keep it in sync with editor content here
         transaction.changes.iterChanges((fromA, toA, fromB, toB, inserted) => {
-          const { line, column } = lineAndColumnFromPos(
-            transaction.state,
-            fromA
-          );
-
-          log(line, column);
+          log("Commit transaction", { fromA, toA, fromB, toB, inserted });
         });
       },
       state: EditorState.create({
@@ -48,29 +43,32 @@ export function useEditor(domSelector: string, code: string) {
             activateOnTyping: true,
             override: [
               async ctx => {
-                const { line, column } = lineAndColumnFromPos(
-                  ctx.state,
-                  ctx.pos
+                if (!ts) {
+                  log("ts is not initialized, skipping autocomplete");
+                  return null;
+                }
+
+                const completions = ts.languageService.getCompletionsAtPosition(
+                  "index.ts",
+                  ctx.pos,
+                  {}
                 );
+                if (!completions) {
+                  log("Unable to get completions", { pos: ctx.pos });
+                  return null;
+                }
 
-                console.log(ctx.pos, line, column);
-
-                // await ts.updateOpen(code);
-                // const completions = await ts.getCompletions(line, column);
-
-                // return {
-                //   from: ctx.pos,
-                //   options:
-                //     completions.body?.map(c => ({
-                //       type: "property", // TODO:: Return correct `type`
-                //       label: c.name,
-                //       info:
-                //         c.displayParts.map(p => p.text).join("") +
-                //         (c.documentation || ""),
-                //     })) || [],
-                // };
-
-                return null;
+                return {
+                  from: ctx.pos,
+                  options:
+                    completions.entries.map(c => ({
+                      type: "property", // TODO:: Return correct `type`
+                      label: c.name,
+                      // info:
+                      //   c.displayParts.map(p => p.text).join("") +
+                      //   (c.documentation || ""),
+                    })) || [],
+                };
               },
             ],
           }),
