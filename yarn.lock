@@ -317,6 +317,26 @@
     "@codemirror/view" "^0.18.0"
     lezer-javascript "^0.13.0"
 
+"@codemirror/lang-json@0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@codemirror/lang-json/-/lang-json-0.18.0.tgz#775f2dc95039a86fe3e6e55e4467e10c2ecae414"
+  integrity sha512-1xquwhwrocZEcURmccMYk1C3g2oj6mu0np1LT1dDGmvd/VVXC0Z9j6NV78zCSyJCIdL2y+RRBh4LVWW6J6NU6Q==
+  dependencies:
+    "@codemirror/highlight" "^0.18.0"
+    "@codemirror/language" "^0.18.0"
+    lezer-json "^0.13.0"
+
+"@codemirror/lang-sql@0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@codemirror/lang-sql/-/lang-sql-0.18.0.tgz#30bd5662267b0f59f69ac6d8694561c5f72cb670"
+  integrity sha512-jNzpfiZLo0vTv/7KoJ7mzukuDhUSh3p1csR8ZXhZolEhp9bXyN4BwravbfoiiAdsiX9N8w65yd03EIlBUL0zHQ==
+  dependencies:
+    "@codemirror/autocomplete" "^0.18.0"
+    "@codemirror/highlight" "^0.18.0"
+    "@codemirror/language" "^0.18.0"
+    "@codemirror/state" "^0.18.0"
+    lezer "^0.13.0"
+
 "@codemirror/language@0.18.2", "@codemirror/language@^0.18.0":
   version "0.18.2"
   resolved "https://registry.yarnpkg.com/@codemirror/language/-/language-0.18.2.tgz#92b0e2ba0debfa8473d805efdabda5c24376cb16"
@@ -328,7 +348,7 @@
     lezer "^0.13.4"
     lezer-tree "^0.13.0"
 
-"@codemirror/lint@^0.18.0", "@codemirror/lint@^0.18.4":
+"@codemirror/lint@0.18.4", "@codemirror/lint@^0.18.0":
   version "0.18.4"
   resolved "https://registry.yarnpkg.com/@codemirror/lint/-/lint-0.18.4.tgz#4cdbb4fd6fee3ac8384df62a99efefe099932feb"
   integrity sha512-H77qYfZOmo1kKf0ZQagzk/JRGVhIpwP0hq1TSO6DFC1WLjW6gcsFJO5NDMS86enm0KX0w4/IkA7PItz2mjmHhQ==
@@ -985,6 +1005,13 @@ lezer-javascript@^0.13.0:
   version "0.13.4"
   resolved "https://registry.yarnpkg.com/lezer-javascript/-/lezer-javascript-0.13.4.tgz#f2b36e83bf02cce6df05601133134357133be76e"
   integrity sha512-nhRbeSwPZo2xVYq6TWyUhi/r9j0CFSUpkuA5J992Az2AYZFw2HnGVjixfP43DKufL+npJwSy0qcCcAHFQ2bFOQ==
+  dependencies:
+    lezer "^0.13.0"
+
+lezer-json@^0.13.0:
+  version "0.13.2"
+  resolved "https://registry.yarnpkg.com/lezer-json/-/lezer-json-0.13.2.tgz#f14f486a535df5d38c3e4aaf0166ba9e0ad0b242"
+  integrity sha512-J5wc5KpYywJroIQ7A2+bW0e3JiSo2wX4uDgbCni2Ww5bvTD/iV2tvZ0cHBLmMU/p5qS4dD5bAPysSqHMS9eNAg==
   dependencies:
     lezer "^0.13.0"
 
