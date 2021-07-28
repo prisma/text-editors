@@ -76,6 +76,7 @@ const files = [
 export async function createFs(tsVersion: string) {
   const fs = new Map<string, string>();
 
+  // First, we remove old cached things from `localStorage`
   Object.keys(localStorage).forEach(function (key) {
     // Remove anything that isn't from this version
     if (key.startsWith(`ts-lib/`) && !key.startsWith(`ts-lib/` + tsVersion)) {
@@ -83,6 +84,7 @@ export async function createFs(tsVersion: string) {
     }
   });
 
+  // Create a list of TS lib contents (either by downloading them or by restoring them from `localStorage`)
   const libs = await Promise.all(
     files.map(fileName => {
       const cacheKey = `ts-lib/${tsVersion}/${fileName}`;
@@ -113,6 +115,7 @@ export async function createFs(tsVersion: string) {
     })
   );
 
+  // Generate fsMap from TS libs
   libs.forEach((fileContent, i) => fs.set(`/${files[i]}`, fileContent));
 
   return fs;
