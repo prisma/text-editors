@@ -4,5 +4,5 @@ dist
 dist-ssr
 *.local
 yarn-error.log
-
+.vercel
 ts-cdn/public/typescript

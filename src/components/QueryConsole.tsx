@@ -17,13 +17,12 @@ type Account = {
 }
 
 const user: User = {
+  accounts: [{
+    provider: "",
+      user: {
 
-    accounts: [{
-      provider: "",
-       user: {
-
-       }
-    }]
+      }
+  }]
 };
 `;
 
