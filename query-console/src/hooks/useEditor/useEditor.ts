@@ -17,19 +17,19 @@ import { lintKeymap } from "@codemirror/lint";
 import { bracketMatching } from "@codemirror/matchbrackets";
 import { javascript } from "@codemirror/lang-javascript";
 
-import { useTSServer } from "../useTSServer";
+import { useTypescript } from "../useTypescript/useTypescript";
 import { lineAndColumnFromPos } from "./lineAndColumnFromPos";
 import { log } from "./log";
 
 export function useEditor(domSelector: string, code: string) {
-  const tsserver = useTSServer(code);
+  const ts = useTypescript(code);
 
   useEffect(() => {
     const view = new EditorView({
       parent: document.querySelector(domSelector)!,
       dispatch: transaction => {
         view.update([transaction]);
-        // TODO:: Send messages to tsserver to keep it in sync with editor content here
+        // TODO:: Send messages to ts to keep it in sync with editor content here
         transaction.changes.iterChanges((fromA, toA, fromB, toB, inserted) => {
           const { line, column } = lineAndColumnFromPos(
             transaction.state,
@@ -53,20 +53,24 @@ export function useEditor(domSelector: string, code: string) {
                   ctx.pos
                 );
 
-                await tsserver.updateOpen(code);
-                const completions = await tsserver.getCompletions(line, column);
+                console.log(ctx.pos, line, column);
 
-                return {
-                  from: ctx.pos,
-                  options:
-                    completions.body?.map(c => ({
-                      type: "property", // TODO:: Return correct `type`
-                      label: c.name,
-                      info:
-                        c.displayParts.map(p => p.text).join("") +
-                        (c.documentation || ""),
-                    })) || [],
-                };
+                // await ts.updateOpen(code);
+                // const completions = await ts.getCompletions(line, column);
+
+                // return {
+                //   from: ctx.pos,
+                //   options:
+                //     completions.body?.map(c => ({
+                //       type: "property", // TODO:: Return correct `type`
+                //       label: c.name,
+                //       info:
+                //         c.displayParts.map(p => p.text).join("") +
+                //         (c.documentation || ""),
+                //     })) || [],
+                // };
+
+                return null;
               },
             ],
           }),
@@ -96,6 +100,14 @@ export function useEditor(domSelector: string, code: string) {
               key: "Ctrl-z",
               mac: "Mod-z",
               run: undo,
+            },
+            {
+              key: "Ctrl-Enter",
+              mac: "Mod-Enter",
+              run: ({ state, dispatch }) => {
+                console.log("ss", state.doc);
+                return true;
+              },
             },
           ]),
 

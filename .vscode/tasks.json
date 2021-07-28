@@ -4,6 +4,7 @@
     {
       "type": "npm",
       "script": "dev",
+      "path": "query-console/",
       "problemMatcher": [],
       "label": "dev",
       "detail": "Start development server"
