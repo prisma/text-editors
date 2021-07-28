@@ -31,8 +31,6 @@ export function useEditor(domSelector: string, code: string) {
 
     log("Commit file change");
     ts.updateFile("index.ts", content);
-
-    log(ts.languageService.getSemanticDiagnostics("index.ts"));
   }, 300);
 
   useEffect(() => {
@@ -97,26 +95,21 @@ export function useEditor(domSelector: string, code: string) {
           defaultHighlightStyle,
           highlightSpecialChars(),
           javascript({ typescript: true }),
-          linter(
-            () => {
-              if (!ts) {
-                log("ts is not initialized, skipping lint");
-                return [];
-              }
-
-              return ts.languageService
-                .getSemanticDiagnostics("index.ts")
-                .map(d => ({
-                  from: d.start || 0,
-                  to: (d.start || 0) + (d.length || 0),
-                  severity: "error",
-                  message: d.messageText as string,
-                }));
-            },
-            {
-              delay: 500,
+          linter(() => {
+            if (!ts) {
+              log("ts is not initialized, skipping lint");
+              return [];
             }
-          ),
+
+            return ts.languageService
+              .getSemanticDiagnostics("index.ts")
+              .map(d => ({
+                from: d.start || 0,
+                to: (d.start || 0) + (d.length || 0),
+                severity: "error",
+                message: d.messageText as string,
+              }));
+          }),
 
           // Keymaps
           keymap.of([

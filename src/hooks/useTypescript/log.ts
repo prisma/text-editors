@@ -1,3 +1,3 @@
 import { logger } from "../../logger";
 
-export const log = logger("ts-worker", "salmon");
+export const log = logger("ts", "salmon");

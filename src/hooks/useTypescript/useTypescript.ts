@@ -13,7 +13,7 @@ export function useTypescript(code: string) {
 
   useEffect(() => {
     (async () => {
-      const fs = await createFs();
+      const fs = await createFs("4.3.5");
       fs.set("index.ts", code);
 
       const system = createSystem(fs);
@@ -22,6 +22,7 @@ export function useTypescript(code: string) {
         ["index.ts"],
         typescript,
         {
+          noEmit: true,
           target: typescript.ScriptTarget.ESNext,
         }
       );
