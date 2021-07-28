@@ -3,5 +3,6 @@ node_modules
 dist
 dist-ssr
 *.local
+yarn-error.log
 
 ts-cdn/public/typescript
