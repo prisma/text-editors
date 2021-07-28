@@ -2,7 +2,7 @@ import React from "react";
 
 import { useEditor } from "../hooks/useEditor/useEditor";
 
-const complexCode = `// Demo code
+const code = `// Demo code
 
 type User = {
   id: number
@@ -27,25 +27,8 @@ const user: User = {
 };
 `;
 
-const simpleCode = `
-type Account1 = {
-  provider: "github" | "heroku"
-}
-const account: Account1[] = [{
-  provider: ""
-}]
-
-type X = "A" | "B";
-const x: X = ""
-
-const y = 2;
-const z = 2 + 
-`;
-
-const code = "const x = 2 + 2";
-
 export function QueryConsole() {
-  useEditor("#editor", simpleCode);
+  useEditor("#editor", code);
 
   return <div id="editor" style={{ width: "100%", height: "100%" }}></div>;
 }

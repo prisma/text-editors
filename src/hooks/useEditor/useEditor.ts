@@ -18,21 +18,32 @@ import { bracketMatching } from "@codemirror/matchbrackets";
 import { javascript } from "@codemirror/lang-javascript";
 
 import { useTypescript } from "../useTypescript/useTypescript";
-import { lineAndColumnFromPos } from "./lineAndColumnFromPos";
 import { log } from "./log";
+import { useDebounce } from "../useDebounce";
 
 export function useEditor(domSelector: string, code: string) {
   const ts = useTypescript(code);
+  const updateFileDebounced = useDebounce((content: string) => {
+    if (!ts) {
+      log("ts is not initialized, skipping updateFile");
+      return null;
+    }
+
+    log("Commit file change");
+    ts?.updateFile("index.ts", content);
+  }, 300);
 
   useEffect(() => {
     const view = new EditorView({
       parent: document.querySelector(domSelector)!,
       dispatch: transaction => {
+        // Update view first
         view.update([transaction]);
-        // TODO:: Send messages to ts to keep it in sync with editor content here
-        transaction.changes.iterChanges((fromA, toA, fromB, toB, inserted) => {
-          log("Commit transaction", { fromA, toA, fromB, toB, inserted });
-        });
+
+        // Then tell tsserver about new file (on a debounce to avoid ddos-ing it)
+        if (transaction.docChanged) {
+          updateFileDebounced(transaction.newDoc.sliceString(0));
+        }
       },
       state: EditorState.create({
         doc: code,

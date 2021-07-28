@@ -22,13 +22,17 @@ export function useTypescript(code: string) {
         ["index.ts"],
         typescript,
         {
-          target: typescript.ScriptTarget.ES2021,
+          target: typescript.ScriptTarget.ESNext,
         }
       );
       setTs(env);
 
       return system;
     })();
+
+    return () => {
+      ts?.languageService.dispose();
+    };
   }, []);
 
   return ts;

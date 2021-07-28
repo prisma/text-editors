@@ -4,10 +4,16 @@
     {
       "type": "npm",
       "script": "dev",
-      "path": "query-console/",
       "problemMatcher": [],
       "label": "dev",
       "detail": "Start development server"
+    },
+    {
+      "type": "npm",
+      "script": "deploy",
+      "problemMatcher": [],
+      "label": "deploy",
+      "detail": "Deploy ts-cdn"
     }
   ]
 }
