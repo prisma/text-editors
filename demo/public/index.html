@@ -32,7 +32,7 @@ await prisma.user.findMany({
 `;
 
       function QueryConsoleDemo() {
-        const [types, setTypes] = useState < FileMap > {};
+        const [types, setTypes] = useState();
         useEffect(() => {
           fetch("https://qc.prisma-adp.vercel.app/types/prisma-client.d.ts")
             .then(r => r.text())
