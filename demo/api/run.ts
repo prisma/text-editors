@@ -25,6 +25,8 @@ export default async function types(req: VercelRequest, res: VercelResponse) {
   });
   await prisma.$disconnect();
 
+  res.setHeader("Content-Type", "application/json");
+
   // Naive implementation, but good enough for a demo lol
   const acceptsEncoding = req.headers["accept-encoding"];
   if (acceptsEncoding?.includes("br")) {
