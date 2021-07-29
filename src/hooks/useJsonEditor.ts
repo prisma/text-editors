@@ -16,6 +16,8 @@ const log = logger("json-editor", "salmon");
 type EditorParams = {
   code: string;
   readonly?: boolean;
+  onChange?: (value: string) => void;
+  onExecuteQuery?: (value: string) => void;
 };
 
 /**
@@ -40,8 +42,11 @@ export function useJsonEditor(domSelector: string, params: EditorParams) {
           return;
         }
 
-        // Update view first
         view.update([transaction]);
+
+        if (transaction.docChanged) {
+          params.onChange?.(transaction.newDoc.sliceString(0));
+        }
       },
       state: EditorState.create({
         doc: params.code,

@@ -7,7 +7,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { debounce } from "lodash-es";
 
 import { logger } from "../logger";
-import { useTypescript } from "./useTypescript/useTypescript";
+import { FileMap, useTypescript } from "./useTypescript/useTypescript";
 import { useEditorParent } from "./useEditorParent";
 import { useEditorTheme } from "./useEditorTheme";
 import { useEditorAppearance } from "./useEditorAppearance";
@@ -16,9 +16,14 @@ import { useEditorKeymap } from "./useEditorKeymap";
 
 const log = logger("ts-editor", "skyblue");
 
+export type { FileMap };
+
 type EditorParams = {
   code: string;
   readonly?: boolean;
+  types?: FileMap;
+  onChange?: (value: string) => void;
+  onExecuteQuery?: (value: string) => void;
 };
 
 /**
@@ -28,7 +33,7 @@ type EditorParams = {
  * @param params Editor configuration
  */
 export function useTypescriptEditor(domSelector: string, params: EditorParams) {
-  const ts = useTypescript(params.code);
+  const ts = useTypescript(params.code, params.types);
   const updateFileDebounced = debounce((content: string) => {
     if (!ts) {
       log("ts is not initialized, skipping updateFile");
@@ -64,7 +69,9 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
 
         // Then tell tsserver about new file (on a debounce to avoid ddos-ing it)
         if (transaction.docChanged) {
-          updateFileDebounced(transaction.newDoc.sliceString(0));
+          const newDoc = transaction.newDoc.sliceString(0);
+          updateFileDebounced(newDoc);
+          params.onChange?.(newDoc);
         }
       },
       state: EditorState.create({

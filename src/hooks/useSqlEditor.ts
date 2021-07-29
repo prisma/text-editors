@@ -15,6 +15,8 @@ const log = logger("sql-editor", "aquamarine");
 type EditorParams = {
   code: string;
   readonly?: boolean;
+  onChange?: (value: string) => void;
+  onExecuteQuery?: (value: string) => void;
 };
 
 /**
@@ -35,12 +37,15 @@ export function useSqlEditor(domSelector: string, params: EditorParams) {
     const view = new EditorView({
       parent,
       dispatch: transaction => {
-        if (transaction.docChanged) {
+        if (params.readonly && transaction.docChanged) {
           return;
         }
 
-        // Update view first
         view.update([transaction]);
+
+        if (transaction.docChanged) {
+          params.onChange?.(transaction.newDoc.sliceString(0));
+        }
       },
       state: EditorState.create({
         doc: params.code,

@@ -9,7 +9,15 @@ import typescript from "typescript";
 import { log } from "./log";
 import { createFs } from "./createFs";
 
-export function useTypescript(code: string) {
+/** Map from fileName to fileContent */
+export type FileMap = Record<string, string>;
+
+interface ExtendedWindow extends Window {
+  ts?: VirtualTypeScriptEnvironment;
+}
+declare const window: ExtendedWindow;
+
+export function useTypescript(code: string, types?: FileMap) {
   const [ts, setTs] = useState<VirtualTypeScriptEnvironment>();
 
   useEffect(() => {
@@ -30,8 +38,7 @@ export function useTypescript(code: string) {
       setTs(env);
 
       log("Initialized");
-
-      return system;
+      window.ts = ts;
     })();
 
     return () => {
@@ -39,6 +46,18 @@ export function useTypescript(code: string) {
       ts?.languageService.dispose();
     };
   }, []);
+
+  useEffect(() => {
+    if (!ts || !types) {
+      return;
+    }
+
+    log("Loading additional types");
+
+    Object.entries(types).forEach(([fileName, fileContent]) => {
+      ts?.createFile(fileName, fileContent);
+    });
+  }, [ts, types]);
 
   return ts;
 }
