@@ -9,7 +9,7 @@ export default function types(req: VercelRequest, res: VercelResponse) {
   }
 
   const types = fs.readFileSync(
-    path.resolve("../node_modules/.prisma/client/index.d.ts")
+    path.resolve(__dirname, "../node_modules/.prisma/client/index.d.ts")
   );
   const gzippedTypes = gzipSync(types);
 
