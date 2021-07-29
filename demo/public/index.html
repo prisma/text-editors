@@ -22,28 +22,31 @@
       const { useState } = React;
       const { QueryEditor, QueryResponse } = QueryConsole;
 
+      const code = `import { PrismaClient } from "@prisma/client"
+
+const prisma = new PrismaClient()
+
+await prisma.user.findMany({
+
+})
+`;
+
       function QueryConsoleDemo() {
-        const [code, setCode] = useState(`type User = {
-	id: number
-	name: string
-	email: string
-	accounts: Account[]
-}
+        const [types, setTypes] = useState < FileMap > {};
+        useEffect(() => {
+          fetch("https://qc.prisma-adp.vercel.app/types/prisma-client.d.ts")
+            .then(r => r.text())
+            .then(fileContent => {
+              setTypes({
+                "/node_modules/@prisma/client/index.d.ts": fileContent,
+              });
+            });
+        }, []);
 
-type Account = {
-	provider: "github" | "heroku"
-	user: User
-}
-
-const user: User = {
-	accounts: [{
-		provider: "",
-			user: {
-
-			}
-	}]
-};`);
         const [response, setResponse] = useState("[]");
+        const runQuery = query => {
+          setResponse("[]");
+        };
 
         return React.createElement(
           "div",
@@ -61,7 +64,9 @@ const user: User = {
               { style: { flex: 1 } },
               React.createElement(QueryEditor, {
                 mode: "typescript",
-                value: code,
+                types,
+                initialValue: tsCode,
+                onChange: runQuery,
               })
             ),
             React.createElement("div", {
@@ -71,7 +76,7 @@ const user: User = {
               "div",
               { style: { flex: 1 } },
               React.createElement(QueryResponse, {
-                value: response,
+                initialValue: response,
               })
             ),
           ]

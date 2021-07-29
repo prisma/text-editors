@@ -43,7 +43,10 @@ const Dev = () => {
       });
   }, []);
 
-  const runQuery = (query: string) => {};
+  const [response, setResponse] = useState("[]");
+  const runQuery = (query: string) => {
+    setResponse("[]");
+  };
 
   return (
     <div
@@ -63,9 +66,9 @@ const Dev = () => {
         />
         {/* <QueryEditor mode="sql" initialValue={sqlCode} /> */}
       </div>
-      <div style={{ flex: "0 0 4px", backgroundColor: "skyblue" }}></div>
+      <div style={{ flex: "0 0 2px", backgroundColor: "crimson" }}></div>
       <div style={{ flex: 1 }}>
-        <QueryResponse initialValue={jsonCode} />{" "}
+        <QueryResponse initialValue={response} />
       </div>
     </div>
   );
