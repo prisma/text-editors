@@ -8,8 +8,7 @@
     "build": "./build.sh"
   },
   "dependencies": {
-    "@prisma/client": "2.28.0",
-    "@prisma/studio-pcw": "0.417.0"
+    "@prisma/client": "2.28.0"
   },
   "devDependencies": {
     "@vercel/node": "1.11.1",
