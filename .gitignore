@@ -9,3 +9,4 @@ yarn-error.log
 
 ts-cdn/public/typescript
 demo/public/dist
+demo/public/types
