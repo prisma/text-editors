@@ -4,6 +4,7 @@ import { EditorView, keymap } from "@codemirror/view";
 import { autocompletion } from "@codemirror/autocomplete";
 import { linter } from "@codemirror/lint";
 import { javascript } from "@codemirror/lang-javascript";
+import { selectParentSyntax } from "@codemirror/commands";
 import { debounce } from "lodash-es";
 
 import { logger } from "../logger";
@@ -42,7 +43,7 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
 
     log("Commit file change");
     ts.updateFile("index.ts", content);
-  }, 300);
+  }, 100);
 
   const { parent, dimensions } = useEditorParent(domSelector);
   const editorTheme = useEditorTheme(dimensions);
@@ -60,10 +61,6 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
     const view = new EditorView({
       parent,
       dispatch: transaction => {
-        if (params.readonly && transaction.docChanged) {
-          return;
-        }
-
         // Update view first
         view.update([transaction]);
 
@@ -78,7 +75,8 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
         doc: params.code,
 
         extensions: [
-          javascript({ typescript: true }),
+          EditorView.editable.of(!params.readonly),
+          javascript({ typescript: true, jsx: false }),
           autocompletion({
             activateOnTyping: true,
             override: [
@@ -128,7 +126,8 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
               key: "Ctrl-Enter",
               mac: "Mod-Enter",
               run: ({ state }) => {
-                log("Running query", state.doc);
+                log("Running query (unsupported)");
+
                 return true;
               },
             },

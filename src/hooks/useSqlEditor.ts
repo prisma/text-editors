@@ -37,10 +37,6 @@ export function useSqlEditor(domSelector: string, params: EditorParams) {
     const view = new EditorView({
       parent,
       dispatch: transaction => {
-        if (params.readonly && transaction.docChanged) {
-          return;
-        }
-
         view.update([transaction]);
 
         if (transaction.docChanged) {
@@ -51,6 +47,7 @@ export function useSqlEditor(domSelector: string, params: EditorParams) {
         doc: params.code,
 
         extensions: [
+          EditorView.editable.of(!params.readonly),
           sql(),
 
           editorTheme,
