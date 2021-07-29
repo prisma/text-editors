@@ -1,26 +1,17 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { EditorState } from "@codemirror/state";
-import { EditorView, highlightSpecialChars, keymap } from "@codemirror/view";
-import { defaultKeymap, defaultTabBinding } from "@codemirror/commands";
-import { autocompletion, completionKeymap } from "@codemirror/autocomplete";
-import { closeBrackets, closeBracketsKeymap } from "@codemirror/closebrackets";
-import { commentKeymap } from "@codemirror/comment";
-import { foldGutter, foldKeymap } from "@codemirror/fold";
-import { gutter, lineNumbers } from "@codemirror/gutter";
-import {
-  classHighlightStyle,
-  defaultHighlightStyle,
-} from "@codemirror/highlight";
-import { history, undo } from "@codemirror/history";
-import { indentOnInput } from "@codemirror/language";
+import { EditorView, keymap } from "@codemirror/view";
+import { autocompletion } from "@codemirror/autocomplete";
 import { linter } from "@codemirror/lint";
-import { bracketMatching } from "@codemirror/matchbrackets";
 import { javascript } from "@codemirror/lang-javascript";
 
 import { log } from "./log";
 import { useTypescript } from "../useTypescript/useTypescript";
 import { useDebounce } from "../useDebounce";
 import { useEditorTheme } from "../useEditorTheme";
+import { useEditorAppearance } from "../useEditorAppearance";
+import { useEditorBehaviour } from "../useEditorBehaviour";
+import { useEditorKeymap } from "../useEditorKeymap";
 
 type EditorParams = {
   code: string;
@@ -39,10 +30,19 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
     ts.updateFile("index.ts", content);
   }, 300);
 
-  const parent = document.querySelector(domSelector)!;
-  while (parent.firstChild) parent.removeChild(parent.firstChild); // Empty out parent
-  const dimensions = parent.getBoundingClientRect();
+  const [parent, setParent] = useState<Element>();
+  const [dimensions, setDimensions] = useState<DOMRect>();
+  useEffect(() => {
+    const parent = document.querySelector(domSelector)!;
+    setParent(parent);
+    while (parent && parent.firstChild) parent.removeChild(parent.firstChild); // Empty out parent
+    setDimensions(parent.getBoundingClientRect());
+  }, []);
+
   const editorTheme = useEditorTheme(dimensions);
+  const appearanceExtensions = useEditorAppearance();
+  const behaviourExtensions = useEditorBehaviour();
+  const keyMapExtensions = useEditorKeymap();
 
   useEffect(() => {
     if (!ts) {
@@ -108,34 +108,12 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
             }))
           ),
 
-          // Appearance
           editorTheme,
-          classHighlightStyle,
-          defaultHighlightStyle,
-          highlightSpecialChars(),
+          ...appearanceExtensions,
+          ...behaviourExtensions,
+          ...keyMapExtensions,
 
-          // Behaviour
-          bracketMatching(),
-          closeBrackets(),
-          foldGutter(),
-          gutter({}),
-          indentOnInput(),
-          lineNumbers(),
-          history(),
-
-          // Keymap
           keymap.of([
-            defaultTabBinding,
-            ...defaultKeymap,
-            ...closeBracketsKeymap,
-            ...commentKeymap,
-            ...completionKeymap,
-            ...foldKeymap,
-            {
-              key: "Ctrl-z",
-              mac: "Mod-z",
-              run: undo,
-            },
             {
               key: "Ctrl-Enter",
               mac: "Mod-Enter",

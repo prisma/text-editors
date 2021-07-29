@@ -60,7 +60,7 @@ ReactDOM.render(
       </div>
       <div style={{ flex: "0 0 4px", backgroundColor: "skyblue" }}></div>
       <div style={{ flex: 1 }}>
-        <QueryResponse value={jsonCode} />
+        <QueryResponse value={jsonCode} />{" "}
       </div>
     </div>
   </React.StrictMode>,
