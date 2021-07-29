@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { sql } from "@codemirror/lang-sql";
 
 import { log } from "./log";
+import { useEditorParent } from "../useEditorParent";
 import { useEditorTheme } from "../useEditorTheme";
 import { useEditorAppearance } from "../useEditorAppearance";
 import { useEditorBehaviour } from "../useEditorBehaviour";
@@ -15,16 +16,9 @@ type EditorParams = {
 };
 
 export function useSqlEditor(domSelector: string, params: EditorParams) {
-  const [parent, setParent] = useState<Element>();
-  const [dimensions, setDimensions] = useState<DOMRect>();
-  useEffect(() => {
-    const parent = document.querySelector(domSelector)!;
-    setParent(parent);
-    while (parent && parent.firstChild) parent.removeChild(parent.firstChild); // Empty out parent
-    setDimensions(parent.getBoundingClientRect());
-  }, []);
-
+  const { parent, dimensions } = useEditorParent(domSelector);
   const editorTheme = useEditorTheme(dimensions);
+
   const appearanceExtensions = useEditorAppearance();
   const behaviourExtensions = useEditorBehaviour();
   const keyMapExtensions = useEditorKeymap();
@@ -44,10 +38,8 @@ export function useSqlEditor(domSelector: string, params: EditorParams) {
         doc: params.code,
 
         extensions: [
-          // Language
           sql(),
 
-          // Appearance
           editorTheme,
           ...appearanceExtensions,
           ...behaviourExtensions,

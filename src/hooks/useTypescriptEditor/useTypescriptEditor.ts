@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { EditorState } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import { autocompletion } from "@codemirror/autocomplete";
@@ -8,6 +8,7 @@ import { debounce } from "lodash-es";
 
 import { log } from "./log";
 import { useTypescript } from "../useTypescript/useTypescript";
+import { useEditorParent } from "../useEditorParent";
 import { useEditorTheme } from "../useEditorTheme";
 import { useEditorAppearance } from "../useEditorAppearance";
 import { useEditorBehaviour } from "../useEditorBehaviour";
@@ -30,16 +31,9 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
     ts.updateFile("index.ts", content);
   }, 300);
 
-  const [parent, setParent] = useState<Element>();
-  const [dimensions, setDimensions] = useState<DOMRect>();
-  useEffect(() => {
-    const parent = document.querySelector(domSelector)!;
-    setParent(parent);
-    while (parent && parent.firstChild) parent.removeChild(parent.firstChild); // Empty out parent
-    setDimensions(parent.getBoundingClientRect());
-  }, []);
-
+  const { parent, dimensions } = useEditorParent(domSelector);
   const editorTheme = useEditorTheme(dimensions);
+
   const appearanceExtensions = useEditorAppearance();
   const behaviourExtensions = useEditorBehaviour();
   const keyMapExtensions = useEditorKeymap();
@@ -69,7 +63,6 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
         doc: params.code,
 
         extensions: [
-          // Language
           javascript({ typescript: true }),
           autocompletion({
             activateOnTyping: true,
