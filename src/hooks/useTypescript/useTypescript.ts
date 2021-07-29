@@ -23,6 +23,8 @@ export function useTypescript(code: string, types?: FileMap) {
   useEffect(() => {
     (async () => {
       const fs = await createFs("4.3.5");
+
+      log("Creating index.ts", { content: code });
       fs.set("index.ts", code);
 
       const system = createSystem(fs);

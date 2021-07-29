@@ -83,6 +83,8 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
             activateOnTyping: true,
             override: [
               async ctx => {
+                log("Autocomplete requested", { pos: ctx.pos });
+
                 const completions = ts.languageService.getCompletionsAtPosition(
                   "index.ts",
                   ctx.pos,

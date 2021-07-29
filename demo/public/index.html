@@ -19,7 +19,7 @@
     <script src="https://unpkg.com/react-dom@17.0.0/umd/react-dom.production.min.js"></script>
     <script src="dist/query-console.umd.js"></script>
     <script type="module">
-      const { useState } = React;
+      const { useState, useEffect } = React;
       const { QueryEditor, QueryResponse } = QueryConsole;
 
       const code = `import { PrismaClient } from "@prisma/client"
@@ -65,12 +65,12 @@ await prisma.user.findMany({
               React.createElement(QueryEditor, {
                 mode: "typescript",
                 types,
-                initialValue: tsCode,
+                initialValue: code,
                 onChange: runQuery,
               })
             ),
             React.createElement("div", {
-              style: { flex: "0 0 4px", backgroundColor: "skyblue" },
+              style: { flex: "0 0 2px", backgroundColor: "crimson" },
             }),
             React.createElement(
               "div",
