@@ -7,7 +7,7 @@ type RequestBody = {
   query: string;
 };
 
-const DB_URL = process.env.DB_URL;
+const DB_URL = process.env.DB_URL as string;
 
 export default function types(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {

@@ -4,6 +4,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "tsc": "tsc",
     "build": "./build.sh"
   },
   "dependencies": {
