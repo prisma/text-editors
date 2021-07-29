@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useEditor } from "../hooks/useEditor/useEditor";
+import { useJsonEditor } from "../hooks/useJsonEditor/useJsonEditor";
 import styles from "./QueryEditor.module.css";
 
 type QueryResponseProps = {
@@ -9,7 +9,7 @@ type QueryResponseProps = {
 };
 
 export function QueryResponse({ value = "{}", onChange }: QueryResponseProps) {
-  useEditor("#query-editor", { code: value, mode: "json" });
+  useJsonEditor("#query-editor", { code: value, readonly: true });
 
   return (
     <div id="query-editor" className={styles.skeleton}>

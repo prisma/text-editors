@@ -1,8 +1,10 @@
 import React from "react";
 
-import { EditorMode, useEditor } from "../hooks/useEditor/useEditor";
+import { useTypescriptEditor } from "../hooks/useTypescriptEditor/useTypescriptEditor";
+import { useSqlEditor } from "../hooks/useSqlEditor/useSqlEditor";
 import styles from "./QueryEditor.module.css";
 
+export type EditorMode = "typescript" | "sql";
 type QueryEditorProps = {
   mode?: EditorMode;
   value: string;
@@ -16,7 +18,12 @@ export function QueryEditor({
   onChange,
   onExecuteQuery,
 }: QueryEditorProps) {
-  useEditor("#query-response", { code: value, mode });
+  // Conditional hooks are fne because we do not support changing `mode` after first render
+  if (mode === "typescript") {
+    useTypescriptEditor("#query-response", { code: value });
+  } else if (mode === "sql") {
+    useSqlEditor("#query-response", { code: value });
+  }
 
   return (
     <div id="query-response" className={styles.skeleton}>

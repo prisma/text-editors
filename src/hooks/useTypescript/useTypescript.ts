@@ -6,6 +6,7 @@ import {
 } from "@typescript/vfs";
 import typescript from "typescript";
 
+import { log } from "./log";
 import { createFs } from "./createFs";
 
 export function useTypescript(code: string) {
@@ -27,6 +28,8 @@ export function useTypescript(code: string) {
         }
       );
       setTs(env);
+
+      log("Initialized");
 
       return system;
     })();
