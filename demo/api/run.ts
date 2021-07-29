@@ -1,5 +1,6 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { PrismaClient } from "@prisma/client";
+import { gzipSync } from "zlib";
 
 type RequestBody = {
   schema: string;
@@ -19,7 +20,9 @@ export default async function types(req: VercelRequest, res: VercelResponse) {
   const response = await new AsyncFunction("prisma", `return await ${query}`)(
     prisma
   );
-  prisma.$disconnect();
+  await prisma.$disconnect();
 
-  return res.json({ query, response });
+  const gzippedResponse = gzipSync(Buffer.from(response, "utf-8"));
+
+  return res.json({ query, response: gzippedResponse });
 }
