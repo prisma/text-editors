@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as path from "path";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { PCW, parseDatasourceUrl } from "@prisma/studio-pcw";
 
@@ -9,18 +10,21 @@ type RequestBody = {
 
 const DB_URL = process.env.DB_URL as string;
 
-export default function types(req: VercelRequest, res: VercelResponse) {
+export default async function types(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(400).send("Bad Request");
   }
 
-  const { schema, query } = req.body as RequestBody;
+  const { query } = req.body as RequestBody;
+  const schemaPath = path.resolve(
+    "../node_modules/.prisma/client/schema.prisma"
+  );
+  const schema = fs.readFileSync(schemaPath, "utf-8");
   const { env } = parseDatasourceUrl(schema);
 
-  fs.writeFileSync("/tmp/schema.prisma", schema, "utf-8");
   const pcw = new PCW(
     schema,
-    "/tmp/schema.prisma",
+    schemaPath,
     {
       [`${env}`]: DB_URL,
     },
@@ -28,5 +32,6 @@ export default function types(req: VercelRequest, res: VercelResponse) {
       forcePrismaLibrary: true,
     }
   );
-  res.json({ query });
+
+  res.json({ query, response: await pcw.request(query) });
 }
