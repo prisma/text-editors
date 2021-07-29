@@ -5,6 +5,7 @@ dist-ssr
 *.local
 yarn-error.log
 .vercel
+.env
 
 ts-cdn/public/typescript
 demo/public/dist

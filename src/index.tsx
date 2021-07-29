@@ -5,7 +5,9 @@ import { QueryEditor } from "./components/QueryEditor";
 import { QueryResponse } from "./components/QueryResponse";
 import "./index.css";
 
-const tsCode = `type User = {
+const QUERY_BASE_URL: string = "https://qc.prisma-adp.vercel.app";
+
+const tsCode: string = `type User = {
   id: number
   name: string
   email: string
@@ -24,12 +26,12 @@ const user: User = {
 
       }
   }]
-};` as string;
+};`;
 
-const sqlCode = `SELECT * FROM Users;
-INSERT INTO Account (id, provider) VALUES (1, "github");` as string;
+const sqlCode: string = `SELECT * FROM Users;
+INSERT INTO Account (id, provider) VALUES (1, "github");`;
 
-const jsonCode = `[{
+const jsonCode: string = `[{
   "id": 1,
   "name": "Sid",
   "email": "sinha@prisma.io",
@@ -40,10 +42,12 @@ const jsonCode = `[{
     "provider": "heroku",
     "userId": 1
   }]
-}]` as string;
+}]`;
 
-ReactDOM.render(
-  <React.StrictMode>
+const Dev = () => {
+  const runQuery = (query: string) => {};
+
+  return (
     <div
       style={{
         display: "flex",
@@ -53,7 +57,7 @@ ReactDOM.render(
       }}
     >
       <div style={{ flex: 1 }}>
-        <QueryEditor mode="typescript" value={tsCode} />
+        <QueryEditor mode="typescript" value={tsCode} onChange={runQuery} />
         {/* <QueryEditor mode="sql" value={sqlCode} /> */}
       </div>
       <div style={{ flex: "0 0 4px", backgroundColor: "skyblue" }}></div>
@@ -61,6 +65,12 @@ ReactDOM.render(
         <QueryResponse value={jsonCode} />{" "}
       </div>
     </div>
+  );
+};
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Dev />
   </React.StrictMode>,
   document.getElementById("root")
 );
