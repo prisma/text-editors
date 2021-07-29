@@ -22,7 +22,7 @@ export default function types(req: VercelRequest, res: VercelResponse) {
     schema,
     "/tmp/schema.prisma",
     {
-      [env]: DB_URL,
+      [`${env}`]: DB_URL,
     },
     {
       forcePrismaLibrary: true,
