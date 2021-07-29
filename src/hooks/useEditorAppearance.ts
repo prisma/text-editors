@@ -1,4 +1,4 @@
-import { highlightSpecialChars, keymap } from "@codemirror/view";
+import { highlightSpecialChars } from "@codemirror/view";
 import {
   classHighlightStyle,
   defaultHighlightStyle,

@@ -24,12 +24,10 @@ const user: User = {
 
       }
   }]
-};
-`;
+};` as string;
 
 const sqlCode = `SELECT * FROM Users;
-INSERT INTO Account (id, provider) VALUES (1, "github");
-`;
+INSERT INTO Account (id, provider) VALUES (1, "github");` as string;
 
 const jsonCode = `[{
   "id": 1,
@@ -42,7 +40,7 @@ const jsonCode = `[{
     "provider": "heroku",
     "userId": 1
   }]
-}]`;
+}]` as string;
 
 ReactDOM.render(
   <React.StrictMode>

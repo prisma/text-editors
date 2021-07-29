@@ -1,6 +1,7 @@
 {
   "name": "query-console",
   "version": "0.0.1",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
