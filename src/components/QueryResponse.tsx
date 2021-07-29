@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useJsonEditor } from "../hooks/useJsonEditor/useJsonEditor";
+import { useJsonEditor } from "../hooks/useJsonEditor";
 import styles from "./QueryEditor.module.css";
 
 type QueryResponseProps = {

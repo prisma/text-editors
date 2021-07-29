@@ -6,19 +6,27 @@ import { linter } from "@codemirror/lint";
 import { javascript } from "@codemirror/lang-javascript";
 import { debounce } from "lodash-es";
 
-import { log } from "./log";
-import { useTypescript } from "../useTypescript/useTypescript";
-import { useEditorParent } from "../useEditorParent";
-import { useEditorTheme } from "../useEditorTheme";
-import { useEditorAppearance } from "../useEditorAppearance";
-import { useEditorBehaviour } from "../useEditorBehaviour";
-import { useEditorKeymap } from "../useEditorKeymap";
+import { logger } from "../logger";
+import { useTypescript } from "./useTypescript/useTypescript";
+import { useEditorParent } from "./useEditorParent";
+import { useEditorTheme } from "./useEditorTheme";
+import { useEditorAppearance } from "./useEditorAppearance";
+import { useEditorBehaviour } from "./useEditorBehaviour";
+import { useEditorKeymap } from "./useEditorKeymap";
+
+const log = logger("ts-editor", "skyblue");
 
 type EditorParams = {
   code: string;
   readonly?: boolean;
 };
 
+/**
+ * Creates a CodeMirror instance for editing TypeScript
+ *
+ * @param domSelector DOM Element where the editor will be rendered
+ * @param params Editor configuration
+ */
 export function useTypescriptEditor(domSelector: string, params: EditorParams) {
   const ts = useTypescript(params.code);
   const updateFileDebounced = debounce((content: string) => {

@@ -5,8 +5,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "format": "prettier -w .",
-    "deploy": "vercel"
+    "format": "prettier -w ."
   },
   "dependencies": {
     "react": "17.0.0",
@@ -38,7 +37,6 @@
     "lodash-es": "4.17.21",
     "lz-string": "1.4.4",
     "typescript": "4.3.5",
-    "vercel": "23.0.1",
     "vite": "2.4.3"
   }
 }

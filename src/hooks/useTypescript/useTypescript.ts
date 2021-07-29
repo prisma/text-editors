@@ -35,6 +35,7 @@ export function useTypescript(code: string) {
     })();
 
     return () => {
+      log("Destroying language service");
       ts?.languageService.dispose();
     };
   }, []);
