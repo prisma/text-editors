@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { PrismaClient } from "@prisma/client";
-import { gzipSync } from "zlib";
+import { gzipSync, brotliCompressSync } from "zlib";
 
 type RequestBody = {
   schema: string;
@@ -22,7 +22,18 @@ export default async function types(req: VercelRequest, res: VercelResponse) {
   );
   await prisma.$disconnect();
 
-  const gzippedResponse = gzipSync(Buffer.from(response, "utf-8"));
-
-  return res.json({ query, response: gzippedResponse });
+  // Naive implementation, but good enough for a demo
+  const acceptsEncoding = req.headers["accept-encoding"];
+  if (acceptsEncoding?.includes("br")) {
+    return res.setHeader("Content-Encoding", "br").json({
+      query,
+      response: brotliCompressSync(Buffer.from(response, "utf-8")),
+    });
+  } else if (acceptsEncoding?.includes("gzip")) {
+    return res
+      .setHeader("Content-Encoding", "gzip")
+      .json({ query, response: gzipSync(Buffer.from(response, "utf-8")) });
+  } else {
+    return res.json({ query, response: response });
+  }
 }
