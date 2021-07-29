@@ -4,10 +4,10 @@ import { EditorView, keymap } from "@codemirror/view";
 import { autocompletion } from "@codemirror/autocomplete";
 import { linter } from "@codemirror/lint";
 import { javascript } from "@codemirror/lang-javascript";
+import { debounce } from "lodash-es";
 
 import { log } from "./log";
 import { useTypescript } from "../useTypescript/useTypescript";
-import { useDebounce } from "../useDebounce";
 import { useEditorTheme } from "../useEditorTheme";
 import { useEditorAppearance } from "../useEditorAppearance";
 import { useEditorBehaviour } from "../useEditorBehaviour";
@@ -20,7 +20,7 @@ type EditorParams = {
 
 export function useTypescriptEditor(domSelector: string, params: EditorParams) {
   const ts = useTypescript(params.code);
-  const updateFileDebounced = useDebounce((content: string) => {
+  const updateFileDebounced = debounce((content: string) => {
     if (!ts) {
       log("ts is not initialized, skipping updateFile");
       return null;
