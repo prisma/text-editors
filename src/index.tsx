@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 
-import { QueryEditor } from "./components/QueryEditor";
+import { EditorMode, QueryEditor } from "./components/QueryEditor";
 import { QueryResponse } from "./components/QueryResponse";
 import { FileMap } from "./hooks/useTypescriptEditor";
 import "./index.css";
@@ -43,6 +43,12 @@ const Dev = () => {
       });
   }, []);
 
+  const [queryMode, setQueryMode] = useState<EditorMode>("typescript");
+  const flipQueryMode = () => {
+    if (queryMode === "typescript") setQueryMode("sql");
+    else setQueryMode("typescript");
+  };
+
   const [response, setResponse] = useState("[]");
   const runQuery = (query: string) => {
     setResponse("[]");
@@ -58,17 +64,28 @@ const Dev = () => {
       }}
     >
       <div style={{ flex: 1 }}>
-        <QueryEditor
-          mode="typescript"
-          types={types}
-          initialValue={tsCode}
-          onChange={runQuery}
-        />
-        {/* <QueryEditor mode="sql" initialValue={sqlCode} /> */}
+        {queryMode === "typescript" && (
+          <QueryEditor
+            mode="typescript"
+            types={types}
+            initialValue={tsCode}
+            onChange={runQuery}
+          />
+        )}
+        {queryMode === "sql" && (
+          <QueryEditor mode="sql" initialValue={sqlCode} />
+        )}
       </div>
       <div style={{ flex: "0 0 2px", backgroundColor: "crimson" }}></div>
       <div style={{ flex: 1 }}>
         <QueryResponse initialValue={response} />
+      </div>
+
+      <div
+        style={{ position: "fixed", top: 10, right: 10, cursor: "pointer" }}
+        onClick={flipQueryMode}
+      >
+        🔘
       </div>
     </div>
   );

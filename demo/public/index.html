@@ -22,7 +22,7 @@
       const { useState, useEffect } = React;
       const { QueryEditor, QueryResponse } = QueryConsole;
 
-      const code = `import { PrismaClient } from "@prisma/client"
+      const tsCode = `import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
 
@@ -30,6 +30,9 @@ await prisma.user.findMany({
 
 })
 `;
+
+      const sqlCode = `SELECT * FROM Users;
+INSERT INTO Account (id, provider) VALUES (1, "github");`;
 
       function QueryConsoleDemo() {
         const [types, setTypes] = useState();
@@ -43,10 +46,25 @@ await prisma.user.findMany({
             });
         }, []);
 
-        const [response, setResponse] = useState("[]");
-        const runQuery = query => {
-          setResponse("[]");
+        const [queryMode, setQueryMode] = useState("typescript");
+        const flipQueryMode = () => {
+          if (queryMode === "typescript") setQueryMode("sql");
+          else setQueryMode("typescript");
         };
+
+        const [response, setResponse] = useState(`[{
+  "id": 1,
+  "name": "Sid",
+  "email": "sinha@prisma.io",
+  "accounts": [{
+    "provider": "github",
+    "userId": 1
+  }, {
+    "provider": "heroku",
+    "userId": 1
+  }]
+}]`);
+        const runQuery = query => {};
 
         return React.createElement(
           "div",
@@ -59,16 +77,22 @@ await prisma.user.findMany({
             },
           },
           [
-            React.createElement(
-              "div",
-              { style: { flex: 1 } },
-              React.createElement(QueryEditor, {
-                mode: "typescript",
-                types,
-                initialValue: code,
-                onChange: runQuery,
-              })
-            ),
+            React.createElement("div", { style: { flex: 1 } }, [
+              queryMode === "typescript" &&
+                React.createElement(QueryEditor, {
+                  mode: "typescript",
+                  types,
+                  initialValue: tsCode,
+                  onChange: runQuery,
+                }),
+              queryMode === "sql" &&
+                React.createElement(QueryEditor, {
+                  mode: "sql",
+                  types,
+                  initialValue: sqlCode,
+                  onChange: runQuery,
+                }),
+            ]),
             React.createElement("div", {
               style: { flex: "0 0 2px", backgroundColor: "crimson" },
             }),
@@ -78,6 +102,20 @@ await prisma.user.findMany({
               React.createElement(QueryResponse, {
                 initialValue: response,
               })
+            ),
+
+            React.createElement(
+              "div",
+              {
+                style: {
+                  position: "fixed",
+                  top: 10,
+                  right: 10,
+                  cursor: "pointer",
+                },
+                onClick: flipQueryMode,
+              },
+              "🔘"
             ),
           ]
         );
