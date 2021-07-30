@@ -83,6 +83,7 @@ INSERT INTO Account (id, provider) VALUES (1, "github");`;
                   mode: "typescript",
                   types,
                   initialValue: tsCode,
+                  theme: "dark",
                   onChange: runQuery,
                 }),
               queryMode === "sql" &&
@@ -94,13 +95,14 @@ INSERT INTO Account (id, provider) VALUES (1, "github");`;
                 }),
             ]),
             React.createElement("div", {
-              style: { flex: "0 0 2px", backgroundColor: "crimson" },
+              style: { flex: "0 0 1px", backgroundColor: "#666" },
             }),
             React.createElement(
               "div",
               { style: { flex: 1 } },
               React.createElement(QueryResponse, {
                 initialValue: response,
+                theme: "dark",
               })
             ),
 

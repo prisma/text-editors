@@ -2,12 +2,47 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { EditorMode, QueryEditor, ThemeName } from "./components/QueryEditor";
 import { QueryResponse } from "./components/QueryResponse";
-import { FileMap } from "./hooks/useTypescriptEditor";
+import { FileMap } from "./hooks/useTypescriptEditor/useTypescriptEditor";
 import "./index.css";
 
 const tsCode: string = `import { PrismaClient } from "@prisma/client"
 
+// PrismaClient initialization
 const prisma = new PrismaClient()
+// Irrelevant variable declaration
+const x = 2;
+
+async function abcd() {
+  const y = 2
+
+  // Query inside function
+  await prisma.user.findMany({
+
+	})
+
+  // Variable declaration with query
+  const result = await prisma.user.findMany({
+
+	})
+
+  return result
+}
+
+const fn = async () => {
+  const y = 2
+  
+  // Query inside function
+  await prisma.user.findMany({
+  
+  })
+  
+  // Variable declaration with query
+  const result = await prisma.user.findMany({
+  
+  })
+  
+  return result
+}
 
 await prisma.user.findMany({
 

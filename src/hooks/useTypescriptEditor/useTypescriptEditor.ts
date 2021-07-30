@@ -1,20 +1,17 @@
 import { autocompletion } from "@codemirror/autocomplete";
-import { javascript, javascriptLanguage } from "@codemirror/lang-javascript";
-import { LanguageSupport, syntaxTree } from "@codemirror/language";
+import { javascript } from "@codemirror/lang-javascript";
 import { linter } from "@codemirror/lint";
 import { EditorState } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import { debounce } from "lodash-es";
 import { useEffect } from "react";
-import { logger } from "../logger";
-import { useEditorAppearance } from "./useEditorAppearance";
-import { useEditorBehaviour } from "./useEditorBehaviour";
-import { useEditorKeymap } from "./useEditorKeymap";
-import { useEditorParent } from "./useEditorParent";
-import { useEditorTheme } from "./useEditorTheme";
-import { FileMap, useTypescript } from "./useTypescript/useTypescript";
-
-const log = logger("ts-editor", "skyblue");
+import { useEditorBehaviour } from "../useEditorBehaviour";
+import { useEditorKeymap } from "../useEditorKeymap";
+import { useEditorParent } from "../useEditorParent";
+import { ThemeName, useEditorTheme } from "../useEditorTheme";
+import { FileMap, useTypescript } from "../useTypescript/useTypescript";
+import { log } from "./log";
+import { prismaStateField } from "./prismaStateField";
 
 export type { FileMap };
 
@@ -22,6 +19,7 @@ type EditorParams = {
   code: string;
   readonly?: boolean;
   types?: FileMap;
+  theme?: ThemeName;
   onChange?: (value: string) => void;
   onExecuteQuery?: (value: string) => void;
 };
@@ -45,9 +43,10 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
   }, 100);
 
   const { parent, dimensions } = useEditorParent(domSelector);
-  const editorTheme = useEditorTheme(dimensions);
-
-  const appearanceExtensions = useEditorAppearance();
+  const editorThemeExtensions = useEditorTheme(
+    (params.theme = "dark"),
+    dimensions
+  );
   const behaviourExtensions = useEditorBehaviour();
   const keyMapExtensions = useEditorKeymap();
 
@@ -115,16 +114,17 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
             }))
           ),
 
-          editorTheme,
-          ...appearanceExtensions,
+          ...editorThemeExtensions,
           ...behaviourExtensions,
           ...keyMapExtensions,
+
+          prismaStateField.extension,
 
           keymap.of([
             {
               key: "Ctrl-Enter",
               mac: "Mod-Enter",
-              run: ({ state }) => {
+              run: ({ state, visibleRanges }) => {
                 log("Running query (unsupported)");
 
                 return true;
