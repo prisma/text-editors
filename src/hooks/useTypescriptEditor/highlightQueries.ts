@@ -150,6 +150,16 @@ function getDecorationsFromView(view: EditorView) {
             return;
           }
 
+          if (
+            view.state.sliceDoc(
+              maybeVariableNameInsideMemberExpressionInsideMemberExpression.from,
+              maybeVariableNameInsideMemberExpressionInsideMemberExpression.to
+            ) !== prismaVariableName
+          ) {
+            // But if the variable name is not `prismaVariableName`, then this is a dud. It cannot be of any other form, so bail
+            return;
+          }
+
           builder.add(
             callExpression.from,
             callExpression.to,
