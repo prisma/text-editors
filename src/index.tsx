@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-
 import { EditorMode, QueryEditor } from "./components/QueryEditor";
 import { QueryResponse } from "./components/QueryResponse";
 import { FileMap } from "./hooks/useTypescriptEditor";

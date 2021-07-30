@@ -1,6 +1,6 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
 import { PrismaClient } from "@prisma/client";
-import { gzipSync, deflateSync, brotliCompressSync } from "zlib";
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import { brotliCompressSync, deflateSync, gzipSync } from "zlib";
 
 type RequestBody = {
   schema: string;

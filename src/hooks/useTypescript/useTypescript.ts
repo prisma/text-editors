@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
 import {
   createSystem,
   createVirtualTypeScriptEnvironment,
   VirtualTypeScriptEnvironment,
 } from "@typescript/vfs";
+import { useEffect, useState } from "react";
 import typescript from "typescript";
-
-import { log } from "./log";
 import { createFs } from "./createFs";
+import { log } from "./log";
 
 /** Map from fileName to fileContent */
 export type FileMap = Record<string, string>;

@@ -1,19 +1,18 @@
-import { useEffect } from "react";
+import { autocompletion } from "@codemirror/autocomplete";
+import { javascript, javascriptLanguage } from "@codemirror/lang-javascript";
+import { LanguageSupport, syntaxTree } from "@codemirror/language";
+import { linter } from "@codemirror/lint";
 import { EditorState } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
-import { autocompletion } from "@codemirror/autocomplete";
-import { linter } from "@codemirror/lint";
-import { javascript } from "@codemirror/lang-javascript";
-import { selectParentSyntax } from "@codemirror/commands";
 import { debounce } from "lodash-es";
-
+import { useEffect } from "react";
 import { logger } from "../logger";
-import { FileMap, useTypescript } from "./useTypescript/useTypescript";
-import { useEditorParent } from "./useEditorParent";
-import { useEditorTheme } from "./useEditorTheme";
 import { useEditorAppearance } from "./useEditorAppearance";
 import { useEditorBehaviour } from "./useEditorBehaviour";
 import { useEditorKeymap } from "./useEditorKeymap";
+import { useEditorParent } from "./useEditorParent";
+import { useEditorTheme } from "./useEditorTheme";
+import { FileMap, useTypescript } from "./useTypescript/useTypescript";
 
 const log = logger("ts-editor", "skyblue");
 

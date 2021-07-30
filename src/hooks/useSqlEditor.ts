@@ -1,14 +1,13 @@
-import { useEffect } from "react";
+import { sql } from "@codemirror/lang-sql";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { sql } from "@codemirror/lang-sql";
-
+import { useEffect } from "react";
 import { logger } from "../logger";
-import { useEditorParent } from "./useEditorParent";
-import { useEditorTheme } from "./useEditorTheme";
 import { useEditorAppearance } from "./useEditorAppearance";
 import { useEditorBehaviour } from "./useEditorBehaviour";
 import { useEditorKeymap } from "./useEditorKeymap";
+import { useEditorParent } from "./useEditorParent";
+import { useEditorTheme } from "./useEditorTheme";
 
 const log = logger("sql-editor", "aquamarine");
 

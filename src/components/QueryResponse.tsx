@@ -1,5 +1,4 @@
 import React from "react";
-
 import { useJsonEditor } from "../hooks/useJsonEditor";
 import styles from "./QueryEditor.module.css";
 

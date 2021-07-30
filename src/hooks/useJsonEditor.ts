@@ -1,15 +1,14 @@
-import { useEffect } from "react";
-import { EditorState } from "@codemirror/state";
-import { EditorView } from "@codemirror/view";
 import { json, jsonParseLinter } from "@codemirror/lang-json";
 import { linter } from "@codemirror/lint";
-
+import { EditorState } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
+import { useEffect } from "react";
 import { logger } from "../logger";
-import { useEditorParent } from "./useEditorParent";
-import { useEditorTheme } from "./useEditorTheme";
 import { useEditorAppearance } from "./useEditorAppearance";
 import { useEditorBehaviour } from "./useEditorBehaviour";
 import { useEditorKeymap } from "./useEditorKeymap";
+import { useEditorParent } from "./useEditorParent";
+import { useEditorTheme } from "./useEditorTheme";
 
 const log = logger("json-editor", "salmon");
 

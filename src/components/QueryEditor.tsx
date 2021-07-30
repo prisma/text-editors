@@ -1,7 +1,6 @@
 import React from "react";
-
-import { FileMap, useTypescriptEditor } from "../hooks/useTypescriptEditor";
 import { useSqlEditor } from "../hooks/useSqlEditor";
+import { FileMap, useTypescriptEditor } from "../hooks/useTypescriptEditor";
 import styles from "./QueryEditor.module.css";
 
 export type EditorMode = "typescript" | "sql";
