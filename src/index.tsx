@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { EditorMode, QueryEditor } from "./components/QueryEditor";
+import { EditorMode, QueryEditor, ThemeName } from "./components/QueryEditor";
 import { QueryResponse } from "./components/QueryResponse";
 import { FileMap } from "./hooks/useTypescriptEditor";
 import "./index.css";
@@ -48,6 +48,12 @@ const Dev = () => {
     else setQueryMode("typescript");
   };
 
+  const [theme, setTheme] = useState<ThemeName>("dark");
+  const flipTheme = () => {
+    if (theme === "dark") setTheme("light");
+    else setTheme("dark");
+  };
+
   const [response, setResponse] = useState("[]");
   const runQuery = (query: string) => {
     setResponse("[]");
@@ -75,13 +81,19 @@ const Dev = () => {
           <QueryEditor mode="sql" initialValue={sqlCode} />
         )}
       </div>
-      <div style={{ flex: "0 0 2px", backgroundColor: "crimson" }}></div>
+      <div style={{ flex: "0 0 1px", backgroundColor: "#666" }}></div>
       <div style={{ flex: 1 }}>
         <QueryResponse initialValue={response} />
       </div>
 
       <div
-        style={{ position: "fixed", top: 10, right: 10, cursor: "pointer" }}
+        style={{ position: "fixed", top: 10, right: 20, cursor: "pointer" }}
+        onClick={flipTheme}
+      >
+        🌓
+      </div>
+      <div
+        style={{ position: "fixed", top: 10, right: 50, cursor: "pointer" }}
         onClick={flipQueryMode}
       >
         🔘

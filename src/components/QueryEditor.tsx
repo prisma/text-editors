@@ -1,9 +1,11 @@
 import React from "react";
+import { ThemeName } from "../hooks/useEditorTheme";
 import { useSqlEditor } from "../hooks/useSqlEditor";
 import { FileMap, useTypescriptEditor } from "../hooks/useTypescriptEditor";
 import styles from "./QueryEditor.module.css";
 
 export type EditorMode = "typescript" | "sql";
+export type { ThemeName } from "../hooks/useEditorTheme";
 
 type QueryEditorProps = {
   /** Controls what language this editor works with */
@@ -12,6 +14,8 @@ type QueryEditorProps = {
   types?: FileMap;
   /** (Uncontrolled) initial value of the editor */
   initialValue: string;
+  /** Theme for the editor */
+  theme?: ThemeName;
   /** Callback called when the value of the editor changes (debounced) */
   onChange?: (value: string) => void;
   /** Callback called when the user requests a query to be run */
@@ -22,6 +26,7 @@ export function QueryEditor({
   mode = "typescript",
   types,
   initialValue,
+  theme,
   onChange,
   onExecuteQuery,
 }: QueryEditorProps) {
@@ -30,6 +35,7 @@ export function QueryEditor({
     useTypescriptEditor("#query-response", {
       code: initialValue,
       types,
+      theme,
       onChange,
       onExecuteQuery,
     });

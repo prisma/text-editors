@@ -3,17 +3,17 @@ import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { useEffect } from "react";
 import { logger } from "../logger";
-import { useEditorAppearance } from "./useEditorAppearance";
 import { useEditorBehaviour } from "./useEditorBehaviour";
 import { useEditorKeymap } from "./useEditorKeymap";
 import { useEditorParent } from "./useEditorParent";
-import { useEditorTheme } from "./useEditorTheme";
+import { ThemeName, useEditorTheme } from "./useEditorTheme";
 
 const log = logger("sql-editor", "aquamarine");
 
 type EditorParams = {
   code: string;
   readonly?: boolean;
+  theme?: ThemeName;
   onChange?: (value: string) => void;
   onExecuteQuery?: (value: string) => void;
 };
@@ -26,9 +26,10 @@ type EditorParams = {
  */
 export function useSqlEditor(domSelector: string, params: EditorParams) {
   const { parent, dimensions } = useEditorParent(domSelector);
-  const editorTheme = useEditorTheme(dimensions);
-
-  const appearanceExtensions = useEditorAppearance();
+  const editorThemeExtensions = useEditorTheme(
+    (params.theme = "dark"),
+    dimensions
+  );
   const behaviourExtensions = useEditorBehaviour();
   const keyMapExtensions = useEditorKeymap();
 
@@ -49,8 +50,7 @@ export function useSqlEditor(domSelector: string, params: EditorParams) {
           EditorView.editable.of(!params.readonly),
           sql(),
 
-          editorTheme,
-          ...appearanceExtensions,
+          ...editorThemeExtensions,
           ...behaviourExtensions,
           ...keyMapExtensions,
         ],
