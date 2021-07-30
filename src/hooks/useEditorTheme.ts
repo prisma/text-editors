@@ -7,14 +7,18 @@ import {
   oneDarkHighlightStyle,
   oneDarkTheme,
 } from "@codemirror/theme-one-dark";
-import { EditorView, highlightSpecialChars } from "@codemirror/view";
+import {
+  EditorView,
+  highlightActiveLine,
+  highlightSpecialChars,
+} from "@codemirror/view";
 
 export type ThemeName = "light" | "dark";
 
 export function useEditorTheme(
   name: ThemeName,
   dimensions?: DOMRect
-): Extension[] {
+): Extension {
   const height = dimensions?.height || 100;
 
   const extensions = [
@@ -22,6 +26,8 @@ export function useEditorTheme(
       {
         "&": { height: height + "px", width: "100%" },
         ".cm-scroller": { overflow: "auto" },
+        ".cm-activeLine": { background: "#fff1" },
+        ".cm-query": { background: "#000" },
       },
       {
         dark: name === "dark",
@@ -29,16 +35,15 @@ export function useEditorTheme(
     ),
     classHighlightStyle,
     highlightSpecialChars(),
+    highlightActiveLine(),
+
+    // Light theme-specific extensions
+    name === "light" ? defaultHighlightStyle : [],
+
+    // Dark theme-specific extensions
+    name === "dark" ? oneDarkTheme : [],
+    name === "dark" ? oneDarkHighlightStyle : [],
   ];
-
-  if (name === "light") {
-    extensions.push(defaultHighlightStyle);
-  }
-
-  if (name === "dark") {
-    extensions.push(oneDarkTheme);
-    extensions.push(oneDarkHighlightStyle);
-  }
 
   return extensions;
 }

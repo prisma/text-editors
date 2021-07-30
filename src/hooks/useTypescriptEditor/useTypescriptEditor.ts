@@ -10,8 +10,8 @@ import { useEditorKeymap } from "../useEditorKeymap";
 import { useEditorParent } from "../useEditorParent";
 import { ThemeName, useEditorTheme } from "../useEditorTheme";
 import { FileMap, useTypescript } from "../useTypescript/useTypescript";
+import { highlightQueries } from "./highlightQueries";
 import { log } from "./log";
-import { prismaStateField } from "./prismaStateField";
 
 export type { FileMap };
 
@@ -44,7 +44,7 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
 
   const { parent, dimensions } = useEditorParent(domSelector);
   const editorThemeExtensions = useEditorTheme(
-    (params.theme = "dark"),
+    params.theme || "dark",
     dimensions
   );
   const behaviourExtensions = useEditorBehaviour();
@@ -114,11 +114,11 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
             }))
           ),
 
-          ...editorThemeExtensions,
-          ...behaviourExtensions,
-          ...keyMapExtensions,
+          editorThemeExtensions,
+          behaviourExtensions,
+          keyMapExtensions,
 
-          prismaStateField.extension,
+          highlightQueries(),
 
           keymap.of([
             {

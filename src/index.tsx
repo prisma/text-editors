@@ -17,8 +17,9 @@ async function abcd() {
 
   // Query inside function
   await prisma.user.findMany({
-
+    where: {}
 	})
+  await prisma.$queryRaw(\`SELECT * FROM "Users"\`)
 
   // Variable declaration with query
   const result = await prisma.user.findMany({
@@ -108,6 +109,7 @@ const Dev = () => {
           <QueryEditor
             mode="typescript"
             types={types}
+            theme={theme}
             initialValue={tsCode}
             onChange={runQuery}
           />

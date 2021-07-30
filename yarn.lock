@@ -377,7 +377,7 @@
     "@codemirror/state" "^0.18.0"
     "@codemirror/view" "^0.18.0"
 
-"@codemirror/rangeset@^0.18.0", "@codemirror/rangeset@^0.18.2", "@codemirror/rangeset@^0.18.3":
+"@codemirror/rangeset@0.18.4", "@codemirror/rangeset@^0.18.0", "@codemirror/rangeset@^0.18.2", "@codemirror/rangeset@^0.18.3":
   version "0.18.4"
   resolved "https://registry.yarnpkg.com/@codemirror/rangeset/-/rangeset-0.18.4.tgz#84b615906236019107332a023116d2031f63b7bf"
   integrity sha512-HHAebb85KoNrnzKG7Z3bOK3HirstPFFB5tu70QfSaUgSZeWnsSgcmGk033rMLGYV9GNTiibWKpqRPaCuyOUk7w==
