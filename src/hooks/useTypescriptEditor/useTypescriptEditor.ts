@@ -210,6 +210,7 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
 
                 const queries = state.field(prismaClientQueries);
 
+                log(queries, firstCursor);
                 const relevantQuery = queries.queries.find(
                   q => firstCursor.from >= q.from && firstCursor.to <= q.to
                 );

@@ -21,7 +21,7 @@ async function abcd() {
     where: {}
 	})
 
-  await prisma.$queryRaw(\`SELECT * FROM "Users"\`)
+  await prisma.$queryRaw(\`SELECT * FROM "User"\`)
 
   // Variable declaration with query
   const result = await prisma.user.create({
@@ -87,8 +87,23 @@ const Dev = () => {
   };
 
   const [response, setResponse] = useState("[]");
-  const runQuery = (query: string) => {
-    setResponse("[]");
+  const runQuery = async (query: string) => {
+    setResponse(JSON.stringify({ loading: true }, null, 2));
+
+    const res = await fetch("https://qc.prisma-adp.vercel.app/api/run", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query }),
+    }).then(r => r.json());
+
+    console.log("Received response", res.response);
+    if (res.response.error) {
+      setResponse(JSON.stringify({ error: res.response.error }, null, 2));
+    } else {
+      setResponse(JSON.stringify(res.response.data, null, 2));
+    }
   };
 
   return (
@@ -107,7 +122,7 @@ const Dev = () => {
             types={types}
             theme={theme}
             initialValue={tsCode}
-            onChange={runQuery}
+            onExecuteQuery={runQuery}
           />
         )}
         {queryMode === "sql" && (
