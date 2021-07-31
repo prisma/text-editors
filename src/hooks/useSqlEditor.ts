@@ -50,9 +50,9 @@ export function useSqlEditor(domSelector: string, params: EditorParams) {
           EditorView.editable.of(!params.readonly),
           sql(),
 
-          ...editorThemeExtensions,
-          ...behaviourExtensions,
-          ...keyMapExtensions,
+          editorThemeExtensions,
+          behaviourExtensions,
+          keyMapExtensions,
         ],
       }),
     });

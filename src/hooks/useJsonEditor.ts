@@ -52,9 +52,9 @@ export function useJsonEditor(domSelector: string, params: EditorParams) {
           json(),
           linter(jsonParseLinter()),
 
-          ...editorThemeExtensions,
-          ...behaviourExtensions,
-          ...keyMapExtensions,
+          editorThemeExtensions,
+          behaviourExtensions,
+          keyMapExtensions,
         ],
       }),
     });
