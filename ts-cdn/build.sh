@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 rm -rf public/typescript
 
 version=$(cat package.json | grep typescript | awk -F '"' '{ print $4 }')
