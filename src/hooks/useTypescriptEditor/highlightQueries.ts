@@ -7,20 +7,24 @@ const highlightDecoration = Decoration.line({
   attributes: { class: "cm-query" },
 });
 
-function getDecorationsFromState(
-  state: EditorState,
-  from?: number,
-  to?: number
-) {
-  const builder = new RangeSetBuilder<Decoration>();
+type PrismaClientQuery = { text: string; from: number; to: number };
+
+/** An EditorState field that stores all valid PrismaClient queries and thir decoration ranges */
+type PrismaClientQueries = {
+  /** A single Prisma Client query */
+  queries: PrismaClientQuery[];
+  /** Its DecorationSet (Decoration ranges) */
+  decorations: DecorationSet;
+};
+
+function getQueries(state: EditorState): PrismaClientQueries {
+  const syntax = syntaxTree(state);
+  const queries: PrismaClientQuery[] = [];
+  const decorationSetBuilder = new RangeSetBuilder<Decoration>();
 
   let prismaVariableName: string;
 
-  const syntax = syntaxTree(state);
-
   syntax.iterate({
-    from,
-    to,
     enter(type, from) {
       // We assume that the PrismaClient instantiation happens before queries are made
       // We will traverse the syntax tree and find:
@@ -120,6 +124,13 @@ function getDecorationsFromState(
             return;
           }
 
+          // Add text of this query
+          queries.push({
+            text: state.doc.sliceString(callExpression.from, callExpression.to),
+            from: callExpression.from,
+            to: callExpression.to,
+          });
+
           // Add ranges for each line this query exists in
           // If you change this, be sure to also change range addition logic for the other kind of query down below
           const lineStart = state.doc.lineAt(callExpression.from);
@@ -127,7 +138,7 @@ function getDecorationsFromState(
 
           for (let i = lineStart.number; i <= lineEnd.number; i++) {
             const line = state.doc.line(i);
-            builder.add(line.from, line.from, highlightDecoration);
+            decorationSetBuilder.add(line.from, line.from, highlightDecoration);
           }
 
           return;
@@ -156,6 +167,13 @@ function getDecorationsFromState(
           return;
         }
 
+        // Add text of this query
+        queries.push({
+          text: state.doc.sliceString(callExpression.from, callExpression.to),
+          from: callExpression.from,
+          to: callExpression.to,
+        });
+
         // Add ranges for each line this query exists in
         // If you change this, be sure to also change range addition logic for the other kind of query up above
         const lineStart = state.doc.lineAt(callExpression.from);
@@ -163,7 +181,7 @@ function getDecorationsFromState(
 
         for (let i = lineStart.number; i <= lineEnd.number; i++) {
           const line = state.doc.line(i);
-          builder.add(line.from, line.from, highlightDecoration);
+          decorationSetBuilder.add(line.from, line.from, highlightDecoration);
         }
 
         return;
@@ -171,25 +189,28 @@ function getDecorationsFromState(
     },
   });
 
-  return builder.finish();
+  return { queries, decorations: decorationSetBuilder.finish() };
 }
 
 /** State field that tracks which ranges are PrismaClient queries */
-export const queryHighlightsStateField = StateField.define<DecorationSet>({
+export const prismaClientQueries = StateField.define<PrismaClientQueries>({
   create(state) {
-    return getDecorationsFromState(state);
+    return getQueries(state);
   },
 
   update(value, transaction) {
-    value = value.map(transaction.changes);
+    value.decorations = value.decorations.map(transaction.changes);
 
     if (transaction.docChanged) {
-      return getDecorationsFromState(transaction.state);
+      return getQueries(transaction.state);
     }
 
     return value;
   },
 
   provide: field =>
-    EditorView.decorations.compute([field], state => state.field(field)),
+    EditorView.decorations.compute(
+      [field],
+      state => state.field(field).decorations
+    ),
 });

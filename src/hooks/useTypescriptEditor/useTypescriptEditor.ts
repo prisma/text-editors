@@ -12,7 +12,7 @@ import { useEditorKeymap } from "../useEditorKeymap";
 import { useEditorParent } from "../useEditorParent";
 import { ThemeName, useEditorTheme } from "../useEditorTheme";
 import { FileMap, useTypescript } from "../useTypescript/useTypescript";
-import { queryHighlightsStateField } from "./highlightQueries";
+import { prismaClientQueries } from "./highlightQueries";
 import { log } from "./log";
 
 export type { FileMap };
@@ -179,7 +179,7 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
                     dom,
                   };
                 },
-                above: true,
+                above: false, // HACK: This makes it so lint errors show up on TOP of this, so BOTH quickInfo and lint tooltips don't show up at the same time
               };
             },
             { hideOnChange: true }
@@ -189,19 +189,38 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
           behaviourExtensions,
           keyMapExtensions,
 
-          queryHighlightsStateField,
+          prismaClientQueries,
 
           keymap.of([
             {
               key: "Ctrl-Enter",
               mac: "Mod-Enter",
               run: ({ state }) => {
-                log("Running query (unsupported)");
+                if (!params.onExecuteQuery) {
+                  return false;
+                }
 
                 const cursors = state.selection.ranges.filter(r => r.empty);
-                const queries = state.field(queryHighlightsStateField);
+                const firstCursor = cursors[0];
 
-                log(cursors.length, queries.size);
+                if (!firstCursor) {
+                  log("Unable to find cursors, bailing");
+                  return true;
+                }
+
+                const queries = state.field(prismaClientQueries);
+
+                const relevantQuery = queries.queries.find(
+                  q => firstCursor.from >= q.from && firstCursor.to <= q.to
+                );
+
+                if (!relevantQuery) {
+                  log("Unable to find relevant query, bailing");
+                  return true;
+                }
+
+                log("Running query", relevantQuery.text);
+                params.onExecuteQuery(relevantQuery.text);
 
                 return true;
               },
