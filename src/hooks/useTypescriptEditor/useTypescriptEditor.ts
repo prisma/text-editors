@@ -12,8 +12,8 @@ import { useEditorKeymap } from "../useEditorKeymap";
 import { useEditorParent } from "../useEditorParent";
 import { ThemeName, useEditorTheme } from "../useEditorTheme";
 import { FileMap, useTypescript } from "../useTypescript/useTypescript";
-import { prismaClientQueries } from "./highlightQueries";
 import { log } from "./log";
+import { prismaClientQueries } from "./prismaQueries";
 
 export type { FileMap };
 
