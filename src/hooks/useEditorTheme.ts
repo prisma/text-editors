@@ -24,10 +24,17 @@ export function useEditorTheme(
   const extensions = [
     EditorView.theme(
       {
-        "&": { height: height + "px", width: "100%" },
+        "&": { height: height + "px", width: "100%", fontSize: "14px" },
         ".cm-scroller": { overflow: "auto" },
-        ".cm-activeLine": { background: "#fff1" },
-        ".cm-query": { background: "#000" },
+        ".cm-activeLine": { background: "#0002" },
+        ".cm-query": {
+          background: "#00000033",
+          borderLeft: "3px solid #3fe288",
+        },
+        ".cm-gutters": {
+          background: "#1e222a",
+          borderRight: "1px solid #3c4048",
+        },
       },
       {
         dark: name === "dark",

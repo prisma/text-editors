@@ -19,11 +19,12 @@ async function abcd() {
   await prisma.user.findMany({
     where: {}
 	})
+
   await prisma.$queryRaw(\`SELECT * FROM "Users"\`)
 
   // Variable declaration with query
-  const result = await prisma.user.findMany({
-
+  const result = await prisma.user.create({
+    data: {}
 	})
 
   return result
@@ -32,19 +33,13 @@ async function abcd() {
 const fn = async () => {
   const y = 2
   
-  // Query inside function
+  // Query inside arrow function
   await prisma.user.findMany({
-  
+    skip: 10
   })
-  
-  // Variable declaration with query
-  const result = await prisma.user.findMany({
-  
-  })
-  
-  return result
 }
 
+// Top level query
 await prisma.user.findMany({
 
 })

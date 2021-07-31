@@ -10,7 +10,7 @@ import { useEditorKeymap } from "../useEditorKeymap";
 import { useEditorParent } from "../useEditorParent";
 import { ThemeName, useEditorTheme } from "../useEditorTheme";
 import { FileMap, useTypescript } from "../useTypescript/useTypescript";
-import { highlightQueries } from "./highlightQueries";
+import { queryHighlightsStateField } from "./highlightQueries";
 import { log } from "./log";
 
 export type { FileMap };
@@ -118,7 +118,7 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
           behaviourExtensions,
           keyMapExtensions,
 
-          highlightQueries(),
+          queryHighlightsStateField,
 
           keymap.of([
             {
