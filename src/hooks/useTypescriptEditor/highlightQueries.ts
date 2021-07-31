@@ -7,8 +7,6 @@ const highlightDecoration = Decoration.line({
   attributes: { class: "cm-query" },
 });
 
-function getDecorationRanges() {}
-
 function getDecorationsFromState(
   state: EditorState,
   from?: number,

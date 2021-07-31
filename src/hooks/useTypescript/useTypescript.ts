@@ -56,7 +56,7 @@ export function useTypescript(code: string, types?: FileMap) {
     log("Loading additional types");
 
     Object.entries(types).forEach(([fileName, fileContent]) => {
-      ts?.createFile(fileName, fileContent);
+      ts.createFile(fileName, fileContent);
     });
   }, [ts, types]);
 

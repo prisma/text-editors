@@ -14,6 +14,7 @@ const x = 2;
 
 async function abcd() {
   const y = 2
+  y = "test"
 
   // Query inside function
   await prisma.user.findMany({

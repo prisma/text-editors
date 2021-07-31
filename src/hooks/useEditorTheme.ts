@@ -35,6 +35,10 @@ export function useEditorTheme(
           background: "#1e222a",
           borderRight: "1px solid #3c4048",
         },
+        ".cm-diagnostic": {
+          padding: "10px",
+          fontFamily: "monospace",
+        },
       },
       {
         dark: name === "dark",

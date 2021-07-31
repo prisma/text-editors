@@ -1,10 +1,12 @@
 import { autocompletion } from "@codemirror/autocomplete";
 import { javascript } from "@codemirror/lang-javascript";
-import { linter } from "@codemirror/lint";
-import { EditorState } from "@codemirror/state";
+import { Diagnostic, linter } from "@codemirror/lint";
+import { EditorState, Text } from "@codemirror/state";
+import { hoverTooltip } from "@codemirror/tooltip";
 import { EditorView, keymap } from "@codemirror/view";
 import { debounce } from "lodash-es";
 import { useEffect } from "react";
+import { DiagnosticCategory, DiagnosticMessageChain } from "typescript";
 import { useEditorBehaviour } from "../useEditorBehaviour";
 import { useEditorKeymap } from "../useEditorKeymap";
 import { useEditorParent } from "../useEditorParent";
@@ -32,7 +34,10 @@ type EditorParams = {
  */
 export function useTypescriptEditor(domSelector: string, params: EditorParams) {
   const ts = useTypescript(params.code, params.types);
-  const updateFileDebounced = debounce((content: string) => {
+  const onChangeDebounced = debounce((doc: Text) => {
+    const content = doc.sliceString(0);
+    params.onChange?.(content);
+
     if (!ts) {
       log("ts is not initialized, skipping updateFile");
       return null;
@@ -64,9 +69,7 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
 
         // Then tell tsserver about new file (on a debounce to avoid ddos-ing it)
         if (transaction.docChanged) {
-          const newDoc = transaction.newDoc.sliceString(0);
-          updateFileDebounced(newDoc);
-          params.onChange?.(newDoc);
+          onChangeDebounced(transaction.newDoc);
         }
       },
       state: EditorState.create({
@@ -105,13 +108,81 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
               },
             ],
           }),
-          linter(() =>
-            ts.languageService.getSemanticDiagnostics("index.ts").map(d => ({
-              from: d.start || 0,
-              to: (d.start || 0) + (d.length || 0),
-              severity: "error",
-              message: d.messageText as string,
-            }))
+          linter(view => {
+            const diagnostics =
+              ts.languageService.getSemanticDiagnostics("index.ts");
+
+            return diagnostics
+              .map(d => {
+                if (!d.start || !d.length) {
+                  return;
+                }
+
+                let severity: "info" | "warning" | "error" = "info";
+                if (d.category === DiagnosticCategory.Error) {
+                  severity = "error";
+                } else if (d.category === DiagnosticCategory.Warning) {
+                  severity = "warning";
+                }
+
+                let message = d.messageText;
+                if (typeof message !== "string") {
+                  // Messages can be a linked list (in case of cascading type errors). In that case, stringify them
+                  let composedMessage = "";
+                  function depthFirstFlatten(
+                    m: DiagnosticMessageChain,
+                    depth: number = 0
+                  ) {
+                    composedMessage += Array.from({ length: depth })
+                      .fill("  ")
+                      .join("");
+                    composedMessage += m.messageText;
+                    composedMessage += "\n";
+                    m.next?.forEach(n => depthFirstFlatten(n, depth + 1));
+                  }
+
+                  depthFirstFlatten(message);
+                  message = composedMessage;
+                }
+
+                return {
+                  from: d.start,
+                  to: d.start + d.length,
+                  severity,
+                  message,
+                };
+              })
+              .filter((d): d is Diagnostic => !!d);
+          }),
+          hoverTooltip(
+            (view, pos, side) => {
+              const quickInfo = ts.languageService.getQuickInfoAtPosition(
+                "index.ts",
+                pos
+              );
+              if (!quickInfo) {
+                return null;
+              }
+
+              return {
+                pos,
+                create(view) {
+                  const dom = document.createElement("div");
+                  dom.innerText =
+                    quickInfo.displayParts?.map(d => d.text).join("") || "";
+                  dom.setAttribute(
+                    "style",
+                    "padding: 10px; font-family: monospace;"
+                  );
+
+                  return {
+                    dom,
+                  };
+                },
+                above: true,
+              };
+            },
+            { hideOnChange: true }
           ),
 
           editorThemeExtensions,
@@ -124,8 +195,13 @@ export function useTypescriptEditor(domSelector: string, params: EditorParams) {
             {
               key: "Ctrl-Enter",
               mac: "Mod-Enter",
-              run: ({ state, visibleRanges }) => {
+              run: ({ state }) => {
                 log("Running query (unsupported)");
+
+                const cursors = state.selection.ranges.filter(r => r.empty);
+                const queries = state.field(queryHighlightsStateField);
+
+                log(cursors.length, queries.size);
 
                 return true;
               },
