@@ -8,6 +8,12 @@
     "serve": "vite preview",
     "format": "prettier -w ."
   },
+  "exports": {
+    ".": {
+      "import": "./dist/query-console.es.js",
+      "require": "./dist/query-console.umd.js"
+    }
+  },
   "dependencies": {
     "react": "17.0.0",
     "react-dom": "17.0.0"

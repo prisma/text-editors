@@ -1,10 +1,12 @@
 #!/bin/sh
 
+set -e
+
 # Build the Query Console
-cd ../
+cd ..
 yarn
-yarn build
-cp -R dist ./demo/public
+tsc
+vite build -c vite.demo.config.ts
 
 # Make Prisma Client types accessible to the CDN
 cd demo

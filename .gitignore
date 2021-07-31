@@ -8,5 +8,4 @@ yarn-error.log
 .env
 
 ts-cdn/public/typescript
-demo/public/dist
-demo/public/types
+demo/public
