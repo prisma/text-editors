@@ -15,10 +15,7 @@ import {
 
 export type ThemeName = "light" | "dark";
 
-export function useEditorTheme(
-  name: ThemeName,
-  dimensions?: DOMRect
-): Extension {
+export function theme(name: ThemeName, dimensions?: DOMRect): Extension {
   const height = dimensions?.height || 100;
 
   const extensions = [

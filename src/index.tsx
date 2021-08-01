@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { EditorMode, QueryEditor, ThemeName } from "./components/QueryEditor";
-import { QueryResponse } from "./components/QueryResponse";
-import { FileMap } from "./hooks/useTypescriptEditor/useTypescriptEditor";
+import { FileMap } from "./editor/editor";
 import "./index.css";
 
 const tsCode: string = `import { PrismaClient } from "@prisma/client"
@@ -130,9 +129,9 @@ const Dev = () => {
         )}
       </div>
       <div style={{ flex: "0 0 1px", backgroundColor: "#666" }}></div>
-      <div style={{ flex: 1 }}>
+      {/* <div style={{ flex: 1 }}>
         <QueryResponse initialValue={response} />
-      </div>
+      </div> */}
 
       <div
         style={{ position: "fixed", top: 10, right: 20, cursor: "pointer" }}

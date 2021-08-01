@@ -1,9 +1,9 @@
 import React from "react";
-import { ThemeName } from "../hooks/useEditorTheme";
+import { ThemeName } from "../editor/extensions/theme";
 import { useJsonEditor } from "../hooks/useJsonEditor";
 import styles from "./QueryEditor.module.css";
 
-export type { ThemeName } from "../hooks/useEditorTheme";
+export type { ThemeName } from "../editor/extensions/theme";
 
 type QueryResponseProps = {
   /** (Uncontrolled) initial value of the editor */

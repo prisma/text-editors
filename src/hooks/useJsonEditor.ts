@@ -3,11 +3,11 @@ import { linter } from "@codemirror/lint";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { useEffect } from "react";
+import { behaviourExtension } from "../editor/extensions/behaviour";
+import { keymapExtension } from "../editor/extensions/keymap";
+import { ThemeName, useEditorTheme } from "../editor/extensions/theme";
 import { logger } from "../logger";
-import { useEditorBehaviour } from "./useEditorBehaviour";
-import { useEditorKeymap } from "./useEditorKeymap";
 import { useEditorParent } from "./useEditorParent";
-import { ThemeName, useEditorTheme } from "./useEditorTheme";
 
 const log = logger("json-editor", "salmon");
 
@@ -31,8 +31,6 @@ export function useJsonEditor(domSelector: string, params: EditorParams) {
     (params.theme = "dark"),
     dimensions
   );
-  const behaviourExtensions = useEditorBehaviour();
-  const keyMapExtensions = useEditorKeymap();
 
   useEffect(() => {
     const view = new EditorView({
@@ -53,8 +51,8 @@ export function useJsonEditor(domSelector: string, params: EditorParams) {
           linter(jsonParseLinter()),
 
           editorThemeExtensions,
-          behaviourExtensions,
-          keyMapExtensions,
+          behaviourExtension,
+          keymapExtension,
         ],
       }),
     });

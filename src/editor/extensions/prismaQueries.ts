@@ -1,25 +1,30 @@
 import { syntaxTree } from "@codemirror/language";
 import { RangeSetBuilder } from "@codemirror/rangeset";
-import { EditorState, StateField } from "@codemirror/state";
-import { Decoration, DecorationSet, EditorView } from "@codemirror/view";
+import { EditorState, Extension, Facet, StateField } from "@codemirror/state";
+import {
+  Decoration,
+  DecorationSet,
+  EditorView,
+  keymap,
+} from "@codemirror/view";
+import { noop, over } from "lodash-es";
+import { log } from "../log";
 
 const highlightDecoration = Decoration.line({
   attributes: { class: "cm-query" },
 });
 
-type PrismaClientQuery = { text: string; from: number; to: number };
-
-/** An EditorState field that stores all valid PrismaClient queries and thir decoration ranges */
-type PrismaClientQueries = {
+/** A set of valid PrismaClient queries and their decoration ranges. Values of this type will eventually end up as an EditorState field */
+type PrismaQueries = {
   /** A single Prisma Client query */
-  queries: PrismaClientQuery[];
+  queries: { text: string; from: number; to: number }[];
   /** Its DecorationSet (Decoration ranges) */
   decorations: DecorationSet;
 };
 
-function getQueries(state: EditorState): PrismaClientQueries {
+function findQueries(state: EditorState): PrismaQueries {
   const syntax = syntaxTree(state);
-  const queries: PrismaClientQuery[] = [];
+  const queries: PrismaQueries["queries"] = [];
   const decorationSetBuilder = new RangeSetBuilder<Decoration>();
 
   let prismaVariableName: string;
@@ -193,16 +198,16 @@ function getQueries(state: EditorState): PrismaClientQueries {
 }
 
 /** State field that tracks which ranges are PrismaClient queries */
-export const prismaClientQueries = StateField.define<PrismaClientQueries>({
+const prismaQueryStateField = StateField.define<PrismaQueries>({
   create(state) {
-    return getQueries(state);
+    return findQueries(state);
   },
 
   update(value, transaction) {
     value.decorations = value.decorations.map(transaction.changes);
 
     if (transaction.docChanged) {
-      return getQueries(transaction.state);
+      return findQueries(transaction.state);
     }
 
     return value;
@@ -214,3 +219,65 @@ export const prismaClientQueries = StateField.define<PrismaClientQueries>({
       state => state.field(field).decorations
     ),
 });
+
+type PrismaQueryOnExecute = (query: string) => void;
+/** Facet to allow configuring query execution callback */
+type PrismaQueryFacet = { onExecute?: PrismaQueryOnExecute };
+const prismaQueriesFacet = Facet.define<PrismaQueryFacet, PrismaQueryFacet>({
+  combine: input => {
+    return {
+      // If multiple `onExecuteQuery` callbacks are registered, chain them (call them one after another)
+      onExecute: over(input.map(i => i.onExecute || noop)) || noop,
+    };
+  },
+});
+
+// Export a function that will build & return an Extension
+export function prismaQuery(
+  config: {
+    onExecute?: PrismaQueryOnExecute;
+  } = {}
+): Extension[] {
+  return [
+    prismaQueriesFacet.of(config),
+    prismaQueryStateField,
+    keymap.of([
+      {
+        key: "Ctrl-Enter",
+        mac: "Mod-Enter",
+        run: ({ state }) => {
+          const { onExecute } = state.facet(prismaQueriesFacet);
+          if (!onExecute) {
+            // If there is no `onExecute` callback registered, bail
+            return false;
+          }
+
+          const cursors = state.selection.ranges.filter(r => r.empty);
+          const firstCursor = cursors[0];
+
+          if (!firstCursor) {
+            log("Unable to find cursors, bailing");
+            return true;
+          }
+
+          const queries = state.field(prismaQueryStateField);
+
+          log(queries, firstCursor);
+          const relevantQuery = queries.queries.find(
+            q => firstCursor.from >= q.from && firstCursor.to <= q.to
+          );
+
+          if (!relevantQuery) {
+            log("Unable to find relevant query, bailing");
+            return true;
+          }
+
+          log("Running query", relevantQuery.text);
+          onExecute(relevantQuery.text);
+
+          return true;
+        },
+      },
+    ]),
+  ];
+}

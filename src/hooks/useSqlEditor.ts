@@ -2,11 +2,11 @@ import { sql } from "@codemirror/lang-sql";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { useEffect } from "react";
+import { useEditorBehaviour } from "../editor/extensions/behaviour";
+import { useEditorKeymap } from "../editor/extensions/keymap";
+import { ThemeName, useEditorTheme } from "../editor/extensions/theme";
 import { logger } from "../logger";
-import { useEditorBehaviour } from "./useEditorBehaviour";
-import { useEditorKeymap } from "./useEditorKeymap";
 import { useEditorParent } from "./useEditorParent";
-import { ThemeName, useEditorTheme } from "./useEditorTheme";
 
 const log = logger("sql-editor", "aquamarine");
 

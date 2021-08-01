@@ -4,17 +4,15 @@ import { gutter, lineNumbers } from "@codemirror/gutter";
 import { history } from "@codemirror/history";
 import { indentOnInput } from "@codemirror/language";
 import { bracketMatching } from "@codemirror/matchbrackets";
-import { EditorState, Extension } from "@codemirror/state";
+import { EditorState } from "@codemirror/state";
 
-export function useEditorBehaviour(): Extension {
-  return [
-    EditorState.tabSize.of(2),
-    bracketMatching(),
-    closeBrackets(),
-    foldGutter(),
-    gutter({}),
-    indentOnInput(),
-    lineNumbers(),
-    history(),
-  ];
-}
+export const behaviourExtension = [
+  EditorState.tabSize.of(2),
+  bracketMatching(),
+  closeBrackets(),
+  foldGutter(),
+  gutter({}),
+  indentOnInput(),
+  lineNumbers(),
+  history(),
+];

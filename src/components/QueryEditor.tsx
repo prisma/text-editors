@@ -1,14 +1,8 @@
-import React from "react";
-import { ThemeName } from "../hooks/useEditorTheme";
-import { useSqlEditor } from "../hooks/useSqlEditor";
-import {
-  FileMap,
-  useTypescriptEditor,
-} from "../hooks/useTypescriptEditor/useTypescriptEditor";
-import styles from "./QueryEditor.module.css";
+import React, { useEffect, useRef, useState } from "react";
+import { Editor, FileMap, ThemeName } from "../editor";
 
 export type EditorMode = "typescript" | "sql";
-export type { ThemeName } from "../hooks/useEditorTheme";
+export type { ThemeName } from "../editor/extensions/theme";
 
 type QueryEditorProps = {
   /** Controls what language this editor works with */
@@ -33,24 +27,30 @@ export function QueryEditor({
   onChange,
   onExecuteQuery,
 }: QueryEditorProps) {
-  // Conditional hooks are fine because we do not support changing `mode` after first render
-  if (mode === "typescript") {
-    useTypescriptEditor("#query-response", {
-      code: initialValue,
-      types,
-      theme,
-      onChange,
-      onExecuteQuery,
-    });
-  } else if (mode === "sql") {
-    useSqlEditor("#query-response", { code: initialValue });
-  }
+  const ref = useRef<HTMLDivElement>(null);
+  const [editor, setEditor] = useState<Editor>();
 
-  return (
-    <div id="query-response" className={styles.skeleton}>
-      {/* Fallback content */}
-      <div className={styles.gutter}></div>
-      <div className={styles.content}></div>
-    </div>
-  );
+  useEffect(() => {
+    setEditor(
+      new Editor({
+        domElement: ref.current!, // `!` is fine because this will run after the component has mounted
+        code: initialValue,
+        types,
+        theme,
+        onChange,
+        onExecuteQuery,
+      })
+    );
+
+    return () => {
+      editor?.destroy();
+      setEditor(undefined);
+    };
+  }, []);
+
+  useEffect(() => {
+    editor?.injectTypes(types || {});
+  }, [types]);
+
+  return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
 }
