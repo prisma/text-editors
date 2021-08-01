@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "tsc": "tsc",
-    "preview": "yarn build && serve",
+    "preview": "yarn build && serve public",
     "build": "./build.sh"
   },
   "dependencies": {

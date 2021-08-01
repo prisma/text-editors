@@ -12,6 +12,8 @@ const prisma = new PrismaClient()
 // Irrelevant variable declaration
 const x = 2;
 
+con
+
 async function abcd() {
   const y = 2
   y = "test"

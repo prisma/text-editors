@@ -33,9 +33,51 @@ export function theme(name: ThemeName, dimensions?: DOMRect): Extension {
           borderRight: "1px solid #3c4048",
         },
         ".cm-diagnostic": {
-          padding: "10px",
+          padding: "0.5rem",
           fontFamily: "monospace",
         },
+
+        ".cm-tooltip": {
+          background: "#363636",
+          fontFamily: "monospace",
+        },
+
+        ".cm-tooltip-autocomplete": {},
+        ".cm-completionLabel": {}, // Unmatched text
+        ".cm-completionMatchedText": {
+          textDecoration: "none",
+          fontWeight: 600,
+          color: "#00B4D4",
+        },
+        ".cm-completionDetail": {
+          fontStyle: "initial",
+          color: "#ABABAB",
+          marginLeft: "2rem",
+        }, // Text to the right of tooltip
+        ".cm-completionInfo": {}, // "Additional" text that shows up in a panel on the right of the tolltip
+
+        ".cm-autocompleteIcon": {},
+        ".cm-autocompleteIcon-var": {
+          "&:after": { content: '"V"' },
+        },
+        ".cm-autocompleteIcon-let": {},
+        ".cm-autocompleteIcon-const": {},
+
+        ".cm-autocompleteIcon-class": {},
+        ".cm-autocompleteIcon-constructor": {},
+        ".cm-autocompleteIcon-function": {
+          "&:after": { content: '"F"' },
+        },
+        ".cm-autocompleteIcon-method": {},
+        ".cm-autocompleteIcon-parameter": {},
+        ".cm-autocompleteIcon-property": {},
+
+        ".cm-autocompleteIcon-type": {},
+        ".cm-autocompleteIcon-interface": {},
+        ".cm-autocompleteIcon-enum": {},
+        ".cm-autocompleteIcon-enum-member": {},
+        ".cm-autocompleteIcon-keyword": {},
+        ".cm-autocompleteIcon-string": {},
       },
       {
         dark: name === "dark",

@@ -1,5 +1,6 @@
 import {
   autocompletion,
+  completeFromList,
   CompletionContext,
   CompletionResult,
 } from "@codemirror/autocomplete";
@@ -9,7 +10,11 @@ import { EditorState, Text } from "@codemirror/state";
 import { hoverTooltip, Tooltip } from "@codemirror/tooltip";
 import { EditorView } from "@codemirror/view";
 import { debounce } from "lodash-es";
-import { DiagnosticCategory, DiagnosticMessageChain } from "typescript";
+import {
+  DiagnosticCategory,
+  displayPartsToString,
+  flattenDiagnosticMessageText,
+} from "typescript";
 import { logger } from "../logger";
 import { FileMap, TypescriptProject } from "../typescript";
 import { behaviourExtension } from "./extensions/behaviour";
@@ -67,7 +72,9 @@ export class Editor {
           javascript({ typescript: true, jsx: false }),
           autocompletion({
             activateOnTyping: true,
+            maxRenderedOptions: 50,
             override: [this.getCompletionSource],
+            // override: [this.getCompletionSource],
           }),
           linter(this.getLintDiagnostics),
           hoverTooltip(this.getHoverTooltipSource, { hideOnChange: true }),
@@ -90,30 +97,27 @@ export class Editor {
     ctx: CompletionContext
   ): Promise<CompletionResult | null> => {
     // This is an arrow function because we want to inherit the `this` binding
+    const { pos } = ctx;
 
     const completions = (await this.ts.lang()).getCompletionsAtPosition(
       this.ts.entrypoint,
-      ctx.pos,
-      {
-        disableSuggestions: true,
-      }
+      pos,
+      {}
     );
     if (!completions) {
-      log("Unable to get completions", { pos: ctx.pos });
+      log("Unable to get completions", { pos });
       return null;
     }
 
-    return {
-      from: ctx.pos,
-      options:
-        completions.entries.map(c => ({
-          type: "property", // TODO:: Return correct `type`
-          label: c.name,
-          // info:
-          //   c.displayParts.map(p => p.text).join("") +
-          //   (c.documentation || ""),
-        })) || [],
-    };
+    return completeFromList(
+      completions.entries.map(c => ({
+        type: c.kind,
+        label: c.name,
+        detail: "detail",
+        info: "info",
+        // boost: 1 / distance(c.name, "con"),
+      }))
+    )(ctx);
   };
 
   private getLintDiagnostics = async (): Promise<Diagnostic[]> => {
@@ -123,11 +127,8 @@ export class Editor {
     );
 
     return diagnostics
+      .filter(d => d.start !== undefined && d.length !== undefined)
       .map(d => {
-        if (!d.start || !d.length) {
-          return;
-        }
-
         let severity: "info" | "warning" | "error" = "info";
         if (d.category === DiagnosticCategory.Error) {
           severity = "error";
@@ -135,34 +136,13 @@ export class Editor {
           severity = "warning";
         }
 
-        let message = d.messageText;
-        if (typeof message !== "string") {
-          // Messages can be a linked list (in case of cascading type errors). In that case, stringify them
-          let composedMessage = "";
-          function depthFirstFlatten(
-            m: DiagnosticMessageChain,
-            depth: number = 0
-          ) {
-            composedMessage += Array.from({ length: depth })
-              .fill("  ")
-              .join("");
-            composedMessage += m.messageText;
-            composedMessage += "\n";
-            m.next?.forEach(n => depthFirstFlatten(n, depth + 1));
-          }
-
-          depthFirstFlatten(message);
-          message = composedMessage;
-        }
-
         return {
-          from: d.start,
-          to: d.start + d.length,
+          from: d.start!, // `!` is fine because of the `.filter()` before the `.map()`
+          to: d.start! + d.length!, // `!` is fine because of the `.filter()` before the `.map()`
           severity,
-          message,
+          message: flattenDiagnosticMessageText(d.messageText, "\n", 0),
         };
-      })
-      .filter((d): d is Diagnostic => !!d);
+      });
   };
 
   private getHoverTooltipSource = async (
@@ -183,8 +163,10 @@ export class Editor {
       pos,
       create() {
         const dom = document.createElement("div");
-        dom.innerText = quickInfo.displayParts?.map(d => d.text).join("") || "";
-        dom.setAttribute("style", "padding: 10px; font-family: monospace;");
+        dom.innerText = displayPartsToString(quickInfo.displayParts);
+        if (quickInfo.documentation?.length)
+          dom.innerText += "\n" + displayPartsToString(quickInfo.documentation);
+        dom.setAttribute("style", "padding: 0.5rem;");
 
         return {
           dom,
