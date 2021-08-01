@@ -17,17 +17,16 @@ export function Editor({ initialValue, theme, onChange }: EditorProps) {
   const [editor, setEditor] = useState<JSONEditor>();
 
   useEffect(() => {
-    setEditor(
-      new JSONEditor({
-        domElement: ref.current!, // `!` is fine because this will run after the component has mounted
-        code: initialValue,
-        theme,
-        onChange,
-      })
-    );
+    const jsonEditor = new JSONEditor({
+      domElement: ref.current!, // `!` is fine because this will run after the component has mounted
+      code: initialValue,
+      theme,
+      onChange,
+    });
+    setEditor(jsonEditor);
 
     return () => {
-      editor?.destroy();
+      jsonEditor?.destroy();
       setEditor(undefined);
     };
   }, []);

@@ -1,5 +1,6 @@
 import {
   keywordCompletion,
+  MSSQL,
   MySQL,
   PostgreSQL,
   schemaCompletion,
@@ -15,7 +16,7 @@ import { theme, ThemeName } from "./extensions/theme";
 
 const log = logger("sql-editor", "aquamarine");
 
-export type SQLDialect = "postgresql" | "mysql";
+export type SQLDialect = "postgresql" | "mysql" | "sqlserver";
 
 type EditorParams = {
   domElement: Element;
@@ -75,12 +76,14 @@ export class Editor {
         return PostgreSQL;
       case "mysql":
         return MySQL;
+      case "sqlserver":
+        return MSSQL;
       default:
         return StandardSQL;
     }
   }
 
-  public destroy() {
+  public destroy = () => {
     this.view.destroy();
-  }
+  };
 }

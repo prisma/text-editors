@@ -53,7 +53,7 @@ export class Editor {
     log("Initialized");
   }
 
-  public destroy() {
+  public destroy = () => {
     this.view.destroy();
-  }
+  };
 }

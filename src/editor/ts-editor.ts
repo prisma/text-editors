@@ -86,6 +86,8 @@ export class Editor {
   private getCompletionSource = async (
     ctx: CompletionContext
   ): Promise<CompletionResult | null> => {
+    // This is an arrow function because we want to inherit the `this` binding
+
     log("Autocomplete requested", { pos: ctx.pos });
 
     const completions = (await this.ts.lang()).getCompletionsAtPosition(
@@ -161,10 +163,12 @@ export class Editor {
       .filter((d): d is Diagnostic => !!d);
   };
 
-  private async getHoverTooltipSource(
+  private getHoverTooltipSource = async (
     _view: EditorView,
     pos: number
-  ): Promise<Tooltip | null> {
+  ): Promise<Tooltip | null> => {
+    // This is an arrow function because we want to inherit the `this` binding
+
     const quickInfo = (await this.ts.lang()).getQuickInfoAtPosition(
       this.ts.entrypoint,
       pos
@@ -186,19 +190,23 @@ export class Editor {
       },
       above: false, // HACK: This makes it so lint errors show up on TOP of this, so BOTH quickInfo and lint tooltips don't show up at the same time
     };
-  }
+  };
 
-  public injectTypes(types: FileMap) {
+  public injectTypes = (types: FileMap) => {
+    // This is an arrow function because we want to inherit the `this` binding
+
     this.ts.injectTypes(types || {});
 
     // Don't `await`, we do not want this function's caller to wait
     this.getLintDiagnostics().then(diagnostics => {
       this.view.dispatch(setDiagnostics(this.view.state, diagnostics));
     });
-  }
+  };
 
-  public destroy() {
+  public destroy = () => {
+    // This is an arrow function because we want to inherit the `this` binding
+
     this.ts.destroy();
     this.view.destroy();
-  }
+  };
 }

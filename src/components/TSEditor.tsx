@@ -29,27 +29,26 @@ export function Editor({
   const [editor, setEditor] = useState<TSEditor>();
 
   useEffect(() => {
-    setEditor(
-      new TSEditor({
-        domElement: ref.current!, // `!` is fine because this will run after the component has mounted
-        code: initialValue,
-        readonly,
-        theme,
-        types,
-        onChange,
-        onExecuteQuery,
-      })
-    );
+    const tsEditor = new TSEditor({
+      domElement: ref.current!, // `!` is fine because this will run after the component has mounted
+      code: initialValue,
+      readonly,
+      theme,
+      types,
+      onChange,
+      onExecuteQuery,
+    });
+    setEditor(tsEditor);
 
     return () => {
-      editor?.destroy();
+      tsEditor?.destroy();
       setEditor(undefined);
     };
   }, []);
 
   useEffect(() => {
     editor?.injectTypes(types || {});
-  }, [types]);
+  }, [editor, types]);
 
   return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
 }

@@ -24,18 +24,17 @@ export function Editor({
   const [editor, setEditor] = useState<SQLEditor>();
 
   useEffect(() => {
-    setEditor(
-      new SQLEditor({
-        domElement: ref.current!, // `!` is fine because this will run after the component has mounted
-        code: initialValue,
-        theme,
-        onChange,
-        onExecuteQuery,
-      })
-    );
+    const sqlEditor = new SQLEditor({
+      domElement: ref.current!, // `!` is fine because this will run after the component has mounted
+      code: initialValue,
+      theme,
+      onChange,
+      onExecuteQuery,
+    });
+    setEditor(sqlEditor);
 
     return () => {
-      editor?.destroy();
+      sqlEditor?.destroy();
       setEditor(undefined);
     };
   }, []);
