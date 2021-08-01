@@ -123,17 +123,17 @@ const ReactDemo = () => {
           <TSEditor
             types={types}
             theme={theme}
-            initialValue={tsCode}
+            value={tsCode}
             onExecuteQuery={runPrismaClientQuery}
           />
         )}
         {queryMode === "sql" && (
-          <SQLEditor initialValue={sqlCode} onExecuteQuery={runSqlQuery} />
+          <SQLEditor value={sqlCode} onExecuteQuery={runSqlQuery} />
         )}
       </div>
       <div style={{ flex: "0 0 1px", backgroundColor: "#666" }}></div>
       <div style={{ flex: 1 }}>
-        <JSONEditor readonly initialValue={response} />
+        <JSONEditor readonly value={response} />
       </div>
 
       <div

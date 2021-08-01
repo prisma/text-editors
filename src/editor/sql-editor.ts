@@ -83,6 +83,15 @@ export class Editor {
     }
   }
 
+  public forceUpdate = (code: string) => {
+    this.view.dispatch({
+      changes: [
+        { from: 0, to: this.view.state.doc.length },
+        { from: 0, insert: code },
+      ],
+    });
+  };
+
   public destroy = () => {
     this.view.destroy();
   };

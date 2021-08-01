@@ -10,8 +10,8 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/query-console.es.js",
-      "require": "./dist/query-console.umd.js"
+      "import": "./dist/editors.es.js",
+      "require": "./dist/editors.umd.js"
     }
   },
   "dependencies": {},

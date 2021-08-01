@@ -9,7 +9,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, "src/lib.ts"),
       name: "QueryConsole",
-      fileName: format => `query-console.${format}.js`,
+      fileName: format => `editors.${format}.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom"],

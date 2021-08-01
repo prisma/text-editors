@@ -203,6 +203,25 @@ export class Editor {
     });
   };
 
+  public forceUpdate = (code: string) => {
+    this.view.dispatch({
+      changes: [
+        { from: 0, to: this.view.state.doc.length },
+        { from: 0, insert: code },
+      ],
+    });
+
+    // Don't `await`, we do not want this function's caller to wait
+
+    // Update TSServer's view of this file
+    this.ts.env().then(env => env.updateFile(this.ts.entrypoint, code));
+
+    // Then re-compute lint diagnostics
+    this.getLintDiagnostics().then(diagnostics => {
+      this.view.dispatch(setDiagnostics(this.view.state, diagnostics));
+    });
+  };
+
   public destroy = () => {
     // This is an arrow function because we want to inherit the `this` binding
 

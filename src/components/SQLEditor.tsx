@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { SQLEditor, ThemeName } from "../editor";
 
 type EditorProps = {
-  /** (Uncontrolled) initial value of the editor */
-  initialValue: string;
+  /** (Controlled) Value of the editor */
+  value: string;
   /** Controls if the editor is readonly */
   readonly?: boolean;
   /** Theme for the editor */
@@ -15,7 +15,7 @@ type EditorProps = {
 };
 
 export function Editor({
-  initialValue,
+  value,
   theme,
   onChange,
   onExecuteQuery,
@@ -23,10 +23,11 @@ export function Editor({
   const ref = useRef<HTMLDivElement>(null);
   const [editor, setEditor] = useState<SQLEditor>();
 
+  // Handles editor lifecycle
   useEffect(() => {
     const sqlEditor = new SQLEditor({
       domElement: ref.current!, // `!` is fine because this will run after the component has mounted
-      code: initialValue,
+      code: value,
       theme,
       onChange,
       onExecuteQuery,
@@ -38,6 +39,11 @@ export function Editor({
       setEditor(undefined);
     };
   }, []);
+
+  // Ensures `value` given to this component is always reflected in the editor
+  useEffect(() => {
+    editor?.forceUpdate(value);
+  }, [value]);
 
   return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
 }
