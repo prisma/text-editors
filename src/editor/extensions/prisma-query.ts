@@ -19,7 +19,12 @@ const highlightDecoration = Decoration.line({
 /** A set of valid PrismaClient queries and their decoration ranges. Values of this type will eventually end up as an EditorState field */
 type PrismaQueries = {
   /** A single Prisma Client query */
-  queries: { text: string; from: number; to: number }[];
+  queries: {
+    text: string;
+    from: number;
+    to: number;
+    variables: Record<string, string>;
+  }[];
   /** Its DecorationSet (Decoration ranges) */
   decorations: DecorationSet;
 };
@@ -38,35 +43,71 @@ function findQueries(state: EditorState): PrismaQueries {
       // 1. The name of the variable holding the PrismaClient instance
       // 2. All AwaitExpressions that use this instance
       // These two _should_ be sufficient in identifying queries
+      //
+      // If debugging, it is possible to see what SyntaxNode you're on by slicing the state doc around it like so:
+      //   log({ text: state.sliceDoc(variableDeclaration.from, variableDeclaration.to) });
+      // This will give you a readable representation of the node you're working with
 
-      if (type.name === "NewExpression") {
+      if (type.name === "VariableDefinition") {
+        // log(type);
+      } else if (type.name === "NewExpression") {
         // This `if` branch finds the PrismaClient instance variable name
 
         // Check if this `new` expressions is for the PrismaClient constructor
-        // TODO:: Do NOT use syntax.resolve, it will fail if there are multiple spaces after `new`
-        const identifier = syntax.resolve(from + "new ".length, 1);
+
+        // First, get the `new` keyword in question
+        // const prisma = new PrismaClient()
+        //                |-|
+        const newKeyword = syntax.resolve(from, 1);
+        if (newKeyword?.name !== "new") {
+          return;
+        }
+
+        // Next, make sure the `new` keyword is initializing a variable
+        // const prisma = new PrismaClient()
+        //                    |------------|
+        const identifier = newKeyword.nextSibling;
+        if (identifier?.name !== "VariableName") {
+          return;
+        }
+
+        // Then, we can find the name of the identifier, which is the name of the class the `new` keyword is instantiating
+        // const prisma = new PrismaClient()
+        //                    |----------|
         const identifierName = state.sliceDoc(identifier.from, identifier.to);
-
         if (identifierName !== "PrismaClient") {
+          // If the identifier isn't `PrismaClient`, it means this `new` keyword is instantiating an irrelevant class
           return;
         }
 
-        // If it is, find the name of the variable so we can use it to identify PrismaClient calls
-        const variableDeclaration = identifier.parent?.parent;
-        if (!variableDeclaration) {
+        // If this is a `new PrismaClient` call, find the name of the variable so we can use it to identify PrismaClient calls
+
+        // First, we try to go two parents up, to find the VariableDeclaration
+        // const prisma = new PrismaClient()
+        // |-------------------------------|
+        const variableDeclaration = newKeyword.parent?.parent;
+        if (variableDeclaration?.name !== "VariableDeclaration") {
           return;
         }
 
-        const variableDefinition =
-          variableDeclaration.getChild("VariableDefinition");
-        if (!variableDefinition) {
+        // Then, we find its first child, which should be the variable name
+        // const prisma = new PrismaClient()
+        // |---|
+        const constDeclaration = variableDeclaration.firstChild;
+        if (constDeclaration?.name !== "const") {
           return;
         }
 
-        prismaVariableName = state.sliceDoc(
-          variableDefinition.from,
-          variableDefinition.to
-        );
+        // Then, we find the ConstDeclaration's sibling
+        // const prisma = new PrismaClient()
+        //       |----|
+        const variableName = constDeclaration.nextSibling;
+        if (variableName?.name !== "VariableDefinition") {
+          return;
+        }
+
+        // Now that we know the bounds of the variable name, we can slice the doc to find out what its value is
+        prismaVariableName = state.sliceDoc(variableName.from, variableName.to);
       } else if (type.name === "UnaryExpression") {
         // This branch finds actual queries using the PrismaClient instance variable name
 
@@ -136,6 +177,7 @@ function findQueries(state: EditorState): PrismaQueries {
             text: state.doc.sliceString(callExpression.from, callExpression.to),
             from: callExpression.from,
             to: callExpression.to,
+            variables: {},
           });
 
           // Add ranges for each line this query exists in
@@ -179,6 +221,7 @@ function findQueries(state: EditorState): PrismaQueries {
           text: state.doc.sliceString(callExpression.from, callExpression.to),
           from: callExpression.from,
           to: callExpression.to,
+          variables: {},
         });
 
         // Add ranges for each line this query exists in
