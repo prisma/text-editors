@@ -6,10 +6,8 @@ set -e
 cd ..
 yarn
 yarn build -c vite.demo.config.ts
-# tsc
-# vite build 
 
-# Make Prisma Client types accessible to the CDN
+# Make Prisma Client types accessible to the Vercel CDN so they can fetched at runtime
 cd demo
 rm -rf public/types
 mkdir -p public/types

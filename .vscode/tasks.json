@@ -10,10 +10,18 @@
     },
     {
       "type": "npm",
-      "script": "deploy",
+      "script": "build",
       "problemMatcher": [],
-      "label": "deploy",
-      "detail": "Deploy ts-cdn"
+      "label": "build",
+      "detail": "Build library"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "demo",
+      "problemMatcher": [],
+      "label": "build:demo",
+      "detail": "Build demo"
     }
   ]
 }
