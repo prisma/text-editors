@@ -1,70 +1,103 @@
 import { compressToUTF16, decompressFromUTF16 } from "lz-string";
-import { fileNames } from "./dts";
 import { log } from "./log";
 
+type LibName = "typescript" | "@types/node";
 type FileName = string;
 type FileContent = string;
-type TSVersion = "4.3.5";
 
 /**
  * A virtual file-system to manage files for the TS Language server
  */
 export class TSFS {
-  /** The version of Typescript this is using. Minimum supported version is 4.3.5 */
-  private version: TSVersion;
-  /** Base URL where core TS typedefs will be downloaded from */
-  private cdnBaseUrl: string;
   /** Internal map of file names to their content */
   public fs: Map<FileName, FileContent>;
 
-  constructor(version: TSVersion) {
+  constructor() {
     this.fs = new Map();
-    this.version = version;
-    this.cdnBaseUrl = "https://ts-cdn.prisma-adp.vercel.app";
+  }
 
-    // Remove old cached things from `localStorage`
-    Object.keys(localStorage).forEach(function (key) {
+  /**
+   * Given a lib name, runs a callback function for every file in that library.
+   * It might fetch files in the library from a cache or from the network
+   */
+  private forFileInLib = async (
+    libName: LibName,
+    cb: (name: string, content: string) => void
+  ) => {
+    // First, we fetch metadata about the library
+
+    // Rollup needs us to use static strings for dynamic imports
+    const meta =
+      libName === "typescript"
+        ? await import("./types/typescript/meta.js")
+        : await import("./types/@types/node/meta.js");
+
+    // The metadata tells us the version of the library, and gives us a list of file names in the library.
+    // If our cache already has this version of the library:
+    // 1. We iterate over the file names in that library and fetch file contents from `localStorage` (compressed).
+    // 2. We iterate over the file names in taht library and call the callback function for every (fileName, fileContent) pair
+    //
+    // If our cache does not have this version of the library:
+    // 1. We fetch all files of this library via the network
+    // 2. We remove any other versions of the library that were cached (to conserve space)
+    // 3. We iterate over the files we just fetched and cache them (compressed)
+    // 4. We iterate over the files we just fetched and call the callback for every (fileName, fileContent) pair
+
+    const isCached =
+      localStorage.getItem(`ts-lib/${libName}/_version`) === meta.version;
+
+    // TODO:: Integrity checks?
+    if (isCached) {
+      log(`Injecting ${libName} ${meta.version} from cache`);
+      meta.files.forEach(f => {
+        cb(
+          f,
+          decompressFromUTF16(
+            localStorage.getItem(`ts-lib/${libName}/${meta.version}/${f}`)!
+          )!
+        );
+      });
+    } else {
       // Remove anything that isn't from this version
-      if (key.startsWith(`ts-lib/`) && !key.startsWith(`ts-lib/` + version)) {
-        localStorage.removeItem(key);
-      }
-    });
-  }
-
-  async injectCoreLibs() {
-    const fileNamesToFetch = fileNames[this.version];
-
-    const libs = await Promise.all(
-      fileNamesToFetch.map(fileName => {
-        const cacheKey = `ts-lib/${this.version}/${fileName}`;
-
-        const cachedFileContent = localStorage.getItem(cacheKey);
-        if (cachedFileContent) {
-          return Promise.resolve(decompressFromUTF16(cachedFileContent)!); // `!` is fine because we know compressed files are valid UTF16
+      Object.keys(localStorage).forEach(function (key) {
+        if (
+          key.startsWith(`ts-lib/${libName}`) &&
+          !key.startsWith(`ts-lib/${libName}/${meta.version}`)
+        ) {
+          localStorage.removeItem(key);
         }
+      });
 
-        return fetch(
-          `${this.cdnBaseUrl}/typescript/${this.version}/${fileName}`
-        )
-          .then(r => r.text())
-          .then(fileContent => {
-            setTimeout(
-              () =>
-                localStorage.setItem(cacheKey, compressToUTF16(fileContent)),
-              0
-            );
-            return fileContent;
-          })
-          .catch(e => {
-            log(`Unable to fetch TS lib ${fileName}`, { error: e });
-            throw new Error(`Unable to fetch TS lib ${fileName}`);
-          });
-      })
-    );
+      log(`Downloading & Injecting ${libName} ${meta.version}`);
 
-    // Generate fsMap from TS libs
-    libs.forEach((fileContent, i) =>
-      this.fs.set(`/${fileNames[this.version][i]}`, fileContent)
-    );
-  }
+      // Rollup needs us to use static strings for dynamic imports
+      const data =
+        libName === "typescript"
+          ? await import("./types/typescript/data.js")
+          : await import("./types/@types/node/data.js");
+
+      // Add new things to `localStorage`
+      localStorage.setItem(`ts-lib/${libName}/_version`, meta.version);
+      Object.entries(data.files).forEach(([name, content]) => {
+        localStorage.setItem(
+          `ts-lib/${libName}/${data.version}/${name}`,
+          compressToUTF16(content)
+        );
+        cb(name, content);
+      });
+    }
+  };
+
+  injectCoreLibs = async () => {
+    await Promise.all([
+      this.forFileInLib("typescript", (name, content) => {
+        // TS Core libs need to be available at the root path `/` (TSServer requires this)
+        this.fs.set("/" + name, content);
+      }),
+      this.forFileInLib("@types/node", (name, content) => {
+        // Additional libs need to be faked so they look like they're coming from node_modules (TSServer requires this)
+        this.fs.set("/node_modules/@types/node/" + name, content);
+      }),
+    ]);
+  };
 }
