@@ -1,16 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Editor, FileMap, ThemeName } from "../editor";
+import { SQLEditor, ThemeName } from "../editor";
 
-export type EditorMode = "typescript" | "sql";
-export type { ThemeName } from "../editor/extensions/theme";
-
-type QueryEditorProps = {
-  /** Controls what language this editor works with */
-  mode: EditorMode;
-  /** Additional Typescript types to load into the editor */
-  types?: FileMap;
+type EditorProps = {
   /** (Uncontrolled) initial value of the editor */
   initialValue: string;
+  /** Controls if the editor is readonly */
+  readonly?: boolean;
   /** Theme for the editor */
   theme?: ThemeName;
   /** Callback called when the value of the editor changes (debounced) */
@@ -19,23 +14,20 @@ type QueryEditorProps = {
   onExecuteQuery?: (query: string) => void;
 };
 
-export function QueryEditor({
-  mode = "typescript",
-  types,
+export function Editor({
   initialValue,
   theme,
   onChange,
   onExecuteQuery,
-}: QueryEditorProps) {
+}: EditorProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [editor, setEditor] = useState<Editor>();
+  const [editor, setEditor] = useState<SQLEditor>();
 
   useEffect(() => {
     setEditor(
-      new Editor({
+      new SQLEditor({
         domElement: ref.current!, // `!` is fine because this will run after the component has mounted
         code: initialValue,
-        types,
         theme,
         onChange,
         onExecuteQuery,
@@ -47,10 +39,6 @@ export function QueryEditor({
       setEditor(undefined);
     };
   }, []);
-
-  useEffect(() => {
-    editor?.injectTypes(types || {});
-  }, [types]);
 
   return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
 }

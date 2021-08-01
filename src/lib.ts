@@ -1,5 +1,5 @@
-export { QueryEditor } from "./components/QueryEditor";
-export { QueryResponse } from "./components/QueryResponse";
-export { useTypescriptEditor } from "./editor/editor";
-export { useJsonEditor } from "./hooks/useJsonEditor";
-export { useSqlEditor } from "./hooks/useSqlEditor";
+export { Editor as JSONEditor } from "./components/JSONEditor";
+export { Editor as SQLEditor } from "./components/SQLEditor";
+export { Editor as TSEditor } from "./components/TSEditor";
+export type { SQLDialect, ThemeName } from "./editor";
+export type { FileMap } from "./typescript";

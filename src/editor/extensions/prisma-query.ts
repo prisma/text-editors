@@ -8,7 +8,9 @@ import {
   keymap,
 } from "@codemirror/view";
 import { noop, over } from "lodash-es";
-import { log } from "../log";
+import { logger } from "../../logger";
+
+const log = logger("prisma-query-extension", "grey");
 
 const highlightDecoration = Decoration.line({
   attributes: { class: "cm-query" },
@@ -262,7 +264,6 @@ export function prismaQuery(
 
           const queries = state.field(prismaQueryStateField);
 
-          log(queries, firstCursor);
           const relevantQuery = queries.queries.find(
             q => firstCursor.from >= q.from && firstCursor.to <= q.to
           );

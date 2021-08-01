@@ -10,14 +10,14 @@ import { hoverTooltip, Tooltip } from "@codemirror/tooltip";
 import { EditorView } from "@codemirror/view";
 import { debounce } from "lodash-es";
 import { DiagnosticCategory, DiagnosticMessageChain } from "typescript";
+import { logger } from "../logger";
 import { FileMap, TypescriptProject } from "../typescript";
 import { behaviourExtension } from "./extensions/behaviour";
 import { keymapExtension } from "./extensions/keymap";
-import { prismaQuery } from "./extensions/prismaQueries";
+import { prismaQuery } from "./extensions/prisma-query";
 import { theme, ThemeName } from "./extensions/theme";
-import { log } from "./log";
 
-export type { FileMap, ThemeName };
+const log = logger("ts-editor", "limegreen");
 
 type EditorParams = {
   domElement: Element;
@@ -26,7 +26,7 @@ type EditorParams = {
   types?: FileMap;
   theme?: ThemeName;
   onChange?: (value: string) => void;
-  onExecuteQuery?: (value: string) => void;
+  onExecuteQuery?: (query: string) => void;
 };
 
 export class Editor {
@@ -60,6 +60,7 @@ export class Editor {
 
         extensions: [
           EditorView.editable.of(!params.readonly),
+
           javascript({ typescript: true, jsx: false }),
           autocompletion({
             activateOnTyping: true,
@@ -67,6 +68,7 @@ export class Editor {
           }),
           linter(this.getLintDiagnostics),
           hoverTooltip(this.getHoverTooltipSource, { hideOnChange: true }),
+          prismaQuery({ onExecute: params.onExecuteQuery }),
 
           theme(
             params.theme || "dark",
@@ -74,8 +76,6 @@ export class Editor {
           ),
           behaviourExtension,
           keymapExtension,
-
-          prismaQuery({ onExecute: params.onExecuteQuery }),
         ],
       }),
     });

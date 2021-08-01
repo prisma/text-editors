@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { EditorMode, QueryEditor, ThemeName } from "./components/QueryEditor";
-import { FileMap } from "./editor/editor";
 import "./index.css";
+import { FileMap, JSONEditor, SQLEditor, ThemeName, TSEditor } from "./lib";
+
+type QueryMode = "typescript" | "sql";
 
 const tsCode: string = `import { PrismaClient } from "@prisma/client"
 
@@ -61,7 +62,7 @@ const jsonCode: string = `[{
   }]
 }]`;
 
-const Dev = () => {
+const ReactDemo = () => {
   const [types, setTypes] = useState<FileMap>({});
   useEffect(() => {
     fetch("https://qc.prisma-adp.vercel.app/types/prisma-client.d.ts")
@@ -73,7 +74,7 @@ const Dev = () => {
       });
   }, []);
 
-  const [queryMode, setQueryMode] = useState<EditorMode>("typescript");
+  const [queryMode, setQueryMode] = useState<QueryMode>("typescript");
   const flipQueryMode = () => {
     if (queryMode === "typescript") setQueryMode("sql");
     else setQueryMode("typescript");
@@ -86,7 +87,7 @@ const Dev = () => {
   };
 
   const [response, setResponse] = useState("[]");
-  const runQuery = async (query: string) => {
+  const runPrismaClientQuery = async (query: string) => {
     setResponse(JSON.stringify({ loading: true }, null, 2));
 
     const res = await fetch("https://qc.prisma-adp.vercel.app/api/run", {
@@ -105,6 +106,9 @@ const Dev = () => {
     }
   };
 
+  const runSqlQuery = (query: string) =>
+    runPrismaClientQuery(`prisma.$queryRaw(\`${query}\`)`);
+
   return (
     <div
       style={{
@@ -116,22 +120,21 @@ const Dev = () => {
     >
       <div style={{ flex: 1 }}>
         {queryMode === "typescript" && (
-          <QueryEditor
-            mode="typescript"
+          <TSEditor
             types={types}
             theme={theme}
             initialValue={tsCode}
-            onExecuteQuery={runQuery}
+            onExecuteQuery={runPrismaClientQuery}
           />
         )}
         {queryMode === "sql" && (
-          <QueryEditor mode="sql" initialValue={sqlCode} />
+          <SQLEditor initialValue={sqlCode} onExecuteQuery={runSqlQuery} />
         )}
       </div>
       <div style={{ flex: "0 0 1px", backgroundColor: "#666" }}></div>
-      {/* <div style={{ flex: 1 }}>
-        <QueryResponse initialValue={response} />
-      </div> */}
+      <div style={{ flex: 1 }}>
+        <JSONEditor readonly initialValue={response} />
+      </div>
 
       <div
         style={{ position: "fixed", top: 10, right: 20, cursor: "pointer" }}
@@ -151,7 +154,7 @@ const Dev = () => {
 
 ReactDOM.render(
   <React.StrictMode>
-    <Dev />
+    <ReactDemo />
   </React.StrictMode>,
   document.getElementById("root")
 );
