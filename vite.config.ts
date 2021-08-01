@@ -9,6 +9,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, "src/lib.ts"),
       name: "QueryConsole",
+      formats: ["es"],
       fileName: format => `editors.${format}.js`,
     },
     rollupOptions: {

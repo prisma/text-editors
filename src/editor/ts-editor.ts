@@ -39,7 +39,10 @@ export class Editor {
       params.onChange?.(content);
 
       log("Commit file change");
-      (await this.ts.env()).updateFile(this.ts.entrypoint, content);
+      // Don't `await` because we do not want to block
+      this.ts.env().then(env => {
+        env.updateFile(this.ts.entrypoint, content);
+      });
     }, 100);
 
     this.ts = new TypescriptProject(params.code);
@@ -88,12 +91,12 @@ export class Editor {
   ): Promise<CompletionResult | null> => {
     // This is an arrow function because we want to inherit the `this` binding
 
-    log("Autocomplete requested", { pos: ctx.pos });
-
     const completions = (await this.ts.lang()).getCompletionsAtPosition(
       this.ts.entrypoint,
       ctx.pos,
-      {}
+      {
+        disableSuggestions: true,
+      }
     );
     if (!completions) {
       log("Unable to get completions", { pos: ctx.pos });
@@ -115,7 +118,6 @@ export class Editor {
 
   private getLintDiagnostics = async (): Promise<Diagnostic[]> => {
     // This is an arrow function because we want to inherit the `this` binding
-
     const diagnostics = (await this.ts.lang()).getSemanticDiagnostics(
       this.ts.entrypoint
     );

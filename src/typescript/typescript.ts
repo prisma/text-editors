@@ -14,12 +14,25 @@ export type FileMap = Record<string, string>;
  * A representation of a Typescript project. Only supports single-file projects currently.
  */
 export class TypescriptProject {
-  private tsserver?: VirtualTypeScriptEnvironment;
   private fs: TSFS;
 
+  /**
+   * Since this module is lazily initialized, this serves as a way to throttle multiple consecutive `init` requests.
+   * We want to avoid initializing `tsserver` multiple times.
+   *
+   * After construction, it stays in the `procrastinating` state until someone requests something of it.
+   * Once that happens, it goes through the `initializing` & `ready` states.
+   */
+  private state: "procrastinating" | "initializing" | "ready";
+  /** When initialization starts, the promise it returns is stored here so that future `init` requests can be throttled */
+  private initPromise?: Promise<void>;
+  private tsserver?: VirtualTypeScriptEnvironment;
+
   constructor(entrypointFileContent: string) {
-    this.fs = new TSFS("4.3.5");
+    this.fs = new TSFS();
     this.fs.fs.set(TS_PROJECT_ENTRYPOINT, entrypointFileContent);
+    this.state = "procrastinating";
+    this.initPromise = undefined;
   }
 
   get entrypoint() {
@@ -27,6 +40,7 @@ export class TypescriptProject {
   }
 
   async init(): Promise<void> {
+    this.state = "initializing";
     await this.fs.injectCoreLibs();
 
     const system = createSystem(this.fs.fs);
@@ -41,6 +55,7 @@ export class TypescriptProject {
 
     log("Initialized");
     window.ts = this.tsserver;
+    this.state = "ready";
   }
 
   injectTypes(types: FileMap) {
@@ -58,9 +73,20 @@ export class TypescriptProject {
   }
 
   async env(): Promise<VirtualTypeScriptEnvironment> {
-    if (this.tsserver) return this.tsserver;
+    // If this is the first time someone has requested something, start initialization
+    if (this.state === "procrastinating") {
+      this.initPromise = this.init();
+      await this.initPromise;
+      return this.tsserver!;
+    }
 
-    await this.init();
+    // If this is already initializing, return the initPromise so avoid double initialization
+    if (this.state === "initializing") {
+      await this.initPromise;
+      return this.tsserver!;
+    }
+
+    // If this is ready, you're good to go
     return this.tsserver!;
   }
 
@@ -72,7 +98,10 @@ export class TypescriptProject {
   destroy() {
     log("Destroying language service");
     this.tsserver?.languageService.dispose();
+
     log("Destroying tsserver");
+    this.state = "procrastinating";
+    this.initPromise = undefined;
     this.tsserver = undefined;
   }
 }
