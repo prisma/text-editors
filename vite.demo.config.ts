@@ -4,7 +4,7 @@ export default defineConfig({
   build: {
     emptyOutDir: true,
     rollupOptions: {
-      input: "index.html",
+      input: "demo/index.html",
       output: {
         dir: "demo/public",
       },

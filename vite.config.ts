@@ -5,10 +5,9 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [reactRefresh()],
   build: {
-    emptyOutDir: true,
     lib: {
       entry: path.resolve(__dirname, "src/lib.ts"),
-      name: "QueryConsole",
+      name: "PrismaEditors",
       formats: ["es"],
       fileName: format => `editors.${format}.js`,
     },

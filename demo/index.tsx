@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import { FileMap, JSONEditor, SQLEditor, ThemeName, TSEditor } from "./lib";
+import {
+  FileMap,
+  JSONEditor,
+  PrismaSchemaEditor,
+  SQLEditor,
+  ThemeName,
+  TSEditor,
+} from "../src/lib";
+// import prismaSchema from "../prisma/schema.prisma?raw";
+const prismaSchema = "";
 
 type QueryMode = "typescript" | "sql";
 
@@ -120,35 +128,50 @@ const ReactDemo = () => {
         height: "100vh",
       }}
     >
-      <div style={{ flex: 1 }}>
-        {queryMode === "typescript" && (
-          <TSEditor
-            types={types}
-            theme={theme}
-            value={tsCode}
-            onExecuteQuery={runPrismaClientQuery}
-          />
-        )}
-        {queryMode === "sql" && (
-          <SQLEditor value={sqlCode} onExecuteQuery={runSqlQuery} />
-        )}
+      <div style={{ display: "flex", flex: 1, position: "relative" }}>
+        <div style={{ flex: 3 }}>
+          {queryMode === "typescript" && (
+            <TSEditor
+              types={types}
+              theme={theme}
+              value={tsCode}
+              onExecuteQuery={runPrismaClientQuery}
+            />
+          )}
+          {queryMode === "sql" && (
+            <SQLEditor value={sqlCode} onExecuteQuery={runSqlQuery} />
+          )}
+
+          <div
+            style={{
+              position: "absolute",
+              top: 10,
+              right: 20,
+              cursor: "pointer",
+            }}
+            onClick={flipTheme}
+          >
+            🌓
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              top: 10,
+              right: 50,
+              cursor: "pointer",
+            }}
+            onClick={flipQueryMode}
+          >
+            🔘
+          </div>
+        </div>
+        <div style={{ flex: 1 }}>
+          <PrismaSchemaEditor readonly value={prismaSchema} />
+        </div>
       </div>
       <div style={{ flex: "0 0 1px", backgroundColor: "#666" }}></div>
       <div style={{ flex: 1 }}>
         <JSONEditor readonly value={response} />
-      </div>
-
-      <div
-        style={{ position: "fixed", top: 10, right: 20, cursor: "pointer" }}
-        onClick={flipTheme}
-      >
-        🌓
-      </div>
-      <div
-        style={{ position: "fixed", top: 10, right: 50, cursor: "pointer" }}
-        onClick={flipQueryMode}
-      >
-        🔘
       </div>
     </div>
   );
