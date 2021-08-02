@@ -1,6 +1,6 @@
 {
   "name": "@prisma/editors",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "scripts": {
     "prepare": "yarn build:types",
@@ -20,6 +20,7 @@
       "require": "./dist/editors.umd.js"
     }
   },
+  "types": "./dist/types/lib.d.ts",
   "dependencies": {},
   "devDependencies": {
     "@codemirror/autocomplete": "0.18.8",

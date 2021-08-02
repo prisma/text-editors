@@ -5,10 +5,10 @@ set -e
 rm -rf dist
 
 # Typecheck
-tsc
+yarn tsc
 
 # Build
-vite build $@ # Forward any arguments to this script to the build command (used when building the demo)
+yarn vite build 
 
 # Build type declarations
-tsc --noEmit false --declaration --emitDeclarationOnly --outFile dist/lib.d.ts --isolatedModules false
+yarn tsc --noEmit false --declaration --emitDeclarationOnly --isolatedModules false --outDir dist/types
