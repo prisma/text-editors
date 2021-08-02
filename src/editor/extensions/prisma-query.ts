@@ -72,15 +72,23 @@ class RunQueryWidget extends WidgetType {
 
   toDOM = () => {
     const widget = document.createElement("div");
-    widget.innerText = "▶ Run Query";
-    widget.setAttribute("class", "cm-run-query-button");
+    // Indent the div so it looks like it starts right where the query starts (instead of starting where the line starts)
     widget.setAttribute("style", `margin-left: ${this.indent * 0.5}rem;`);
 
+    // Since the top-most element has to be `display: block`, it will stretch to fill the entire line
+    // We want to add a click listener, so attaching it to this outside div will make it so clicking anywhere on the line executes the query
+    // To avoid this, we create a child button and add the `innerText` and the click handler to it instead
+    const button = document.createElement("button");
+    button.innerText = "▶ Run Query";
+    button.setAttribute("class", "cm-run-query-button");
     if (this.onExecute) {
-      widget.addEventListener("click", () => {
+      button.onclick = () => {
         this.onExecute?.(this.query.text);
-      });
+      };
     }
+
+    widget.appendChild(button);
+
     return widget;
   };
 }

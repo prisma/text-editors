@@ -40,10 +40,12 @@ export function theme(name: ThemeName, dimensions?: DOMRect): Extension {
           borderLeft: "3px solid #3fe288",
         },
         ".cm-run-query-button": {
-          display: "block",
+          background: "transparent",
+          border: 0,
           color: "#ffffff55",
           cursor: "pointer",
           fontSize: "12px",
+          fontFamily: "monospace",
 
           "&:hover": {
             color: "#ffffff88",

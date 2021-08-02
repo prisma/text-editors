@@ -17,43 +17,50 @@ const tsCode: string = `import { PrismaClient } from "@prisma/client"
 
 // PrismaClient initialization
 const prisma = new PrismaClient()
-// Irrelevant variable declaration
-const x = 2;
 
-con
+// Top level queries
+await prisma.artist.findMany()
 
-async function abcd() {
+await prisma.artist.findMany({
+  where: {
+    Name: {
+      startsWith: "F"
+    }
+  }
+})
+
+await prisma.$queryRaw(\`SELECT * FROM "Album"\`)
+
+// Invalid top-level query
+const result = await prisma.invoice.create({
+	data: {}
+})
+
+async function fn() {
+  // Type error
   const y = 2
   y = "test"
 
   // Query inside function
-  await prisma.user.findMany({
-    where: {}
-	})
+  await prisma.genre.findMany()
 
-  await prisma.$queryRaw(\`SELECT * FROM "User"\`)
+  // $queryRaw inside function
+  await prisma.$queryRaw(\`SELECT * FROM "Album"\`)
 
   // Variable declaration with query
-  const result = await prisma.user.create({
+  const result = await prisma.invoice.create({
     data: {}
 	})
 
   return result
 }
 
-const fn = async () => {
+const arrowFn = async () => {
   const y = 2
   
   // Query inside arrow function
-  await prisma.user.findMany({
-    skip: 10
-  })
+  await prisma.genre.findMany({ skip: 10 })
 }
-
-// Top level query
-await prisma.user.findMany({
-
-})
 `;
 
 const sqlCode: string = `SELECT * FROM Users;

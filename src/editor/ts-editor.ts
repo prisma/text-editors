@@ -48,7 +48,7 @@ export class Editor {
       this.ts.env().then(env => {
         env.updateFile(this.ts.entrypoint, content);
       });
-    }, 100);
+    }, 50);
 
     this.ts = new TypescriptProject(params.code);
 

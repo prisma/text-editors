@@ -1,3 +1,5 @@
+// Schema preview (for reference)
+
 datasource db {
   provider = "postgresql"
   url      = env("DB_URL")
