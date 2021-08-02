@@ -39,7 +39,7 @@ export class TypescriptProject {
     return TS_PROJECT_ENTRYPOINT;
   }
 
-  async init(): Promise<void> {
+  private async init(): Promise<void> {
     this.state = "initializing";
     await this.fs.injectCoreLibs();
 
@@ -58,7 +58,7 @@ export class TypescriptProject {
     this.state = "ready";
   }
 
-  injectTypes(types: FileMap) {
+  public injectTypes(types: FileMap) {
     Object.entries(types).forEach(([name, content]) => {
       if (this.tsserver) {
         log("Injecting types to tsserver");
@@ -72,7 +72,7 @@ export class TypescriptProject {
     });
   }
 
-  async env(): Promise<VirtualTypeScriptEnvironment> {
+  public async env(): Promise<VirtualTypeScriptEnvironment> {
     // If this is the first time someone has requested something, start initialization
     if (this.state === "procrastinating") {
       this.initPromise = this.init();
@@ -90,12 +90,14 @@ export class TypescriptProject {
     return this.tsserver!;
   }
 
-  async lang(): Promise<VirtualTypeScriptEnvironment["languageService"]> {
+  public async lang(): Promise<
+    VirtualTypeScriptEnvironment["languageService"]
+  > {
     const env = await this.env();
     return env.languageService;
   }
 
-  destroy() {
+  public destroy() {
     log("Destroying language service");
     this.tsserver?.languageService.dispose();
 

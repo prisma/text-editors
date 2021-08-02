@@ -27,7 +27,6 @@ export class Editor {
         // Update view first
         this.view.update([transaction]);
 
-        // Then tell tsserver about new file (on a debounce to avoid ddos-ing it)
         if (transaction.docChanged) {
           params.onChange?.(transaction.newDoc.sliceString(0));
         }
