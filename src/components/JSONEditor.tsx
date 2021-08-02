@@ -12,7 +12,7 @@ type EditorProps = {
   onChange?: (value: string) => void;
 };
 
-export function Editor({ value, theme, onChange }: EditorProps) {
+export function Editor({ value, readonly, theme, onChange }: EditorProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [editor, setEditor] = useState<JSONEditor>();
 
@@ -21,6 +21,7 @@ export function Editor({ value, theme, onChange }: EditorProps) {
     const jsonEditor = new JSONEditor({
       domElement: ref.current!, // `!` is fine because this will run after the component has mounted
       code: value,
+      readonly,
       theme,
       onChange,
     });

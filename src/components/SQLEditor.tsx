@@ -16,6 +16,7 @@ type EditorProps = {
 
 export function Editor({
   value,
+  readonly,
   theme,
   onChange,
   onExecuteQuery,
@@ -28,6 +29,7 @@ export function Editor({
     const sqlEditor = new SQLEditor({
       domElement: ref.current!, // `!` is fine because this will run after the component has mounted
       code: value,
+      readonly,
       theme,
       onChange,
       onExecuteQuery,
