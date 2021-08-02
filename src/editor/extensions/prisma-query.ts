@@ -1,38 +1,139 @@
 import { syntaxTree } from "@codemirror/language";
-import { RangeSetBuilder } from "@codemirror/rangeset";
+import { RangeSet } from "@codemirror/rangeset";
 import { EditorState, Extension, Facet, StateField } from "@codemirror/state";
-import {
-  Decoration,
-  DecorationSet,
-  EditorView,
-  keymap,
-} from "@codemirror/view";
+import { Decoration, EditorView, keymap, WidgetType } from "@codemirror/view";
 import { noop, over } from "lodash-es";
 import { logger } from "../../logger";
 
 const log = logger("prisma-query-extension", "grey");
 
-const highlightDecoration = Decoration.line({
-  attributes: { class: "cm-query" },
-});
+/**
+ * There's a lot of stuff here, but it is all tightly connected:
+ *
+ * 1. A StateField that will hold positions and values of PrismaClient queries
+ * 2. A line Decoration that will add a special class to all lines in view that are known to contain PrismaClient queries (as stored in the StateField)
+ * 3. A widget Decoration that will add a DOM element on the first line where a query is known to exist (as stored in the StateField)
+ * 4. A Facet that will be used to register one or more `onExecute` handler. This facet's value will be accessible by the StateField
+ * 5. A keyMap that will be used to execute the query your cursor is on when you press a combination of keys
+ * 6. An Extension that packages all of this up in one function that can be invoked to add this extension to the EditorView
+ */
 
+/** A single PrismaClient query */
+type PrismaQuery = {
+  text: string;
+  from: number;
+  to: number;
+  variables: Record<string, string>;
+};
 /** A set of valid PrismaClient queries and their decoration ranges. Values of this type will eventually end up as an EditorState field */
 type PrismaQueries = {
-  /** A single Prisma Client query */
-  queries: {
-    text: string;
-    from: number;
-    to: number;
-    variables: Record<string, string>;
-  }[];
-  /** Its DecorationSet (Decoration ranges) */
-  decorations: DecorationSet;
+  /** Set of all found queries */
+  queries: PrismaQuery[];
+  /** Their Decoration ranges */
+  decorations: RangeSet<Decoration>;
 };
+
+type PrismaQueryOnExecute = (query: string) => void;
+/** Facet to allow configuring query execution callback */
+type PrismaQueryFacet = { onExecute?: PrismaQueryOnExecute };
+const prismaQueriesFacet = Facet.define<PrismaQueryFacet, PrismaQueryFacet>({
+  combine: input => {
+    return {
+      // If multiple `onExecuteQuery` callbacks are registered, chain them (call them one after another)
+      onExecute: over(input.map(i => i.onExecute || noop)) || noop,
+    };
+  },
+});
+
+/** A Widget that draws the `Run Query` button */
+class RunQueryWidget extends WidgetType {
+  private query: PrismaQuery;
+  private indent: number;
+  private onExecute?: PrismaQueryOnExecute;
+
+  constructor(params: {
+    query: PrismaQuery;
+    indent: number;
+    onExecute?: PrismaQueryOnExecute;
+  }) {
+    super();
+    this.query = params.query;
+    this.indent = params.indent;
+    this.onExecute = params.onExecute;
+  }
+
+  ignoreEvent() {
+    return false;
+  }
+
+  eq(other: RunQueryWidget) {
+    return other.query.from == this.query.from; // It is enough to check the `from`s because two queries cannot start at the same location
+  }
+
+  toDOM = () => {
+    const widget = document.createElement("div");
+    widget.innerText = "▶ Run Query";
+    widget.setAttribute("class", "cm-run-query-button");
+    widget.setAttribute("style", `margin-left: ${this.indent * 0.5}rem;`);
+
+    if (this.onExecute) {
+      widget.addEventListener("click", () => {
+        this.onExecute?.(this.query.text);
+      });
+    }
+    return widget;
+  };
+}
 
 function findQueries(state: EditorState): PrismaQueries {
   const syntax = syntaxTree(state);
   const queries: PrismaQueries["queries"] = [];
-  const decorationSetBuilder = new RangeSetBuilder<Decoration>();
+  let decorationSet: RangeSet<Decoration> = RangeSet.empty;
+
+  function addQuery(query: PrismaQuery) {
+    // Add text of this query
+    queries.push(query);
+
+    // If you change this, be sure to also change range addition logic for the other kind of query down below
+    const lineStart = state.doc.lineAt(query.from);
+    const lineEnd = state.doc.lineAt(query.to);
+
+    // Add line decorations for each line this query exists in
+    decorationSet = decorationSet.update({
+      add: new Array(lineEnd.number - lineStart.number + 1)
+        .fill(undefined)
+        .map((_, i) => {
+          const line = state.doc.line(lineStart.number + i);
+          return {
+            from: line.from,
+            to: line.from, // Line decorations must start and end on the same line
+            value: Decoration.line({
+              attributes: { class: "cm-query" },
+            }),
+          };
+        }),
+      sort: true,
+    });
+
+    // Add a widget decoration to be able to run this query
+    decorationSet = decorationSet.update({
+      add: [
+        {
+          from: lineStart.from,
+          to: lineStart.from,
+          value: Decoration.widget({
+            widget: new RunQueryWidget({
+              query,
+              indent: lineStart.text.length - lineStart.text.trim().length,
+              onExecute: state.facet(prismaQueriesFacet).onExecute,
+            }),
+            side: -1,
+          }),
+        },
+      ],
+      sort: true,
+    });
+  }
 
   let prismaVariableName: string;
 
@@ -48,9 +149,7 @@ function findQueries(state: EditorState): PrismaQueries {
       //   log({ text: state.sliceDoc(variableDeclaration.from, variableDeclaration.to) });
       // This will give you a readable representation of the node you're working with
 
-      if (type.name === "VariableDefinition") {
-        // log(type);
-      } else if (type.name === "NewExpression") {
+      if (type.name === "NewExpression") {
         // This `if` branch finds the PrismaClient instance variable name
 
         // Check if this `new` expressions is for the PrismaClient constructor
@@ -128,7 +227,7 @@ function findQueries(state: EditorState): PrismaQueries {
         // This bails if this syntax node does not have an `await` keyword
         // We want this because both queries we're trying to parse have `await`s
         // await prisma.user.findMany()     OR     await prisma.$queryRaw()
-        // |-------------------------|             |----------------------|
+        // |---|                                   |---|
         const awaitKeyword = syntax.resolve(from, 1);
         if (awaitKeyword.name !== "await") {
           return;
@@ -172,23 +271,12 @@ function findQueries(state: EditorState): PrismaQueries {
             return;
           }
 
-          // Add text of this query
-          queries.push({
+          addQuery({
             text: state.doc.sliceString(callExpression.from, callExpression.to),
             from: callExpression.from,
             to: callExpression.to,
             variables: {},
           });
-
-          // Add ranges for each line this query exists in
-          // If you change this, be sure to also change range addition logic for the other kind of query down below
-          const lineStart = state.doc.lineAt(callExpression.from);
-          const lineEnd = state.doc.lineAt(callExpression.to);
-
-          for (let i = lineStart.number; i <= lineEnd.number; i++) {
-            const line = state.doc.line(i);
-            decorationSetBuilder.add(line.from, line.from, highlightDecoration);
-          }
 
           return;
         }
@@ -217,29 +305,19 @@ function findQueries(state: EditorState): PrismaQueries {
         }
 
         // Add text of this query
-        queries.push({
+        addQuery({
           text: state.doc.sliceString(callExpression.from, callExpression.to),
           from: callExpression.from,
           to: callExpression.to,
           variables: {},
         });
 
-        // Add ranges for each line this query exists in
-        // If you change this, be sure to also change range addition logic for the other kind of query up above
-        const lineStart = state.doc.lineAt(callExpression.from);
-        const lineEnd = state.doc.lineAt(callExpression.to);
-
-        for (let i = lineStart.number; i <= lineEnd.number; i++) {
-          const line = state.doc.line(i);
-          decorationSetBuilder.add(line.from, line.from, highlightDecoration);
-        }
-
         return;
       }
     },
   });
 
-  return { queries, decorations: decorationSetBuilder.finish() };
+  return { queries, decorations: decorationSet };
 }
 
 /** State field that tracks which ranges are PrismaClient queries */
@@ -263,18 +341,6 @@ const prismaQueryStateField = StateField.define<PrismaQueries>({
       [field],
       state => state.field(field).decorations
     ),
-});
-
-type PrismaQueryOnExecute = (query: string) => void;
-/** Facet to allow configuring query execution callback */
-type PrismaQueryFacet = { onExecute?: PrismaQueryOnExecute };
-const prismaQueriesFacet = Facet.define<PrismaQueryFacet, PrismaQueryFacet>({
-  combine: input => {
-    return {
-      // If multiple `onExecuteQuery` callbacks are registered, chain them (call them one after another)
-      onExecute: over(input.map(i => i.onExecute || noop)) || noop,
-    };
-  },
 });
 
 // Export a function that will build & return an Extension

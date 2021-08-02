@@ -166,7 +166,7 @@ export class Editor {
         dom.innerText = displayPartsToString(quickInfo.displayParts);
         if (quickInfo.documentation?.length)
           dom.innerText += "\n" + displayPartsToString(quickInfo.documentation);
-        dom.setAttribute("style", "padding: 0.5rem;");
+        dom.setAttribute("class", "cm-quickinfo-tooltip");
 
         return {
           dom,

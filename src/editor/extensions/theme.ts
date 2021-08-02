@@ -23,25 +23,34 @@ export function theme(name: ThemeName, dimensions?: DOMRect): Extension {
       {
         "&": { height: height + "px", width: "100%", fontSize: "14px" },
         ".cm-scroller": { overflow: "auto" },
+        ".cm-line": { position: "relative" },
         ".cm-activeLine": { background: "#0002" },
-        ".cm-query": {
-          background: "#00000033",
-          borderLeft: "3px solid #3fe288",
-        },
         ".cm-gutters": {
           background: "#1e222a",
           borderRight: "1px solid #3c4048",
         },
-        ".cm-diagnostic": {
-          padding: "0.5rem",
-          fontFamily: "monospace",
-        },
-
         ".cm-tooltip": {
           background: "#363636",
           fontFamily: "monospace",
         },
 
+        // Prisma Query Plugin
+        ".cm-query": {
+          background: "#00000033",
+          borderLeft: "3px solid #3fe288",
+        },
+        ".cm-run-query-button": {
+          display: "block",
+          color: "#ffffff55",
+          cursor: "pointer",
+          fontSize: "12px",
+
+          "&:hover": {
+            color: "#ffffff88",
+          },
+        },
+
+        // Autocomplete
         ".cm-tooltip-autocomplete": {},
         ".cm-completionLabel": {}, // Unmatched text
         ".cm-completionMatchedText": {
@@ -57,17 +66,13 @@ export function theme(name: ThemeName, dimensions?: DOMRect): Extension {
         ".cm-completionInfo": {}, // "Additional" text that shows up in a panel on the right of the tolltip
 
         ".cm-autocompleteIcon": {},
-        ".cm-autocompleteIcon-var": {
-          "&:after": { content: '"V"' },
-        },
+        ".cm-autocompleteIcon-var": {},
         ".cm-autocompleteIcon-let": {},
         ".cm-autocompleteIcon-const": {},
 
         ".cm-autocompleteIcon-class": {},
         ".cm-autocompleteIcon-constructor": {},
-        ".cm-autocompleteIcon-function": {
-          "&:after": { content: '"F"' },
-        },
+        ".cm-autocompleteIcon-function": {},
         ".cm-autocompleteIcon-method": {},
         ".cm-autocompleteIcon-parameter": {},
         ".cm-autocompleteIcon-property": {},
@@ -78,6 +83,17 @@ export function theme(name: ThemeName, dimensions?: DOMRect): Extension {
         ".cm-autocompleteIcon-enum-member": {},
         ".cm-autocompleteIcon-keyword": {},
         ".cm-autocompleteIcon-string": {},
+
+        // Diagnostics (Lint issues)
+        ".cm-diagnostic": {
+          padding: "0.5rem",
+          fontFamily: "monospace",
+        },
+
+        // Quickinfo (Hover tooltips)
+        ".cm-quickinfo-tooltip": {
+          padding: "0.5rem",
+        },
       },
       {
         dark: name === "dark",

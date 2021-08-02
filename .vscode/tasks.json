@@ -22,6 +22,14 @@
       "problemMatcher": [],
       "label": "build:demo",
       "detail": "Build demo"
+    },
+    {
+      "type": "npm",
+      "script": "deploy",
+      "path": "demo",
+      "problemMatcher": [],
+      "label": "deploy:demo",
+      "detail": "Deploy demo"
     }
   ]
 }

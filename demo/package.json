@@ -6,7 +6,8 @@
   "scripts": {
     "tsc": "tsc",
     "preview": "yarn build && serve public",
-    "build": "./build.sh"
+    "build": "./build.sh",
+    "deploy": "yarn build && vercel"
   },
   "dependencies": {
     "@prisma/client": "2.28.0"
