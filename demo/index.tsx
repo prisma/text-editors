@@ -8,8 +8,8 @@ import {
   ThemeName,
   TSEditor,
 } from "../src/lib";
-// import prismaSchema from "../prisma/schema.prisma?raw";
-const prismaSchema = "";
+/* @ts-expect-error */
+import prismaSchema from "./prisma/schema.prisma?raw";
 
 type QueryMode = "typescript" | "sql";
 
@@ -128,8 +128,8 @@ const ReactDemo = () => {
         height: "100vh",
       }}
     >
-      <div style={{ display: "flex", flex: 1, position: "relative" }}>
-        <div style={{ flex: 3 }}>
+      <div style={{ flex: "1 0 0", display: "flex", position: "relative" }}>
+        <div style={{ width: "70%" }}>
           {queryMode === "typescript" && (
             <TSEditor
               types={types}
@@ -165,12 +165,12 @@ const ReactDemo = () => {
             🔘
           </div>
         </div>
-        <div style={{ flex: 1 }}>
+        <div style={{ width: "30%" }}>
           <PrismaSchemaEditor readonly value={prismaSchema} />
         </div>
       </div>
       <div style={{ flex: "0 0 1px", backgroundColor: "#666" }}></div>
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: "1 0 0" }}>
         <JSONEditor readonly value={response} />
       </div>
     </div>
