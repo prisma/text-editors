@@ -9,7 +9,8 @@
     "build:lib": "./scripts/build-lib.sh",
     "build": "yarn build:types && yarn build:lib",
     "serve": "vite preview",
-    "format": "prettier -w ."
+    "format": "prettier -w .",
+    "prepublishOnly": "yarn build"
   },
   "files": [
     "dist"
