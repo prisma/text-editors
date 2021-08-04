@@ -48,7 +48,7 @@ export class Editor {
       this.ts.env().then(env => {
         env.updateFile(this.ts.entrypoint, content);
       });
-    }, 50);
+    }, 100);
 
     this.ts = new TypescriptProject(params.code);
 
@@ -74,7 +74,6 @@ export class Editor {
             activateOnTyping: true,
             maxRenderedOptions: 50,
             override: [this.getCompletionSource],
-            // override: [this.getCompletionSource],
           }),
           linter(this.getLintDiagnostics),
           hoverTooltip(this.getHoverTooltipSource, { hideOnChange: true }),
@@ -188,6 +187,8 @@ export class Editor {
   };
 
   public forceUpdate = (code: string) => {
+    log("Force updating editor value");
+
     this.view.dispatch({
       changes: [
         { from: 0, to: this.view.state.doc.length },

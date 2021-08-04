@@ -10,9 +10,9 @@
     },
     {
       "type": "npm",
-      "script": "build",
+      "script": "build:lib",
       "problemMatcher": [],
-      "label": "build",
+      "label": "build:lib",
       "detail": "Build library"
     },
     {
@@ -26,9 +26,9 @@
     {
       "type": "npm",
       "script": "deploy",
-      "path": "demo",
+      "path": "",
       "problemMatcher": [],
-      "label": "deploy:demo",
+      "label": "deploy",
       "detail": "Deploy demo"
     }
   ]

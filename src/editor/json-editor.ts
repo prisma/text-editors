@@ -53,6 +53,8 @@ export class Editor {
   }
 
   public forceUpdate = (code: string) => {
+    log("Force updating editor value");
+
     this.view.dispatch({
       changes: [
         { from: 0, to: this.view.state.doc.length },
