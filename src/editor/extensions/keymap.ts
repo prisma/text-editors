@@ -7,7 +7,7 @@ import { undo } from "@codemirror/history";
 import { Extension } from "@codemirror/state";
 import { keymap as keymapFacet } from "@codemirror/view";
 
-export const keymap: Extension = [
+export const keymap = (): Extension => [
   keymapFacet.of([
     defaultTabBinding,
     ...defaultKeymap,

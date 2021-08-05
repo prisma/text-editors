@@ -33,13 +33,12 @@ export class Editor {
 
           typescript({
             code: params.code,
-            onChange: params.onChange,
           }),
           prismaQuery({ onExecute: params.onExecuteQuery }),
 
           theme(params.theme || "light"),
-          behaviour,
-          keymap,
+          behaviour({ onChange: params.onChange }),
+          keymap(),
         ],
       }),
     });

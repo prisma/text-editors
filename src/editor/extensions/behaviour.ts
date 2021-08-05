@@ -5,8 +5,9 @@ import { history } from "@codemirror/history";
 import { indentOnInput } from "@codemirror/language";
 import { bracketMatching } from "@codemirror/matchbrackets";
 import { EditorState, Extension } from "@codemirror/state";
+import { OnChange, onChangeCallback } from "./change-callback";
 
-export const behaviour: Extension = [
+export const behaviour = (config: { onChange?: OnChange }): Extension => [
   EditorState.tabSize.of(2),
   bracketMatching(),
   closeBrackets(),
@@ -15,4 +16,5 @@ export const behaviour: Extension = [
   indentOnInput(),
   lineNumbers(),
   history(),
+  onChangeCallback(config.onChange),
 ];

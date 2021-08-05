@@ -23,14 +23,6 @@ export class Editor {
   constructor(params: EditorParams) {
     this.view = new EditorView({
       parent: params.domElement,
-      dispatch: transaction => {
-        // Update view first
-        this.view.update([transaction]);
-
-        if (transaction.docChanged) {
-          params.onChange?.(transaction.newDoc.sliceString(0));
-        }
-      },
       state: EditorState.create({
         doc: params.code,
 
@@ -40,8 +32,8 @@ export class Editor {
           linter(jsonParseLinter()),
 
           theme("light"),
-          behaviour,
-          keymap,
+          behaviour({ onChange: params.onChange }),
+          keymap(),
         ],
       }),
     });

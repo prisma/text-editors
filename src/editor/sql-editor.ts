@@ -36,15 +36,6 @@ export class Editor {
 
     this.view = new EditorView({
       parent: params.domElement,
-      dispatch: transaction => {
-        // Update view first
-        this.view.update([transaction]);
-
-        // Then tell tsserver about new file (on a debounce to avoid ddos-ing it)
-        if (transaction.docChanged) {
-          params.onChange?.(transaction.newDoc.sliceString(0));
-        }
-      },
       state: EditorState.create({
         doc: params.code,
 
@@ -58,8 +49,8 @@ export class Editor {
           keywordCompletion(sqlDialect, true),
 
           theme("light"),
-          behaviour,
-          keymap,
+          behaviour({ onChange: params.onChange }),
+          keymap(),
         ],
       }),
     });

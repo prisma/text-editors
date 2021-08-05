@@ -8,19 +8,19 @@ import { javascript } from "@codemirror/lang-javascript";
 import { Diagnostic, linter, setDiagnostics } from "@codemirror/lint";
 import {
   Extension,
-  Facet,
   StateEffect,
   StateField,
   TransactionSpec,
 } from "@codemirror/state";
 import { hoverTooltip, Tooltip } from "@codemirror/tooltip";
 import { EditorView } from "@codemirror/view";
-import { debounce, noop, over } from "lodash-es";
+import { debounce } from "lodash-es";
 import {
   DiagnosticCategory,
   displayPartsToString,
   flattenDiagnosticMessageText,
 } from "typescript";
+import { onChangeCallback } from "../change-callback";
 import { log } from "./log";
 import { FileMap, TypescriptProject } from "./project";
 
@@ -37,7 +37,6 @@ export type { FileMap };
  * 5. A `hoverTooltip` extension that provides tsserver-backed type information on hover, powered by the `hoverTooltip` function
  * 6. An `updateListener` (facet) extension, that ensures that the editor's view is kept in sync with tsserver's view of the file
  * 7. A StateEffect that lets a consumer inject custom types into the `TypescriptProject`
- * 8. A Facet that holds all registered `onChange` callbacks
  *
  * The "correct" way to read this file is from bottom to top.
  */
@@ -159,14 +158,13 @@ const hoverTooltipSource = async (
 /**
  * A (debounced) function that updates the view of the currently open "file" on TSServer
  */
-const updateTSFileDebounced = debounce((view: EditorView) => {
+const updateTSFileDebounced = debounce((code: string, view: EditorView) => {
   log("Commit file change");
 
   const ts = view.state.field(tsStateField);
-  const content = view.state.sliceDoc(0);
 
   // Don't `await` because we do not want to block
-  ts.env().then(env => env.updateFile(ts.entrypoint, content));
+  ts.env().then(env => env.updateFile(ts.entrypoint, code));
 }, 100);
 
 /**
@@ -179,25 +177,10 @@ export function injectTypes(types: FileMap): TransactionSpec {
   };
 }
 
-/**
- * A Facet that stores all registered `onChange` callbacks
- */
-type OnCodeChange = (code: string) => void;
-const OnCodeChangeFacet = Facet.define<OnCodeChange, OnCodeChange>({
-  combine: input => {
-    // If multiple `onCodeChange` callbacks are registered, chain them (call them one after another)
-    return over(input);
-  },
-});
-
 // Export a function that will build & return an Extension
-export function typescript(config: {
-  code: string;
-  onChange?: (code: string) => void;
-}): Extension {
+export function typescript(config: { code: string }): Extension {
   return [
     tsStateField,
-    OnCodeChangeFacet.of(debounce(config.onChange || noop, 300)),
     javascript({ typescript: true, jsx: false }),
     autocompletion({
       activateOnTyping: true,
@@ -208,21 +191,16 @@ export function typescript(config: {
     hoverTooltip(hoverTooltipSource, {
       hideOnChange: true,
     }),
-    EditorView.updateListener.of(({ view, docChanged }) => {
-      if (docChanged) {
-        // Update TSServer's view of this file
-        updateTSFileDebounced(view);
+    onChangeCallback((code: string, view: EditorView) => {
+      // No need to debounce here because this callback is already debounced
 
-        // Call the onChange callback
-        const content = view.state.sliceDoc(0);
-        const onChange = view.state.facet(OnCodeChangeFacet);
-        onChange(content);
+      // Update tsserver's view of this file
+      updateTSFileDebounced(code, view);
 
-        // Then re-compute lint diagnostics
-        lintDiagnostics(view).then(diagnostics => {
-          view.dispatch(setDiagnostics(view.state, diagnostics));
-        });
-      }
+      // Then re-compute lint diagnostics via tsserver
+      lintDiagnostics(view).then(diagnostics => {
+        view.dispatch(setDiagnostics(view.state, diagnostics));
+      });
     }),
   ];
 }
