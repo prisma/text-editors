@@ -48,7 +48,7 @@ export class Editor {
           }),
           keywordCompletion(sqlDialect, true),
 
-          theme("light"),
+          theme(params.theme || "light"),
           behaviour({ onChange: params.onChange }),
           keymap(),
         ],

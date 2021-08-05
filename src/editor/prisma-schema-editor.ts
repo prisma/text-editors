@@ -27,7 +27,7 @@ export class Editor {
         extensions: [
           EditorView.editable.of(!params.readonly),
 
-          theme("light"),
+          theme(params.theme || "light"),
           behaviour({ onChange: params.onChange }),
           keymap(),
         ],

@@ -146,7 +146,11 @@ const ReactDemo = () => {
             />
           )}
           {queryMode === "sql" && (
-            <SQLEditor value={sqlCode} onExecuteQuery={runSqlQuery} />
+            <SQLEditor
+              theme={theme}
+              value={sqlCode}
+              onExecuteQuery={runSqlQuery}
+            />
           )}
 
           <div
@@ -175,12 +179,12 @@ const ReactDemo = () => {
           </div>
         </div>
         <div style={{ width: "30%" }}>
-          <PrismaSchemaEditor readonly value={prismaSchema} />
+          <PrismaSchemaEditor theme={theme} readonly value={prismaSchema} />
         </div>
       </div>
       <div style={{ flex: "0 0 1px", backgroundColor: "#666" }}></div>
       <div style={{ flex: "1 0 0" }}>
-        <JSONEditor readonly value={response} />
+        <JSONEditor theme={theme} readonly value={response} />
       </div>
     </div>
   );

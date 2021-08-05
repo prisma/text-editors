@@ -31,7 +31,7 @@ export class Editor {
           json(),
           linter(jsonParseLinter()),
 
-          theme("light"),
+          theme(params.theme || "light"),
           behaviour({ onChange: params.onChange }),
           keymap(),
         ],
