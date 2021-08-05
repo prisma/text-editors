@@ -27,7 +27,7 @@ export function Editor({
   const ref = useRef<HTMLDivElement>(null);
   const [editor, setEditor] = useState<TSEditor>();
 
-  // Hndles editor lifecycle
+  // Handles editor lifecycle
   useEffect(() => {
     const tsEditor = new TSEditor({
       domElement: ref.current!, // `!` is fine because this will run after the component has mounted
@@ -55,6 +55,11 @@ export function Editor({
   useEffect(() => {
     editor?.forceUpdate(value);
   }, [value]);
+
+  // Ensures `theme` given to this component is always reflected in the editor
+  useEffect(() => {
+    theme && editor?.setTheme(theme);
+  }, [theme]);
 
   return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
 }

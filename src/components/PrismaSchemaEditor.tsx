@@ -38,5 +38,10 @@ export function Editor({ value, readonly, theme, onChange }: EditorProps) {
     editor?.forceUpdate(value);
   }, [value]);
 
+  // Ensures `theme` given to this component is always reflected in the editor
+  useEffect(() => {
+    theme && editor?.setTheme(theme);
+  }, [theme]);
+
   return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
 }

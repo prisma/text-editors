@@ -155,6 +155,7 @@ const ReactDemo = () => {
               top: 10,
               right: 20,
               cursor: "pointer",
+              zIndex: 9999999,
             }}
             onClick={flipTheme}
           >
@@ -166,6 +167,7 @@ const ReactDemo = () => {
               top: 10,
               right: 50,
               cursor: "pointer",
+              zIndex: 9999999,
             }}
             onClick={flipQueryMode}
           >

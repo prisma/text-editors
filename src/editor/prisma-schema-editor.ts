@@ -3,7 +3,7 @@ import { EditorView } from "@codemirror/view";
 import { logger } from "../logger";
 import { behaviour } from "./extensions/behaviour";
 import { keymap } from "./extensions/keymap";
-import { theme, ThemeName } from "./extensions/theme";
+import { setTheme, theme, ThemeName } from "./extensions/theme";
 
 const log = logger("prisma-schema-editor", "salmon");
 
@@ -35,10 +35,7 @@ export class Editor {
         extensions: [
           EditorView.editable.of(!params.readonly),
 
-          theme(
-            params.theme || "dark",
-            params.domElement.getBoundingClientRect()
-          ),
+          theme("light"),
           behaviour,
           keymap,
         ],
@@ -46,6 +43,10 @@ export class Editor {
     });
 
     log("Initialized");
+  }
+
+  public setTheme(theme: ThemeName) {
+    this.view.dispatch(setTheme(theme));
   }
 
   public forceUpdate = (code: string) => {

@@ -4,7 +4,7 @@ import { logger } from "../logger";
 import { behaviour } from "./extensions/behaviour";
 import { keymap } from "./extensions/keymap";
 import { prismaQuery } from "./extensions/prisma-query";
-import { theme, ThemeName } from "./extensions/theme";
+import { setTheme, theme, ThemeName } from "./extensions/theme";
 import { FileMap, injectTypes, typescript } from "./extensions/typescript";
 
 const log = logger("ts-editor", "limegreen");
@@ -33,16 +33,11 @@ export class Editor {
 
           typescript({
             code: params.code,
-            onChange: code => {
-              log("changed", code);
-            },
+            onChange: params.onChange,
           }),
           prismaQuery({ onExecute: params.onExecuteQuery }),
 
-          theme(
-            params.theme || "dark",
-            params.domElement.getBoundingClientRect()
-          ),
+          theme(params.theme || "light"),
           behaviour,
           keymap,
         ],
@@ -55,6 +50,10 @@ export class Editor {
   public injectTypes = (types: FileMap) => {
     this.view.dispatch(injectTypes(types));
   };
+
+  public setTheme(theme: ThemeName) {
+    this.view.dispatch(setTheme(theme));
+  }
 
   public forceUpdate = (code: string) => {
     log("Force updating editor value");

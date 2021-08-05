@@ -190,6 +190,7 @@ const OnCodeChangeFacet = Facet.define<OnCodeChange, OnCodeChange>({
   },
 });
 
+// Export a function that will build & return an Extension
 export function typescript(config: {
   code: string;
   onChange?: (code: string) => void;
