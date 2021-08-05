@@ -4,10 +4,11 @@ import { defaultKeymap, defaultTabBinding } from "@codemirror/commands";
 import { commentKeymap } from "@codemirror/comment";
 import { foldKeymap } from "@codemirror/fold";
 import { undo } from "@codemirror/history";
-import { keymap } from "@codemirror/view";
+import { Extension } from "@codemirror/state";
+import { keymap as keymapFacet } from "@codemirror/view";
 
-export const keymapExtension = [
-  keymap.of([
+export const keymap: Extension = [
+  keymapFacet.of([
     defaultTabBinding,
     ...defaultKeymap,
     ...closeBracketsKeymap,

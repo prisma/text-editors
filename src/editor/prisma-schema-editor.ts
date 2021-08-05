@@ -1,8 +1,8 @@
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { logger } from "../logger";
-import { behaviourExtension } from "./extensions/behaviour";
-import { keymapExtension } from "./extensions/keymap";
+import { behaviour } from "./extensions/behaviour";
+import { keymap } from "./extensions/keymap";
 import { theme, ThemeName } from "./extensions/theme";
 
 const log = logger("prisma-schema-editor", "salmon");
@@ -39,8 +39,8 @@ export class Editor {
             params.theme || "dark",
             params.domElement.getBoundingClientRect()
           ),
-          behaviourExtension,
-          keymapExtension,
+          behaviour,
+          keymap,
         ],
       }),
     });

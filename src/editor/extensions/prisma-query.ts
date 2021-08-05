@@ -356,7 +356,7 @@ export function prismaQuery(
   config: {
     onExecute?: PrismaQueryOnExecute;
   } = {}
-): Extension[] {
+): Extension {
   return [
     prismaQueriesFacet.of(config),
     prismaQueryStateField,
