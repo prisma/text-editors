@@ -31,7 +31,12 @@ export class Editor {
         extensions: [
           EditorView.editable.of(!params.readonly),
 
-          typescript({ code: params.code }),
+          typescript({
+            code: params.code,
+            onChange: code => {
+              log("changed", code);
+            },
+          }),
           prismaQuery({ onExecute: params.onExecuteQuery }),
 
           theme(

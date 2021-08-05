@@ -8,13 +8,14 @@ import { javascript } from "@codemirror/lang-javascript";
 import { Diagnostic, linter, setDiagnostics } from "@codemirror/lint";
 import {
   Extension,
+  Facet,
   StateEffect,
   StateField,
   TransactionSpec,
 } from "@codemirror/state";
 import { hoverTooltip, Tooltip } from "@codemirror/tooltip";
 import { EditorView } from "@codemirror/view";
-import { debounce } from "lodash-es";
+import { debounce, noop, over } from "lodash-es";
 import {
   DiagnosticCategory,
   displayPartsToString,
@@ -31,11 +32,12 @@ export type { FileMap };
  *
  * 1. A StateField, that holds an instance of a `TypescriptProject`
  * 2. A `javascript` extension, that provides syntax highlighting and other simple JS features.
- * 3. A `autocomplete` extension that provides tsserver-backed completions, powered by the `completionSource` function
+ * 3. An `autocomplete` extension that provides tsserver-backed completions, powered by the `completionSource` function
  * 4. A `linter` extension that provides tsserver-backed type errors, powered by the `lintDiagnostics` function
- * 5. A `hoverTooltip` extension that provides tsserver-type information on hover, powered by the `hoverTooltip` function
+ * 5. A `hoverTooltip` extension that provides tsserver-backed type information on hover, powered by the `hoverTooltip` function
  * 6. An `updateListener` (facet) extension, that ensures that the editor's view is kept in sync with tsserver's view of the file
  * 7. A StateEffect that lets a consumer inject custom types into the `TypescriptProject`
+ * 8. A Facet that holds all registered `onChange` callbacks
  *
  * The "correct" way to read this file is from bottom to top.
  */
@@ -45,7 +47,6 @@ export type { FileMap };
  */
 const tsStateField = StateField.define<TypescriptProject>({
   create(state) {
-    // Get value from facet
     return new TypescriptProject(state.sliceDoc(0));
   },
 
@@ -66,6 +67,9 @@ const tsStateField = StateField.define<TypescriptProject>({
   },
 });
 
+/**
+ * A CompletionSource that returns completions to show at the current cursor position (via tsserver)
+ */
 const completionSource = async (
   ctx: CompletionContext
 ): Promise<CompletionResult | null> => {
@@ -93,6 +97,9 @@ const completionSource = async (
   )(ctx);
 };
 
+/**
+ * A LintSource that returns lint diagnostics across the current editor view (via tsserver)
+ */
 const lintDiagnostics = async (view: EditorView): Promise<Diagnostic[]> => {
   const ts = view.state.field(tsStateField);
   const diagnostics = (await ts.lang()).getSemanticDiagnostics(ts.entrypoint);
@@ -116,6 +123,9 @@ const lintDiagnostics = async (view: EditorView): Promise<Diagnostic[]> => {
     });
 };
 
+/**
+ * A HoverTooltipSource that returns a Tooltip to show at a given cursor position (via tsserver)
+ */
 const hoverTooltipSource = async (
   view: EditorView,
   pos: number
@@ -146,18 +156,22 @@ const hoverTooltipSource = async (
   };
 };
 
+/**
+ * A (debounced) function that updates the view of the currently open "file" on TSServer
+ */
 const updateTSFileDebounced = debounce((view: EditorView) => {
-  const ts = view.state.field(tsStateField);
-  const doc = view.state.doc;
-  const content = doc.sliceString(0);
-  log("TODO:: Register onChange as a facet and call it");
-  // params.onChange?.(content);
-
   log("Commit file change");
+
+  const ts = view.state.field(tsStateField);
+  const content = view.state.sliceDoc(0);
+
   // Don't `await` because we do not want to block
   ts.env().then(env => env.updateFile(ts.entrypoint, content));
 }, 100);
 
+/**
+ * A StateEffect that can be dispatched to forcefully re-compute lint diagnostics
+ */
 const injectTypesEffect = StateEffect.define<FileMap>();
 export function injectTypes(types: FileMap): TransactionSpec {
   return {
@@ -165,12 +179,24 @@ export function injectTypes(types: FileMap): TransactionSpec {
   };
 }
 
+/**
+ * A Facet that stores all registered `onChange` callbacks
+ */
+type OnCodeChange = (code: string) => void;
+const OnCodeChangeFacet = Facet.define<OnCodeChange, OnCodeChange>({
+  combine: input => {
+    // If multiple `onCodeChange` callbacks are registered, chain them (call them one after another)
+    return over(input);
+  },
+});
+
 export function typescript(config: {
   code: string;
-  onChange?: (value: string) => void;
+  onChange?: (code: string) => void;
 }): Extension {
   return [
     tsStateField,
+    OnCodeChangeFacet.of(debounce(config.onChange || noop, 300)),
     javascript({ typescript: true, jsx: false }),
     autocompletion({
       activateOnTyping: true,
@@ -185,6 +211,11 @@ export function typescript(config: {
       if (docChanged) {
         // Update TSServer's view of this file
         updateTSFileDebounced(view);
+
+        // Call the onChange callback
+        const content = view.state.sliceDoc(0);
+        const onChange = view.state.facet(OnCodeChangeFacet);
+        onChange(content);
 
         // Then re-compute lint diagnostics
         lintDiagnostics(view).then(diagnostics => {

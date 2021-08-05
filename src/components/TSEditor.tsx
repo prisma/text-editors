@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ThemeName, TSEditor } from "../editor";
-import { FileMap } from "../editor/extensions/typescript";
+import { FileMap, ThemeName, TSEditor } from "../editor";
 
 type EditorProps = {
   /** (Controlled) Value of the editor */
