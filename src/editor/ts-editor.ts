@@ -1,13 +1,8 @@
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { debounce } from "lodash-es";
 import { logger } from "../logger";
-import {
-  appearance,
-  setDimensions,
-  setTheme,
-  ThemeName,
-} from "./extensions/appearance";
+import { BaseEditor } from "./base-editor";
+import { appearance, ThemeName } from "./extensions/appearance";
 import { behaviour } from "./extensions/behaviour";
 import { keymap } from "./extensions/keymap";
 import { prismaQuery } from "./extensions/prisma-query";
@@ -15,7 +10,7 @@ import { FileMap, injectTypes, typescript } from "./extensions/typescript";
 
 const log = logger("ts-editor", "limegreen");
 
-type EditorParams = {
+type TSEditorParams = {
   domElement: Element;
   code: string;
   readonly?: boolean;
@@ -25,14 +20,14 @@ type EditorParams = {
   onExecuteQuery?: (query: string) => void;
 };
 
-export class Editor {
-  private domElement: Element;
-  private view: EditorView;
+export class TSEditor extends BaseEditor {
+  protected view: EditorView;
 
-  constructor(params: EditorParams) {
+  constructor(params: TSEditorParams) {
+    super(params);
+
     const { width, height } = params.domElement.getBoundingClientRect();
 
-    this.domElement = params.domElement;
     this.view = new EditorView({
       parent: params.domElement,
       state: EditorState.create({
@@ -54,37 +49,9 @@ export class Editor {
     });
 
     log("Initialized");
-
-    const onResizeDebounced = debounce(this.setDimensions, 2000);
-    window.addEventListener("resize", onResizeDebounced);
   }
-
-  private setDimensions = () => {
-    const dimensions = this.domElement.getBoundingClientRect();
-    this.view.dispatch(setDimensions(dimensions.width, dimensions.height));
-  };
 
   public injectTypes = (types: FileMap) => {
     this.view.dispatch(injectTypes(types));
-  };
-
-  public setTheme = (theme: ThemeName) => {
-    this.view.dispatch(setTheme(theme));
-  };
-
-  public forceUpdate = (code: string) => {
-    log("Force updating editor value");
-
-    this.view.dispatch({
-      changes: [
-        { from: 0, to: this.view.state.doc.length },
-        { from: 0, insert: code },
-      ],
-    });
-  };
-
-  public destroy = () => {
-    // This is an arrow function because we want to inherit the `this` binding
-    this.view.destroy();
   };
 }
