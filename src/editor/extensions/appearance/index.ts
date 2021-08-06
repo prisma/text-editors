@@ -32,8 +32,7 @@ export const setDimensions = (
   return {
     effects: dimensionsCompartment.reconfigure(
       EditorView.editorAttributes.of({
-        width: `${width}px`,
-        height: `${height}px`,
+        style: `width: ${width || 300}px; height: ${height || 300}px`,
       })
     ),
   };
@@ -51,8 +50,7 @@ export const appearance = ({
   return [
     dimensionsCompartment.of(
       EditorView.editorAttributes.of({
-        width: `${width || 300}px`,
-        height: `${height || 300}px`,
+        style: `width: ${width || 300}px; height: ${height || 300}px`,
       })
     ),
     themeCompartment.of(getThemeExtension(theme || "light")),

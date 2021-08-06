@@ -1,5 +1,5 @@
 import { EditorView } from "@codemirror/view";
-import { debounce } from "lodash-es";
+import { throttle } from "lodash-es";
 import { setDimensions, setTheme, ThemeName } from "./extensions/appearance";
 
 type BaseEditorParams = {
@@ -13,8 +13,8 @@ export abstract class BaseEditor {
   constructor(params: BaseEditorParams) {
     this.domElement = params.domElement;
 
-    const onResizeDebounced = debounce(this.setDimensions, 2000);
-    window.addEventListener("resize", onResizeDebounced);
+    const onResizeThrottled = throttle(this.setDimensions, 50);
+    window.addEventListener("resize", onResizeThrottled);
   }
 
   protected setDimensions = () => {

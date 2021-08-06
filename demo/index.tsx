@@ -130,18 +130,17 @@ const ReactDemo = () => {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "40px 1fr 0.3fr",
-        gridTemplateRows: "1fr 42px 1fr",
-        width: "100vw",
-        height: "100vh",
-        overflow: "hidden",
+        gridTemplateColumns: "40px 70% 30%",
+        gridTemplateRows: "calc(50vh - 11px) 22px calc(50vh - 11px)",
+        width: "100%",
+        height: "100%",
         position: "relative",
       }}
     >
       <div
         style={{
           gridColumn: "1 / 2",
-          gridRow: "1 / 3",
+          gridRow: "1 / -1",
           boxShadow: "2px 0px 8px #0001",
           zIndex: 2,
           borderRight: "1px solid #E2E8F0",
@@ -184,7 +183,7 @@ const ReactDemo = () => {
           borderTop: "1px solid #E2E8F0",
           borderBottom: "1px solid #E2E8F0",
           background: "#F7FAFC",
-          height: "40px",
+          height: "100%",
         }}
       ></div>
 
@@ -200,7 +199,7 @@ const ReactDemo = () => {
         style={{
           position: "absolute",
           top: 10,
-          right: 20,
+          right: "25vw",
           cursor: "pointer",
           zIndex: 9999999,
         }}
@@ -212,7 +211,7 @@ const ReactDemo = () => {
         style={{
           position: "absolute",
           top: 10,
-          right: 50,
+          right: "calc(25vw + 30px)",
           cursor: "pointer",
           zIndex: 9999999,
         }}
