@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import { JSONEditor, ThemeName } from "../editor";
 
 type EditorProps = {
@@ -8,11 +8,22 @@ type EditorProps = {
   readonly?: boolean;
   /** Theme for the editor */
   theme?: ThemeName;
+  /** Additional styles for the editor container */
+  style?: CSSProperties;
+  /** Additional classes for the editor container */
+  className?: string;
   /** Callback called when the value of the editor changes (debounced) */
   onChange?: (value: string) => void;
 };
 
-export function Editor({ value, readonly, theme, onChange }: EditorProps) {
+export function Editor({
+  value,
+  readonly,
+  theme,
+  style,
+  className,
+  onChange,
+}: EditorProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [editor, setEditor] = useState<JSONEditor>();
 
@@ -43,5 +54,5 @@ export function Editor({ value, readonly, theme, onChange }: EditorProps) {
     theme && editor?.setTheme(theme);
   }, [theme]);
 
-  return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
+  return <div ref={ref} style={style} className={className} />;
 }

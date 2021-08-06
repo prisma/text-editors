@@ -97,7 +97,7 @@ const ReactDemo = () => {
     else setQueryMode("typescript");
   };
 
-  const [theme, setTheme] = useState<ThemeName>("dark");
+  const [theme, setTheme] = useState<ThemeName>("light");
   const flipTheme = () => {
     if (theme === "dark") setTheme("light");
     else setTheme("dark");
@@ -129,62 +129,96 @@ const ReactDemo = () => {
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "column",
+        display: "grid",
+        gridTemplateColumns: "40px 1fr 0.3fr",
+        gridTemplateRows: "1fr 42px 1fr",
         width: "100vw",
         height: "100vh",
+        overflow: "hidden",
+        position: "relative",
       }}
     >
-      <div style={{ flex: "1 0 0", display: "flex", position: "relative" }}>
-        <div style={{ width: "70%" }}>
-          {queryMode === "typescript" && (
-            <TSEditor
-              types={types}
-              theme={theme}
-              value={tsCode}
-              onExecuteQuery={runPrismaClientQuery}
-            />
-          )}
-          {queryMode === "sql" && (
-            <SQLEditor
-              theme={theme}
-              value={sqlCode}
-              onExecuteQuery={runSqlQuery}
-            />
-          )}
+      <div
+        style={{
+          gridColumn: "1 / 2",
+          gridRow: "1 / 3",
+          boxShadow: "2px 0px 8px #0001",
+          zIndex: 2,
+          borderRight: "1px solid #E2E8F0",
+        }}
+      ></div>
+      {queryMode === "typescript" && (
+        <TSEditor
+          types={types}
+          theme={theme}
+          value={tsCode}
+          style={{
+            gridColumn: "2 / 3",
+          }}
+          onExecuteQuery={runPrismaClientQuery}
+        />
+      )}
+      {queryMode === "sql" && (
+        <SQLEditor
+          theme={theme}
+          value={sqlCode}
+          onExecuteQuery={runSqlQuery}
+          style={{
+            gridColumn: "2 / 3",
+          }}
+        />
+      )}
 
-          <div
-            style={{
-              position: "absolute",
-              top: 10,
-              right: 20,
-              cursor: "pointer",
-              zIndex: 9999999,
-            }}
-            onClick={flipTheme}
-          >
-            🌓
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              top: 10,
-              right: 50,
-              cursor: "pointer",
-              zIndex: 9999999,
-            }}
-            onClick={flipQueryMode}
-          >
-            🔘
-          </div>
-        </div>
-        <div style={{ width: "30%" }}>
-          <PrismaSchemaEditor theme={theme} readonly value={prismaSchema} />
-        </div>
+      <PrismaSchemaEditor
+        theme={theme}
+        readonly
+        value={prismaSchema}
+        style={{ gridColumn: "3 / -1" }}
+      />
+
+      <div
+        style={{
+          gridColumn: "1 / -1",
+          gridRow: "2 / 2",
+          zIndex: 2,
+          borderTop: "1px solid #E2E8F0",
+          borderBottom: "1px solid #E2E8F0",
+          background: "#F7FAFC",
+          height: "40px",
+        }}
+      ></div>
+
+      {/* <div style={{ flex: "0 0 1px", backgroundColor: "#666" }}></div> */}
+      <JSONEditor
+        theme={theme}
+        readonly
+        value={response}
+        style={{ gridColumn: "2 / -1", gridRow: "3 / -1" }}
+      />
+
+      <div
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 20,
+          cursor: "pointer",
+          zIndex: 9999999,
+        }}
+        onClick={flipTheme}
+      >
+        🌓
       </div>
-      <div style={{ flex: "0 0 1px", backgroundColor: "#666" }}></div>
-      <div style={{ flex: "1 0 0" }}>
-        <JSONEditor theme={theme} readonly value={response} />
+      <div
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 50,
+          cursor: "pointer",
+          zIndex: 9999999,
+        }}
+        onClick={flipQueryMode}
+      >
+        🔘
       </div>
     </div>
   );

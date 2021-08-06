@@ -2,10 +2,16 @@ import { json, jsonParseLinter } from "@codemirror/lang-json";
 import { linter } from "@codemirror/lint";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
+import { debounce } from "lodash-es";
 import { logger } from "../logger";
+import {
+  appearance,
+  setDimensions,
+  setTheme,
+  ThemeName,
+} from "./extensions/appearance";
 import { behaviour } from "./extensions/behaviour";
 import { keymap } from "./extensions/keymap";
-import { setTheme, theme, ThemeName } from "./extensions/theme";
 
 const log = logger("json-editor", "salmon");
 
@@ -18,9 +24,13 @@ type EditorParams = {
 };
 
 export class Editor {
+  private domElement: Element;
   private view: EditorView;
 
   constructor(params: EditorParams) {
+    const { width, height } = params.domElement.getBoundingClientRect();
+
+    this.domElement = params.domElement;
     this.view = new EditorView({
       parent: params.domElement,
       state: EditorState.create({
@@ -31,7 +41,7 @@ export class Editor {
           json(),
           linter(jsonParseLinter()),
 
-          theme(params.theme || "light"),
+          appearance({ theme: params.theme, width, height }),
           behaviour({ onChange: params.onChange }),
           keymap(),
         ],
@@ -39,7 +49,15 @@ export class Editor {
     });
 
     log("Initialized");
+
+    const onResizeDebounced = debounce(this.setDimensions, 2000);
+    window.addEventListener("resize", onResizeDebounced);
   }
+
+  private setDimensions = () => {
+    const dimensions = this.domElement.getBoundingClientRect();
+    this.view.dispatch(setDimensions(dimensions.width, dimensions.height));
+  };
 
   public setTheme(theme: ThemeName) {
     this.view.dispatch(setTheme(theme));

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import { FileMap, ThemeName, TSEditor } from "../editor";
 
 type EditorProps = {
@@ -10,6 +10,10 @@ type EditorProps = {
   theme?: ThemeName;
   /** Additional Typescript types to load into the editor */
   types?: FileMap;
+  /** Additional styles for the editor container */
+  style?: CSSProperties;
+  /** Additional classes for the editor container */
+  className?: string;
   /** Callback called when the value of the editor changes (debounced) */
   onChange?: (value: string) => void;
   /** Callback called when the user requests a query to be run */
@@ -21,6 +25,8 @@ export function Editor({
   readonly,
   types,
   theme,
+  style,
+  className,
   onChange,
   onExecuteQuery,
 }: EditorProps) {
@@ -61,5 +67,5 @@ export function Editor({
     theme && editor?.setTheme(theme);
   }, [theme]);
 
-  return <div ref={ref} style={{ width: "100%", height: "100%" }} />;
+  return <div ref={ref} style={style} className={className} />;
 }
