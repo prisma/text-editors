@@ -1,6 +1,11 @@
 import { EditorView } from "@codemirror/view";
 import { throttle } from "lodash-es";
-import { setDimensions, setTheme, ThemeName } from "./extensions/appearance";
+import {
+  setDimensions,
+  setHighlightStyle,
+  setTheme,
+  ThemeName,
+} from "./extensions/appearance";
 
 type BaseEditorParams = {
   domElement: Element;
@@ -24,6 +29,7 @@ export abstract class BaseEditor {
 
   public setTheme = (theme: ThemeName) => {
     this.view.dispatch(setTheme(theme));
+    this.view.dispatch(setHighlightStyle(theme));
   };
 
   public forceUpdate = (code: string) => {

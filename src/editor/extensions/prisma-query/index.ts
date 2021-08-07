@@ -12,6 +12,7 @@ import {
 } from "@codemirror/view";
 import { noop, over } from "lodash-es";
 import { getQueries, PrismaQuery } from "./get-queries";
+import { queryHighlightStyle } from "./highlight";
 import { log } from "./log";
 
 /**
@@ -22,6 +23,7 @@ import { log } from "./log";
  * 3. A GutterMarker that displays an element in the gutter for all lines that are valid PrismaClient queries
  * 4. A widget that renders a DOM element to allow a PrismaClient query to be executed
  * 5. A ViewPlugin that draws the RunQueryWidget on all first lines of PrismaClient queries
+ * 7. A custom highlight style that dims all lines that aren't PrismaClient queries
  * 6. A keyMap that runs the query under the user's cursor
  *
  * The "correct" way to read this file is from bottom to top.
@@ -60,9 +62,19 @@ const prismaQueryStateField = StateField.define<RangeSet<PrismaQuery>>({
  * A GutterMarker that marks lines that have valid PrismaClient queries
  */
 class QueryGutterMarker extends GutterMarker {
+  isVisible: boolean;
+
+  constructor(isVisible: boolean) {
+    super();
+    this.isVisible = isVisible;
+  }
+
   toDOM() {
     const div = document.createElement("div");
     div.className = "cm-prismaQuery";
+    if (!this.isVisible) {
+      div.classList.add("invisible");
+    }
     return div;
   }
 }
@@ -213,19 +225,26 @@ export function prismaQuery(config: { onExecute?: OnExecute }): Extension {
     prismaQueryStateField,
     gutter({
       lineMarker: (view, line) => {
-        let marker: QueryGutterMarker | null = null;
+        const cursors = view.state.selection.ranges.filter(r => r.empty);
+        const cursorPos = cursors[0].from;
 
+        // If cursor is inside the query, add (visible) markers for all lines in query (and invisible ones for others)
+        // Toggling between visible/invisible instead of adding/removing markers makes it so the editor does not jump when a marker is shown as your cursor moves around
+        let marker: QueryGutterMarker = new QueryGutterMarker(false);
         view.state
           .field(prismaQueryStateField)
-          .between(line.from, line.to, () => {
-            marker = new QueryGutterMarker();
+          .between(line.from, line.to, (from, to) => {
+            if (cursorPos >= from && cursorPos <= to) {
+              marker = new QueryGutterMarker(true);
+            }
           });
 
         return marker;
       },
     }),
-    runQueryViewPlugin,
+    // runQueryViewPlugin,
     queryHighlightPlugin,
+    queryHighlightStyle,
     keymap.of([
       {
         key: "Ctrl-Enter",

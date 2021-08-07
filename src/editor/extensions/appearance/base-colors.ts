@@ -10,24 +10,6 @@ export const base: Extension = [
     ".cm-gutters": { border: "none" },
     ".cm-foldPlaceholder": { background: "transparent", border: "none" },
 
-    // Prisma Query Plugin
-    ".cm-gutterElement .cm-prismaQuery": {
-      height: "100%",
-      borderLeft: "3px solid #22C55E" /* green-500 */,
-    },
-    ".cm-prismaQueryRunButton": {
-      background: "transparent",
-      border: 0,
-      color: "#00000055",
-      cursor: "pointer",
-      fontSize: "13px",
-      fontFamily: "monospace",
-
-      "&:hover": {
-        color: "#00000088",
-      },
-    },
-
     // Autocomplete
     ".cm-tooltip-autocomplete": {},
     ".cm-completionLabel": {}, // Unmatched text

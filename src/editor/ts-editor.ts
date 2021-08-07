@@ -2,7 +2,7 @@ import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { logger } from "../logger";
 import { BaseEditor } from "./base-editor";
-import { appearance, ThemeName } from "./extensions/appearance";
+import { appearance, setTheme, ThemeName } from "./extensions/appearance";
 import { behaviour } from "./extensions/behaviour";
 import { keymap } from "./extensions/keymap";
 import { prismaQuery } from "./extensions/prisma-query";
@@ -41,7 +41,12 @@ export class TSEditor extends BaseEditor {
           }),
           prismaQuery({ onExecute: params.onExecuteQuery }),
 
-          appearance({ theme: params.theme, width, height }),
+          appearance({
+            theme: params.theme,
+            highlightStyle: "none", // We'll let the prismaQuery extension handle the highlightStyle
+            width,
+            height,
+          }),
           behaviour({ onChange: params.onChange }),
           keymap(),
         ],
@@ -50,6 +55,12 @@ export class TSEditor extends BaseEditor {
 
     log("Initialized");
   }
+
+  /** @override */
+  public setTheme = (theme: ThemeName) => {
+    // Override the `setTheme` method to make sure `highlightStyle` never changes from "none"
+    this.view.dispatch(setTheme(theme));
+  };
 
   public injectTypes = (types: FileMap) => {
     this.view.dispatch(injectTypes(types));

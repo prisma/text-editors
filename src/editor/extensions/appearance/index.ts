@@ -4,19 +4,37 @@ import {
   highlightActiveLine,
   highlightSpecialChars,
 } from "@codemirror/view";
-import { theme as darkTheme } from "./theme/dark";
-import { theme as lightTheme } from "./theme/light";
+import {
+  highlightStyle as darkHighlightStyle,
+  theme as darkTheme,
+} from "./dark-colors";
+import {
+  highlightStyle as lightHighlightStyle,
+  theme as lightTheme,
+} from "./light-colors";
 
 export type ThemeName = "light" | "dark";
+export type HighlightStyle = "light" | "dark" | "none";
 
-const themeCompartment = new Compartment();
 const dimensionsCompartment = new Compartment();
+const themeCompartment = new Compartment();
+const highlightStyleCompartment = new Compartment();
 
-const getThemeExtension = (themeName: ThemeName): Extension => {
-  if (themeName === "light") {
+const getThemeExtension = (t: ThemeName): Extension => {
+  if (t === "light") {
     return lightTheme;
   } else {
     return darkTheme;
+  }
+};
+
+const getHighlightStyleExtension = (h: HighlightStyle): Extension => {
+  if (h === "light") {
+    return lightHighlightStyle;
+  } else if (h === "dark") {
+    return darkHighlightStyle;
+  } else {
+    return [];
   }
 };
 
@@ -25,6 +43,17 @@ export const setTheme = (theme: ThemeName): TransactionSpec => {
     effects: themeCompartment.reconfigure(getThemeExtension(theme)),
   };
 };
+
+export const setHighlightStyle = (
+  highlightStyle: HighlightStyle
+): TransactionSpec => {
+  return {
+    effects: highlightStyleCompartment.reconfigure(
+      getHighlightStyleExtension(highlightStyle)
+    ),
+  };
+};
+
 export const setDimensions = (
   width: number,
   height: number
@@ -40,10 +69,12 @@ export const setDimensions = (
 
 export const appearance = ({
   theme,
+  highlightStyle,
   width,
   height,
 }: {
   theme?: ThemeName;
+  highlightStyle?: HighlightStyle;
   width?: number;
   height?: number;
 }): Extension => {
@@ -54,6 +85,9 @@ export const appearance = ({
       })
     ),
     themeCompartment.of(getThemeExtension(theme || "light")),
+    highlightStyleCompartment.of(
+      getHighlightStyleExtension(highlightStyle || theme || "light")
+    ),
     highlightSpecialChars(),
     highlightActiveLine(),
   ];
