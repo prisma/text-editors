@@ -153,6 +153,9 @@ const ReactDemo = () => {
           value={tsCode}
           style={{
             gridColumn: "2 / 3",
+            boxShadow: "2px 0px 8px #0001",
+            zIndex: 2,
+            borderRight: "1px solid #E2E8F0",
           }}
           onExecuteQuery={runPrismaClientQuery}
         />
@@ -164,6 +167,9 @@ const ReactDemo = () => {
           onExecuteQuery={runSqlQuery}
           style={{
             gridColumn: "2 / 3",
+            boxShadow: "2px 0px 8px #0001",
+            zIndex: 2,
+            borderRight: "1px solid #E2E8F0",
           }}
         />
       )}

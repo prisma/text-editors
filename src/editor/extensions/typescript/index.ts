@@ -142,10 +142,12 @@ const hoverTooltipSource = async (
     pos,
     create() {
       const dom = document.createElement("div");
-      dom.innerText = displayPartsToString(quickInfo.displayParts);
-      if (quickInfo.documentation?.length)
-        dom.innerText += "\n" + displayPartsToString(quickInfo.documentation);
       dom.setAttribute("class", "cm-quickinfo-tooltip");
+      dom.textContent =
+        displayPartsToString(quickInfo.displayParts) +
+        (quickInfo.documentation?.length
+          ? "\n" + displayPartsToString(quickInfo.documentation)
+          : "");
 
       return {
         dom,

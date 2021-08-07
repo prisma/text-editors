@@ -8,6 +8,15 @@ export const base: Extension = [
     },
     ".cm-scroller": { overflow: "auto" },
     ".cm-gutters": { border: "none" },
+    ".cm-foldMarker": {
+      width: "12px",
+      height: "12px",
+      marginLeft: "8px",
+
+      "&.folded": {
+        transform: "rotate(-90deg)",
+      },
+    },
     ".cm-foldPlaceholder": { background: "transparent", border: "none" },
 
     // Autocomplete

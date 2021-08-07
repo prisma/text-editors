@@ -111,9 +111,9 @@ class RunQueryWidget extends WidgetType {
 
     // Since the top-most element has to be `display: block`, it will stretch to fill the entire line
     // We want to add a click listener, so attaching it to this outside div will make it so clicking anywhere on the line executes the query
-    // To avoid this, we create a child button and add the `innerText` and the click handler to it instead
+    // To avoid this, we create a child button and add text and the click handler to it instead
     const button = document.createElement("button");
-    button.innerText = "▶ Run Query";
+    button.textContent = "▶ Run Query";
     button.setAttribute("class", "cm-prismaQueryRunButton");
     if (this.onExecute) {
       button.onclick = () => {

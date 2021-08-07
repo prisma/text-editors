@@ -14,8 +14,8 @@ export const theme: Extension = [
       ".cm-scroller": { overflow: "auto" },
       ".cm-gutters": { background: "#FFFFFF" },
       ".cm-gutterElement": { color: "#CBD5E1" /* blueGray-300 */ },
-      ".cm-foldMarker, .cm-foldRangeMarker": {
-        color: "#475569" /* blueGray-600 */,
+      ".cm-foldMarker": {
+        color: "#94A3B8" /* blueGray-400 */,
       },
       ".cm-activeLine, .cm-activeLineGutter": {
         background: "#F1F5F9" /* blueGray-100 */,
