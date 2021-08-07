@@ -6,7 +6,7 @@ import {
   PrismaSchemaEditor,
   SQLEditor,
   ThemeName,
-  TSEditor
+  TSEditor,
 } from "../src/lib";
 /* @ts-expect-error */
 import prismaSchema from "./prisma/schema.prisma?raw";
