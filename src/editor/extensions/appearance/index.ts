@@ -4,8 +4,8 @@ import {
   highlightActiveLine,
   highlightSpecialChars,
 } from "@codemirror/view";
-import { theme as darkTheme } from "./dark";
-import { theme as lightTheme } from "./light";
+import { theme as darkTheme } from "./theme/dark";
+import { theme as lightTheme } from "./theme/light";
 
 export type ThemeName = "light" | "dark";
 

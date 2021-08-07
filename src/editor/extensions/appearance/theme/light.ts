@@ -5,46 +5,60 @@ import {
   tags,
 } from "@codemirror/highlight";
 import { EditorView } from "@codemirror/view";
+import { base } from "./base";
 
 export const theme = [
+  base,
   // Overall editor theme
   EditorView.theme(
     {
       "&": {
         background: "#FFFFFF",
-        fontSize: "14px",
       },
       ".cm-scroller": { overflow: "auto" },
-      ".cm-gutters": { border: "none", background: "#FFFFFF" },
-      // ".cm-foldGutter .cm-gutterElement": { color: "#4B5563" /* gray-600 */ },
-      ".cm-gutterElement": { color: "#CBD5E1" /* gray-300 */ },
+      ".cm-gutters": { background: "#FFFFFF" },
+      ".cm-gutterElement": { color: "#CBD5E1" /* blueGray-300 */ },
+      ".cm-foldMarker, .cm-foldRangeMarker": {
+        color: "#475569" /* blueGray-600 */,
+      },
       ".cm-activeLine, .cm-activeLineGutter": {
         background: "#F1F5F9" /* blueGray-100 */,
       },
 
       // Prisma Query Plugin
       ".cm-query": {
-        borderLeft: "2px solid #22C55E" /* green-500 */,
+        borderLeftColor: "#22C55E" /* green-500 */,
       },
       ".cm-run-query-button": {
-        background: "transparent",
-        border: 0,
-        color: "#00000055",
-        cursor: "pointer",
-        fontSize: "12px",
-        fontFamily: "monospace",
+        color: "#CBD5E1" /* blueGray-300 */,
 
         "&:hover": {
-          color: "#00000088",
+          color: "#94A3B8" /* blueGray-400 */,
         },
+      },
+
+      // Autocomplete
+      ".cm-tooltip-autocomplete": {},
+      ".cm-completionLabel": {}, // Unmatched text
+      ".cm-completionMatchedText": {
+        color: "#00B4D4",
+      },
+      ".cm-completionDetail": {
+        color: "#ABABAB",
+      }, // Text to the right of tooltip
+      ".cm-completionInfo": {}, // "Additional" text that shows up in a panel on the right of the tolltip
+
+      // Diagnostics (Lint issues) & Quickinfo (Hover tooltips)
+      ".cm-diagnostic, .cm-quickinfo-tooltip": {
+        background: "#E2E8F0" /* blueGray-200 */,
+        borderColor: "#CBD5E1" /* blueGray-300 */,
       },
     },
     { dark: false }
   ),
 
-  classHighlightStyle,
-
   // Syntax highlighting
+  classHighlightStyle,
   HighlightStyle.define(
     [
       // Keywords
