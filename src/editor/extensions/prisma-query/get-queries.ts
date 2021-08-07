@@ -1,21 +1,26 @@
 import { syntaxTree } from "@codemirror/language";
+import { RangeSet, RangeSetBuilder, RangeValue } from "@codemirror/rangeset";
 import { EditorState } from "@codemirror/state";
 
-/** A single PrismaClient query */
-export type PrismaQuery = {
+/** A Range representing a single PrismaClient query */
+export class PrismaQuery extends RangeValue {
   text: string;
-  from: number;
-  to: number;
-};
+
+  constructor(text: string) {
+    super();
+
+    this.text = text;
+  }
+}
 
 /**
  * Given an EditorState, returns positions of and decorations associated with all Prisma Client queries
  */
-export function getQueries(state: EditorState): PrismaQuery[] {
+export function getQueries(state: EditorState): RangeSet<PrismaQuery> {
   const syntax = syntaxTree(state);
-  const queries: PrismaQuery[] = [];
 
   let prismaVariableName: string;
+  let queries = new RangeSetBuilder<PrismaQuery>();
 
   syntax.iterate({
     enter(type, from) {
@@ -151,11 +156,13 @@ export function getQueries(state: EditorState): PrismaQuery[] {
             return;
           }
 
-          queries.push({
-            text: state.doc.sliceString(callExpression.from, callExpression.to),
-            from: callExpression.from,
-            to: callExpression.to,
-          });
+          queries.add(
+            callExpression.from,
+            callExpression.to,
+            new PrismaQuery(
+              state.doc.sliceString(callExpression.from, callExpression.to)
+            )
+          );
 
           return;
         }
@@ -184,16 +191,19 @@ export function getQueries(state: EditorState): PrismaQuery[] {
         }
 
         // Add text of this query
-        queries.push({
-          text: state.doc.sliceString(callExpression.from, callExpression.to),
-          from: callExpression.from,
-          to: callExpression.to,
-        });
+        queries.add(
+          callExpression.from,
+          callExpression.to,
+
+          new PrismaQuery(
+            state.doc.sliceString(callExpression.from, callExpression.to)
+          )
+        );
 
         return;
       }
     },
   });
 
-  return queries;
+  return queries.finish();
 }
