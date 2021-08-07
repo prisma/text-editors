@@ -199,7 +199,7 @@ const ReactDemo = () => {
         style={{
           position: "absolute",
           top: 10,
-          right: "25vw",
+          right: "29vw",
           cursor: "pointer",
           zIndex: 9999999,
         }}
@@ -211,7 +211,7 @@ const ReactDemo = () => {
         style={{
           position: "absolute",
           top: 10,
-          right: "calc(25vw + 30px)",
+          right: "calc(29vw + 30px)",
           cursor: "pointer",
           zIndex: 9999999,
         }}
