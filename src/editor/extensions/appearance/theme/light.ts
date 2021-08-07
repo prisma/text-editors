@@ -1,7 +1,6 @@
 import {
   classHighlightStyle,
   HighlightStyle,
-  Tag,
   tags,
 } from "@codemirror/highlight";
 import { EditorView } from "@codemirror/view";
@@ -26,10 +25,10 @@ export const theme = [
       },
 
       // Prisma Query Plugin
-      ".cm-query": {
+      ".cm-gutterElement .cm-prismaQuery": {
         borderLeftColor: "#22C55E" /* green-500 */,
       },
-      ".cm-run-query-button": {
+      ".cm-prismaQueryRunButton": {
         color: "#CBD5E1" /* blueGray-300 */,
 
         "&:hover": {
@@ -59,68 +58,50 @@ export const theme = [
   ),
 
   // Syntax highlighting
+  // This is a custom highlight style that only highlights Prisma Queries
+  // TODO:: Move this into thie Prisma plugin
   classHighlightStyle,
-  HighlightStyle.define(
-    [
+  HighlightStyle.define([
+    // `classHighlightStyle` is a little too generic for some things, so override it in those places
+    {
+      tag: [tags.function(tags.variableName), tags.function(tags.propertyName)],
+      class: "cmt-function",
+    },
+  ]),
+  EditorView.theme({
+    ".cm-line": {
+      color: "#52525B55" /* blueGray-600 */,
+    },
+
+    ".cm-prismaQuery": {
       // Keywords
-      { tag: tags.keyword, color: "#BE185D" /* pink-700 */ },
+      "& .cmt-keyword": { color: "#BE185D" /* pink-700 */ },
 
       // Literals
-      { tag: [tags.literal, tags.bool], color: "#0F766E" /* teal-700 */ },
-      {
-        tag: [tags.string, tags.special(tags.string), tags.regexp],
+      "& .cmt-literal, & .cmt-bool": { color: "#0F766E" /* teal-700 */ },
+      "& .cmt-string2": {
         color: "#0F766E" /* teal-700 */,
-      },
-      {
-        tag: tags.escape,
-        color: "#10B981" /* green-500 */,
       },
 
       // Variables
-      {
-        tag: [
-          tags.definition(tags.variableName),
-          tags.definition(tags.typeName),
-          tags.definition(tags.namespace),
-          tags.definition(tags.className),
-        ],
+      "& .cmt-definition.cmt-variableName": {
         color: "#1D4ED8" /* blue-700 */,
       },
-      {
-        tag: [
-          tags.variableName,
-          tags.typeName,
-          tags.namespace,
-          tags.className,
-          tags.operator,
-          tags.bracket,
-        ],
-        color: "#1E293B" /* blueGray-800 */,
-      },
-      {
-        tag: [tags.propertyName, tags.definition(tags.propertyName)],
+      "& .cmt-variableName, & .cmt-typeName, & .cmt-namespace, & .cmt-className, & .cmt-punctuation":
+        {
+          color: "#1E293B" /* blueGray-800 */,
+        },
+      "& .cmt-propertyName": {
         color: "#9333EA" /* purple-700 */,
       },
-      {
-        tag: [
-          tags.function(tags.variableName),
-          tags.function(tags.propertyName),
-        ],
+      "& .cmt-function": {
         color: "#EA580C" /* orange-600 */,
       },
 
       // Misc
-      {
-        tag: tags.comment,
+      "& .cmt-comment": {
         color: "#52525B" /* blueGray-600 */,
-        opacity: 0.5,
       },
-      { tag: tags.invalid, color: "#000000" /*  */ },
-      {
-        // Custom tag for invisible things?
-        tag: Tag.define(),
-      },
-    ],
-    {}
-  ),
+    },
+  }),
 ];

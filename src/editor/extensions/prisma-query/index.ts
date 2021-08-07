@@ -59,10 +59,10 @@ const prismaQueryStateField = StateField.define<RangeSet<PrismaQuery>>({
 /**
  * A GutterMarker that marks lines that have valid PrismaClient queries
  */
-class QueryMarker extends GutterMarker {
+class QueryGutterMarker extends GutterMarker {
   toDOM() {
     const div = document.createElement("div");
-    div.className = "cm-query";
+    div.className = "cm-prismaQuery";
     return div;
   }
 }
@@ -102,7 +102,7 @@ class RunQueryWidget extends WidgetType {
     // To avoid this, we create a child button and add the `innerText` and the click handler to it instead
     const button = document.createElement("button");
     button.innerText = "▶ Run Query";
-    button.setAttribute("class", "cm-run-query-button");
+    button.setAttribute("class", "cm-prismaQueryRunButton");
     if (this.onExecute) {
       button.onclick = () => {
         this.onExecute?.(this.query.text);
@@ -115,6 +115,9 @@ class RunQueryWidget extends WidgetType {
   };
 }
 
+/**
+ * A ViewPlugin that draws `RunQueryWidget`s
+ */
 const runQueryViewPlugin = ViewPlugin.fromClass(
   class {
     decorations: DecorationSet;
@@ -157,6 +160,52 @@ const runQueryViewPlugin = ViewPlugin.fromClass(
   }
 );
 
+const queryHighlightPlugin = ViewPlugin.fromClass(
+  class {
+    decorations: DecorationSet;
+
+    constructor(view: EditorView) {
+      this.decorations = this.buildDecorations(view);
+    }
+
+    update(viewUpdate: ViewUpdate) {
+      if (viewUpdate.viewportChanged || viewUpdate.docChanged) {
+        this.decorations = this.buildDecorations(viewUpdate.view);
+      }
+    }
+
+    buildDecorations(view: EditorView) {
+      let decorations = new RangeSetBuilder<Decoration>();
+      view.state
+        .field(prismaQueryStateField)
+        .between(view.viewport.from, view.viewport.to, (from, to) => {
+          const lineStart = view.state.doc.lineAt(from);
+          const lineEnd = view.state.doc.lineAt(to);
+
+          new Array(lineEnd.number - lineStart.number + 1)
+            .fill(undefined)
+            .forEach((_, i) => {
+              const line = view.state.doc.line(lineStart.number + i);
+              decorations.add(
+                line.from,
+                line.from,
+                Decoration.line({
+                  attributes: {
+                    class: "cm-prismaQuery",
+                  },
+                })
+              );
+            });
+        });
+
+      return decorations.finish();
+    }
+  },
+  {
+    decorations: value => value.decorations,
+  }
+);
+
 // Export a function that will build & return an Extension
 export function prismaQuery(config: { onExecute?: OnExecute }): Extension {
   return [
@@ -164,18 +213,19 @@ export function prismaQuery(config: { onExecute?: OnExecute }): Extension {
     prismaQueryStateField,
     gutter({
       lineMarker: (view, line) => {
-        let marker: QueryMarker | null = null;
+        let marker: QueryGutterMarker | null = null;
 
         view.state
           .field(prismaQueryStateField)
           .between(line.from, line.to, () => {
-            marker = new QueryMarker();
+            marker = new QueryGutterMarker();
           });
 
         return marker;
       },
     }),
     runQueryViewPlugin,
+    queryHighlightPlugin,
     keymap.of([
       {
         key: "Ctrl-Enter",

@@ -11,11 +11,11 @@ export const base: Extension = [
     ".cm-foldPlaceholder": { background: "transparent", border: "none" },
 
     // Prisma Query Plugin
-    ".cm-query": {
+    ".cm-gutterElement .cm-prismaQuery": {
       height: "100%",
       borderLeft: "3px solid #22C55E" /* green-500 */,
     },
-    ".cm-run-query-button": {
+    ".cm-prismaQueryRunButton": {
       background: "transparent",
       border: 0,
       color: "#00000055",
