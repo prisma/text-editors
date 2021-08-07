@@ -66,7 +66,6 @@ export const base: Extension = [
     ".cm-diagnostic, .cm-quickinfo-tooltip": {
       padding: "0.5rem",
       fontFamily: "monospace",
-      border: "1px solid black",
     },
   }),
 ];

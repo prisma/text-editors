@@ -51,7 +51,8 @@ export const theme = [
       // Diagnostics (Lint issues) & Quickinfo (Hover tooltips)
       ".cm-diagnostic, .cm-quickinfo-tooltip": {
         background: "#E2E8F0" /* blueGray-200 */,
-        borderColor: "#CBD5E1" /* blueGray-300 */,
+        border: "1px solid #CBD5E1" /* blueGray-300 */,
+        color: "#1E293B" /* blueGray-800 */,
       },
     },
     { dark: false }
