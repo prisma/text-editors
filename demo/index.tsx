@@ -6,7 +6,7 @@ import {
   PrismaSchemaEditor,
   SQLEditor,
   ThemeName,
-  TSEditor,
+  TSEditor
 } from "../src/lib";
 /* @ts-expect-error */
 import prismaSchema from "./prisma/schema.prisma?raw";
@@ -154,7 +154,7 @@ const ReactDemo = () => {
           style={{
             gridColumn: "2 / 3",
             boxShadow: "2px 0px 8px #0001",
-            zIndex: 2,
+            zIndex: 1,
             borderRight: "1px solid #E2E8F0",
           }}
           onExecuteQuery={runPrismaClientQuery}
