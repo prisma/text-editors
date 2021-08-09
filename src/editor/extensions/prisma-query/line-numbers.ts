@@ -159,7 +159,7 @@ export function lineNumbers(): Extension {
         color: "#E2E8F0" /* blueGray-200 */,
 
         "&.active": {
-          color: "#22C55E" /* green-500 */,
+          color: "#059669" /* green-600 */,
         },
       },
     }),
