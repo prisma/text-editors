@@ -1,14 +1,13 @@
-import { gutter, GutterMarker } from "@codemirror/gutter";
+import { gutter as cmGutter, GutterMarker } from "@codemirror/gutter";
 import { RangeSet, RangeSetBuilder } from "@codemirror/rangeset";
 import { Extension, Facet, StateField } from "@codemirror/state";
 import {
   Decoration,
   DecorationSet,
   EditorView,
-  keymap,
+  keymap as keymapFacet,
   ViewPlugin,
   ViewUpdate,
-  WidgetType,
 } from "@codemirror/view";
 import { noop, over } from "lodash-es";
 import { getQueries, PrismaQuery } from "./get-queries";
@@ -16,15 +15,17 @@ import { queryHighlightStyle } from "./highlight";
 import { log } from "./log";
 
 /**
- * This file exports an extension that makes Prisma Query functionality work. This includes:
+ * This file exports multiple extensions that make Prisma Query functionality work. This includes:
  *
  * 1. A Facet that will be used to register one or more `onExecute` handlers. This facet's value will be accessible by the StateField
  * 2. A StateField that will hold ranges and values of PrismaClient queries
+ * 3. A `track` extension that tracks Prisma Client queries in the editor
+ *
  * 3. A GutterMarker that displays an element in the gutter for all lines that are valid PrismaClient queries
- * 4. A widget that renders a DOM element to allow a PrismaClient query to be executed
- * 5. A ViewPlugin that draws the RunQueryWidget on all first lines of PrismaClient queries
- * 7. A custom highlight style that dims all lines that aren't PrismaClient queries
- * 6. A keyMap that runs the query under the user's cursor
+ * 4. A GutterMarker that displays a run button in the gutter for all lines that are valid PrismaClient queries
+ * 5. A widget that renders a DOM element to allow a PrismaClient query to be executed
+ * 6. A custom highlight style that dims all lines that aren't PrismaClient queries
+ * 7. A keyMap that runs the query under the user's cursor
  *
  * The "correct" way to read this file is from bottom to top.
  */
@@ -58,6 +59,10 @@ const prismaQueryStateField = StateField.define<RangeSet<PrismaQuery>>({
   },
 });
 
+export function track(config: { onExecute?: OnExecute }): Extension {
+  return [OnExecuteFacet.of(config.onExecute || noop), prismaQueryStateField];
+}
+
 /**
  * A GutterMarker that marks lines that have valid PrismaClient queries
  */
@@ -79,98 +84,40 @@ class QueryGutterMarker extends GutterMarker {
   }
 }
 
-/** A Widget that draws the `Run Query` button */
-class RunQueryWidget extends WidgetType {
-  private query: PrismaQuery;
-  private indent: number;
-  private onExecute?: OnExecute;
+export function gutter(): Extension {
+  return [
+    cmGutter({
+      lineMarker: (view, line) => {
+        const cursors = view.state.selection.ranges;
+        const cursor = cursors[0];
 
-  constructor(params: {
-    query: PrismaQuery;
-    indent: number;
-    onExecute?: OnExecute;
-  }) {
-    super();
-    this.query = params.query;
-    this.indent = params.indent;
-    this.onExecute = params.onExecute;
-  }
+        // If (beginning of) selection range (aka the cursor) is inside the query, add (visible) markers for all lines in query (and invisible ones for others)
+        // Toggling between visible/invisible instead of adding/removing markers makes it so the editor does not jump when a marker is shown as your cursor moves around
+        let marker: QueryGutterMarker = new QueryGutterMarker(false);
+        view.state
+          .field(prismaQueryStateField)
+          .between(line.from, line.to, (from, to) => {
+            if (cursor?.from >= from && cursor?.from <= to) {
+              marker = new QueryGutterMarker(true);
+            }
+          });
 
-  ignoreEvent() {
-    return false;
-  }
+        return marker;
+      },
+    }),
+    // Gutter line marker styles
+    EditorView.baseTheme({
+      ".cm-gutterElement .cm-prismaQuery": {
+        height: "100%",
+        borderLeft: "3px solid #22C55E" /* green-500 */,
 
-  eq(other: RunQueryWidget) {
-    return other.query == this.query;
-  }
-
-  toDOM = () => {
-    const widget = document.createElement("div");
-    // Indent the div so it looks like it starts right where the query starts (instead of starting where the line starts)
-    widget.setAttribute("style", `margin-left: ${this.indent * 0.5}rem;`);
-
-    // Since the top-most element has to be `display: block`, it will stretch to fill the entire line
-    // We want to add a click listener, so attaching it to this outside div will make it so clicking anywhere on the line executes the query
-    // To avoid this, we create a child button and add text and the click handler to it instead
-    const button = document.createElement("button");
-    button.textContent = "▶ Run Query";
-    button.setAttribute("class", "cm-prismaQueryRunButton");
-    if (this.onExecute) {
-      button.onclick = () => {
-        this.onExecute?.(this.query.text);
-      };
-    }
-
-    widget.appendChild(button);
-
-    return widget;
-  };
+        "&.invisible": {
+          borderLeft: "3px solid transparent",
+        },
+      },
+    }),
+  ];
 }
-
-/**
- * A ViewPlugin that draws `RunQueryWidget`s
- */
-const runQueryViewPlugin = ViewPlugin.fromClass(
-  class {
-    decorations: DecorationSet;
-
-    constructor(view: EditorView) {
-      this.decorations = this.buildDecorations(view);
-    }
-
-    update(viewUpdate: ViewUpdate) {
-      if (viewUpdate.viewportChanged || viewUpdate.docChanged) {
-        this.decorations = this.buildDecorations(viewUpdate.view);
-      }
-    }
-
-    buildDecorations(view: EditorView) {
-      let decorations = new RangeSetBuilder<Decoration>();
-      view.state
-        .field(prismaQueryStateField)
-        .between(view.viewport.from, view.viewport.to, (from, to, query) => {
-          const line = view.state.doc.lineAt(from);
-
-          decorations.add(
-            line.from,
-            line.from,
-            Decoration.widget({
-              widget: new RunQueryWidget({
-                query,
-                indent: line.text.length - line.text.trim().length,
-                onExecute: view.state.facet(OnExecuteFacet),
-              }),
-            })
-          );
-        });
-
-      return decorations.finish();
-    }
-  },
-  {
-    decorations: value => value.decorations,
-  }
-);
 
 const queryHighlightPlugin = ViewPlugin.fromClass(
   class {
@@ -218,34 +165,79 @@ const queryHighlightPlugin = ViewPlugin.fromClass(
   }
 );
 
-// Export a function that will build & return an Extension
-export function prismaQuery(config: { onExecute?: OnExecute }): Extension {
+export function highlightStyle(): Extension {
+  return [queryHighlightPlugin, queryHighlightStyle];
+}
+
+/**
+ * A GutterMarker that shows line numbers that change to a run button when hovered over
+ */
+class LineNumberMarker extends GutterMarker {
+  private number: number;
+  public elementClass: string;
+
+  constructor(number: number) {
+    super();
+
+    this.number = number;
+    this.elementClass = "cm-lineNumbers";
+  }
+
+  eq(other: LineNumberMarker) {
+    return false; // No two line number widgets can be the same
+  }
+
+  toDOM(view: EditorView) {
+    const widget = document.createElement("div");
+    widget.classList.add("cm-gutterElement");
+    widget.textContent = `${this.number}`;
+    return widget;
+  }
+}
+
+/**
+ * A GutterMarker that shows line numbers that change to a run button when hovered over
+ */
+class RunQueryMarker extends GutterMarker {
+  private number: number;
+  public elementClass: string;
+
+  constructor(number: number) {
+    super();
+
+    this.number = number;
+    this.elementClass = "cm-lineNumbers";
+  }
+
+  eq(other: RunQueryMarker) {
+    return false; // No two run query widgets can be the same
+  }
+
+  toDOM(view: EditorView) {
+    const widget = document.createElement("div");
+    widget.classList.add("cm-gutterElement");
+    widget.textContent = `${this.number}`;
+
+    const queries = view.state.field(prismaQueryStateField);
+
+    const onExecute = view.state.facet(OnExecuteFacet);
+    return widget;
+  }
+}
+
+export function lineNumbers(): Extension {
   return [
-    OnExecuteFacet.of(config.onExecute || noop),
-    prismaQueryStateField,
-    gutter({
-      lineMarker: (view, line) => {
-        const cursors = view.state.selection.ranges.filter(r => r.empty);
-        const cursorPos = cursors[0].from;
-
-        // If cursor is inside the query, add (visible) markers for all lines in query (and invisible ones for others)
-        // Toggling between visible/invisible instead of adding/removing markers makes it so the editor does not jump when a marker is shown as your cursor moves around
-        let marker: QueryGutterMarker = new QueryGutterMarker(false);
-        view.state
-          .field(prismaQueryStateField)
-          .between(line.from, line.to, (from, to) => {
-            if (cursorPos >= from && cursorPos <= to) {
-              marker = new QueryGutterMarker(true);
-            }
-          });
-
-        return marker;
+    cmGutter({
+      lineMarker: (view, line, others) => {
+        return new LineNumberMarker(view.state.doc.lineAt(line.from).number);
       },
     }),
-    // runQueryViewPlugin,
-    queryHighlightPlugin,
-    queryHighlightStyle,
-    keymap.of([
+  ];
+}
+
+export function keymap(): Extension {
+  return [
+    keymapFacet.of([
       {
         key: "Ctrl-Enter",
         mac: "Mod-Enter",

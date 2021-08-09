@@ -6,33 +6,6 @@ import {
 import { EditorView } from "@codemirror/view";
 
 export const queryHighlightStyle = [
-  // Widget theme
-  EditorView.baseTheme({
-    ".cm-gutterElement .cm-prismaQuery": {
-      height: "100%",
-      borderLeft: "3px solid #22C55E" /* green-500 */,
-
-      "&.invisible": {
-        borderLeft: "3px solid transparent",
-      },
-    },
-
-    "&light": {
-      "& .cm-prismaQueryRunButton": {
-        background: "transparent",
-        border: 0,
-        cursor: "pointer",
-        fontSize: "13px",
-        fontFamily: "monospace",
-        color: "#CBD5E1" /* blueGray-300 */,
-
-        "&:hover": {
-          color: "#94A3B8" /* blueGray-400 */,
-        },
-      },
-    },
-  }),
-
   // Syntax highlighting
   // This is a custom highlight style that only highlights Prisma Queries
   classHighlightStyle,

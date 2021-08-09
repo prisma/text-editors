@@ -8,6 +8,11 @@ export const base: Extension = [
     },
     ".cm-scroller": { overflow: "auto" },
     ".cm-gutters": { border: "none" },
+    ".cm-lineNumbers": {
+      "& .cm-gutterElement": {
+        padding: "0 8px 0 0",
+      },
+    },
     ".cm-foldMarker": {
       width: "12px",
       height: "12px",

@@ -30,7 +30,8 @@ export type { FileMap };
 /**
  * This file exports an extension that makes Typescript language services work. This includes:
  *
- * 1. A StateField, that holds an instance of a `TypescriptProject`
+ * 1. A StateField that holds an instance of a `TypescriptProject` (used to communicate with tsserver)
+ * 1. A StateField that stores ranges for lint diagostics (used to cancel hover tooltips if a lint diagnistic is also present at the position)
  * 2. A `javascript` extension, that provides syntax highlighting and other simple JS features.
  * 3. An `autocomplete` extension that provides tsserver-backed completions, powered by the `completionSource` function
  * 4. A `linter` extension that provides tsserver-backed type errors, powered by the `lintDiagnostics` function
@@ -42,7 +43,7 @@ export type { FileMap };
  */
 
 /**
- * An EditorState field that represents the Typescript project that is currently "open" in the EditorView
+ * A State field that represents the Typescript project that is currently "open" in the EditorView
  */
 const tsStateField = StateField.define<TypescriptProject>({
   create(state) {
@@ -50,7 +51,7 @@ const tsStateField = StateField.define<TypescriptProject>({
   },
 
   update(ts, transaction) {
-    // For all transactions that run, this state field's value will only "change" if a `injectTypesEffect` StateEffect is attache to the transaction
+    // For all transactions that run, this state field's value will only "change" if a `injectTypesEffect` StateEffect is attached to the transaction
     transaction.effects.forEach(e => {
       if (e.is(injectTypesEffect)) {
         ts.injectTypes(e.value);
@@ -73,27 +74,35 @@ const completionSource = async (
   ctx: CompletionContext
 ): Promise<CompletionResult | null> => {
   const { state, pos } = ctx;
+  log("called");
 
   const ts = state.field(tsStateField);
-  const completions = (await ts.lang()).getCompletionsAtPosition(
-    ts.entrypoint,
-    pos,
-    {}
-  );
-  if (!completions) {
-    log("Unable to get completions", { pos });
+  try {
+    const completions = (await ts.lang()).getCompletionsAtPosition(
+      ts.entrypoint,
+      pos,
+      {}
+    );
+    if (!completions) {
+      log("Unable to get completions", { pos });
+      return null;
+    }
+
+    const completionResults = completeFromList(
+      completions.entries.map(c => ({
+        type: c.kind,
+        label: c.name,
+        detail: "detail",
+        info: "info",
+        // boost: 1 / distance(c.name, "con"),
+      }))
+    )(ctx);
+
+    return completionResults;
+  } catch (e) {
+    log("Unable to get completions", { pos, error: e });
     return null;
   }
-
-  return completeFromList(
-    completions.entries.map(c => ({
-      type: c.kind,
-      label: c.name,
-      detail: "detail",
-      info: "info",
-      // boost: 1 / distance(c.name, "con"),
-    }))
-  )(ctx);
 };
 
 /**
@@ -130,6 +139,7 @@ const hoverTooltipSource = async (
   pos: number
 ): Promise<Tooltip | null> => {
   const ts = view.state.field(tsStateField);
+
   const quickInfo = (await ts.lang()).getQuickInfoAtPosition(
     ts.entrypoint,
     pos
@@ -186,7 +196,7 @@ export function typescript(config: { code: string }): Extension {
     javascript({ typescript: true, jsx: false }),
     autocompletion({
       activateOnTyping: true,
-      maxRenderedOptions: 50,
+      maxRenderedOptions: 30,
       override: [completionSource],
     }),
     linter(lintDiagnostics),
