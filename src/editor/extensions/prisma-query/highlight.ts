@@ -3,11 +3,21 @@ import {
   HighlightStyle,
   tags,
 } from "@codemirror/highlight";
-import { EditorView } from "@codemirror/view";
+import { RangeSetBuilder } from "@codemirror/rangeset";
+import { Extension } from "@codemirror/state";
+import {
+  Decoration,
+  DecorationSet,
+  EditorView,
+  ViewPlugin,
+  ViewUpdate,
+} from "@codemirror/view";
+import { prismaQueryStateField } from "./state";
 
+/**
+ * This is a custom highlight style that only highlights Prisma Queries
+ */
 export const queryHighlightStyle = [
-  // Syntax highlighting
-  // This is a custom highlight style that only highlights Prisma Queries
   classHighlightStyle,
   HighlightStyle.define([
     // `classHighlightStyle` is a little too generic for some things, so override it in those places
@@ -59,3 +69,56 @@ export const queryHighlightStyle = [
     "&dark": {},
   }),
 ];
+
+/**
+ * Plugin that adds a special class to all lines that are part of a Prisma Query
+ */
+const queryHighlightPlugin = ViewPlugin.fromClass(
+  class {
+    decorations: DecorationSet;
+
+    constructor(view: EditorView) {
+      this.decorations = this.buildDecorations(view);
+    }
+
+    update(viewUpdate: ViewUpdate) {
+      if (viewUpdate.viewportChanged || viewUpdate.docChanged) {
+        this.decorations = this.buildDecorations(viewUpdate.view);
+      }
+    }
+
+    buildDecorations(view: EditorView) {
+      let decorations = new RangeSetBuilder<Decoration>();
+      view.state
+        .field(prismaQueryStateField)
+        .between(view.viewport.from, view.viewport.to, (from, to) => {
+          const lineStart = view.state.doc.lineAt(from);
+          const lineEnd = view.state.doc.lineAt(to);
+
+          new Array(lineEnd.number - lineStart.number + 1)
+            .fill(undefined)
+            .forEach((_, i) => {
+              const line = view.state.doc.line(lineStart.number + i);
+              decorations.add(
+                line.from,
+                line.from,
+                Decoration.line({
+                  attributes: {
+                    class: "cm-prismaQuery",
+                  },
+                })
+              );
+            });
+        });
+
+      return decorations.finish();
+    }
+  },
+  {
+    decorations: value => value.decorations,
+  }
+);
+
+export function highlightStyle(): Extension {
+  return [queryHighlightPlugin, queryHighlightStyle];
+}

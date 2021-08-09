@@ -42,18 +42,19 @@ export class TSEditor extends BaseEditor {
             width,
             height,
           }),
+
           PrismaQuery.gutter(),
           behaviour({
             lineNumbers: false, // We'll let the prismaQuery extension handle line numbers
             onChange: params.onChange,
           }),
           defaultKeymap(),
+          PrismaQuery.lineNumbers(),
 
           typescript({
             code: params.code,
           }),
-          PrismaQuery.track({ onExecute: params.onExecuteQuery }),
-          PrismaQuery.lineNumbers(),
+          PrismaQuery.state({ onExecute: params.onExecuteQuery }),
           PrismaQuery.highlightStyle(),
           PrismaQuery.keymap(),
         ],

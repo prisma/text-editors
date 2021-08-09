@@ -11,6 +11,11 @@ import { EditorState, Extension } from "@codemirror/state";
 import { merge } from "lodash-es";
 import { OnChange, onChangeCallback } from "./change-callback";
 
+const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+
+/**
+ * Convenient bag of useful extensions that control behaviour
+ */
 export const behaviour = (config: {
   lineNumbers?: boolean;
   onChange?: OnChange;
@@ -28,11 +33,8 @@ export const behaviour = (config: {
     foldGutter({
       markerDOM: isOpen => {
         // Feathericons: chevron-down
-        const svg = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "svg"
-        );
-        svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        const svg = document.createElementNS(SVG_NAMESPACE, "svg");
+        svg.setAttribute("xmlns", SVG_NAMESPACE);
         svg.setAttribute("viewBox", "0 0 24 24");
         svg.setAttribute("fill", "none");
         svg.setAttribute("stroke", "currentColor");
@@ -40,10 +42,7 @@ export const behaviour = (config: {
         svg.setAttribute("stroke-linecap", "round");
         svg.setAttribute("stroke-linejoin", "round");
 
-        const polyline = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "polyline"
-        );
+        const polyline = document.createElementNS(SVG_NAMESPACE, "polyline");
         polyline.setAttribute("points", "6 9 12 15 18 9");
 
         svg.appendChild(polyline);

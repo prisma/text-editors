@@ -39,7 +39,7 @@ function irrelevant() {
   let x = 1;
   x += 1
 
-  expect(x, 3)
+  assert(x, 3)
 }
 
 await prisma.$queryRaw(\`SELECT * FROM "Artist" WHERE Name = "Accept"\`)

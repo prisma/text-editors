@@ -16,7 +16,7 @@ export class PrismaQuery extends RangeValue {
 /**
  * Given an EditorState, returns positions of and decorations associated with all Prisma Client queries
  */
-export function getQueries(state: EditorState): RangeSet<PrismaQuery> {
+export function findQueries(state: EditorState): RangeSet<PrismaQuery> {
   const syntax = syntaxTree(state);
 
   let prismaVariableName: string;
