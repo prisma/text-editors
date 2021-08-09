@@ -11,11 +11,8 @@ import {
 type QueryMode = "typescript" | "sql";
 
 const tsCode: string = `import { PrismaClient } from "@prisma/client"
-
-// PrismaClient initialization
 const prisma = new PrismaClient()
 
-// Top level queries
 await prisma.artist.findMany()
 
 await prisma.artist.findMany({
@@ -28,36 +25,24 @@ await prisma.artist.findMany({
 
 await prisma.$queryRaw(\`SELECT * FROM "Album"\`)
 
-// Invalid top-level query
 const result = await prisma.invoice.create({
 	data: {}
 })
 
-async function fn() {
-  // Type error
-  const y = 2
-  y = "test"
+function irrelevant() {
+  const obj = {
+    name: "something"
+  }
 
-  // Query inside function
-  await prisma.genre.findMany()
+  obj["foo"] = "bar"
 
-  // $queryRaw inside function
-  await prisma.$queryRaw(\`SELECT * FROM "Album"\`)
+  let x = 1;
+  x += 1
 
-  // Variable declaration with query
-  const result = await prisma.invoice.create({
-    data: {}
-	})
-
-  return result
+  expect(x, 3)
 }
 
-const arrowFn = async () => {
-  const y = 2
-  
-  // Query inside arrow function
-  await prisma.genre.findMany({ skip: 10 })
-}
+await prisma.$queryRaw(\`SELECT * FROM "Artist" WHERE Name = "Accept"\`)
 `;
 
 const sqlCode: string = `SELECT * FROM Users;
