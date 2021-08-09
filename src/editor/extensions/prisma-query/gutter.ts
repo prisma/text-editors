@@ -1,6 +1,7 @@
 import { gutter as cmGutter, GutterMarker } from "@codemirror/gutter";
 import { Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
+import { isCursorInRange } from "./find-cursor";
 import { prismaQueryStateField } from "./state";
 
 /**
@@ -41,9 +42,6 @@ export function gutter(): Extension {
        * 3. A green line if this line is part of a Prisma Query, and your cursor is on it
        */
       lineMarker: (view, line) => {
-        const cursors = view.state.selection.ranges;
-        const cursor = cursors[0];
-
         // If (beginning of) selection range (aka the cursor) is inside the query, add (visible) markers for all lines in query (and invisible ones for others)
         // Toggling between visible/invisible instead of adding/removing markers makes it so the editor does not jump when a marker is shown as your cursor moves around
         let marker: QueryGutterMarker = new QueryGutterMarker("invisible");
@@ -51,7 +49,7 @@ export function gutter(): Extension {
           .field(prismaQueryStateField)
           .between(line.from, line.to, (from, to) => {
             marker = new QueryGutterMarker("inactive");
-            if (cursor?.from >= from && cursor?.from <= to) {
+            if (isCursorInRange(view.state, from, to)) {
               marker = new QueryGutterMarker("active");
             }
           });
