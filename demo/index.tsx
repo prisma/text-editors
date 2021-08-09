@@ -3,13 +3,10 @@ import ReactDOM from "react-dom";
 import {
   FileMap,
   JSONEditor,
-  PrismaSchemaEditor,
   SQLEditor,
   ThemeName,
   TSEditor,
 } from "../src/lib";
-/* @ts-expect-error */
-import prismaSchema from "./prisma/schema.prisma?raw";
 
 type QueryMode = "typescript" | "sql";
 
@@ -130,8 +127,8 @@ const ReactDemo = () => {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "40px 70% 30%",
-        gridTemplateRows: "calc(50vh - 11px) 22px calc(50vh - 11px)",
+        gridTemplateColumns: "40px 50% 22px 50%",
+        // gridTemplateRows: "calc(50vh - 11px) 22px calc(50vh - 11px)",
         width: "100%",
         height: "100%",
         position: "relative",
@@ -140,7 +137,7 @@ const ReactDemo = () => {
       <div
         style={{
           gridColumn: "1 / 2",
-          gridRow: "1 / -1",
+          // gridRow: "1 / -1",
           boxShadow: "2px 0px 8px #0001",
           zIndex: 2,
           borderRight: "1px solid #E2E8F0",
@@ -174,17 +171,10 @@ const ReactDemo = () => {
         />
       )}
 
-      <PrismaSchemaEditor
-        theme={theme}
-        readonly
-        value={prismaSchema}
-        style={{ gridColumn: "3 / -1" }}
-      />
-
       <div
         style={{
-          gridColumn: "1 / -1",
-          gridRow: "2 / 2",
+          gridColumn: "3 / 4",
+          gridRow: "1 / -1",
           zIndex: 2,
           borderTop: "1px solid #E2E8F0",
           borderBottom: "1px solid #E2E8F0",
@@ -198,10 +188,10 @@ const ReactDemo = () => {
         theme={theme}
         readonly
         value={response}
-        style={{ gridColumn: "2 / -1", gridRow: "3 / -1" }}
+        style={{ gridColumn: "3 / -1", gridRow: "1 / -1" }}
       />
 
-      <div
+      {/* <div
         style={{
           position: "absolute",
           top: 10,
@@ -212,12 +202,12 @@ const ReactDemo = () => {
         onClick={flipTheme}
       >
         🌓
-      </div>
+      </div> */}
       <div
         style={{
           position: "absolute",
           top: 10,
-          right: "calc(29vw + 30px)",
+          right: "calc(50vw - 60px)",
           cursor: "pointer",
           zIndex: 9999999,
         }}
