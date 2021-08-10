@@ -20,7 +20,7 @@ export function runQueryUnderCursor(state: EditorState) {
   let query: string | null = null;
   state
     .field(prismaQueryStateField)
-    .between(firstCursor.from, firstCursor.to, (from, to, q) => {
+    .between(firstCursor.pos, firstCursor.pos, (from, to, q) => {
       query = q.text;
       return false;
     });
