@@ -1,7 +1,6 @@
 import { RangeSet } from "@codemirror/rangeset";
 import { Extension, Facet, StateField } from "@codemirror/state";
-import noop from "lodash-es/noop";
-import over from "lodash-es/over";
+import { noop, over } from "lodash-es";
 import { findQueries, PrismaQuery } from "./find-queries";
 
 /**

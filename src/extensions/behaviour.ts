@@ -8,7 +8,7 @@ import { history } from "@codemirror/history";
 import { indentOnInput } from "@codemirror/language";
 import { bracketMatching } from "@codemirror/matchbrackets";
 import { EditorState, Extension } from "@codemirror/state";
-import merge from "lodash-es/merge";
+import { merge } from "lodash-es";
 import { OnChange, onChangeCallback } from "./change-callback";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
