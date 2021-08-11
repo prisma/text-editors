@@ -6,7 +6,15 @@
       "detail": "Start development server",
       "type": "npm",
       "script": "dev",
-      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "group": "dev",
+        "showReuseMessage": true,
+        "clear": true
+      },
       "problemMatcher": []
     },
     {
@@ -17,11 +25,25 @@
       "problemMatcher": []
     },
     {
-      "label": "tdd",
+      "label": "test:watch",
       "detail": "Start TDD session",
       "type": "npm",
       "script": "test:watch",
-      "dependsOn": ["dev"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "group": "dev",
+        "showReuseMessage": true,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "tdd",
+      "detail": "Start TDD session",
+      "dependsOn": ["dev", "test:watch"],
       "problemMatcher": []
     },
     {
