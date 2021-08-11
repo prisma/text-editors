@@ -4,15 +4,15 @@
   "license": "MIT",
   "scripts": {
     "prepare": "yarn build:types",
-    "dev": "vite",
+    "dev": "yarn vite",
     "test": "yarn playwright test",
     "test:watch": "yarn chokidar \"**/*.ts\" -c \"clear && yarn test\" --silent --initial",
     "build:types": "node ./scripts/build-types.mjs",
     "build:lib": "./scripts/build-lib.sh",
     "build": "yarn build:types && yarn build:lib",
-    "serve": "vite preview",
-    "format": "prettier -w . --ignore-path=.gitignore",
-    "format:check": "prettier -c . --ignore-path=.gitignore",
+    "serve": "yarn vite preview",
+    "format": "yarn prettier -w . --ignore-path=.gitignore",
+    "format:check": "yarn prettier -c . --ignore-path=.gitignore",
     "prepublishOnly": "yarn build"
   },
   "files": [
