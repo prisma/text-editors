@@ -8,7 +8,7 @@ export default {
   forbidOnly: isCI,
   reporter: "list",
   use: {
-    baseURL: "http://localhost:3000/demo/",
+    baseURL: "http://localhost:3000/",
     headless: true, // Change to `false` for debugging
     viewport: { width: 1280, height: 720 },
     video: "retain-on-failure",

@@ -12,7 +12,7 @@ const log = logger("ts-editor", "limegreen");
 
 type TSEditorParams = {
   domElement: Element;
-  code: string;
+  code?: string;
   readonly?: boolean;
   types?: FileMap;
   theme?: ThemeName;
@@ -23,42 +23,48 @@ type TSEditorParams = {
 export class TSEditor extends BaseEditor {
   protected view: EditorView;
 
+  /**
+   * Returns a state-only version of the editor, without mounting the actual view anywhere. Useful for testing.
+   */
+  static state(params: TSEditorParams) {
+    const { width = 300, height = 300 } =
+      params.domElement?.getBoundingClientRect();
+
+    return EditorState.create({
+      doc: params.code || "",
+
+      extensions: [
+        EditorView.editable.of(!params.readonly),
+
+        appearance({
+          theme: params.theme,
+          highlightStyle: "none", // We'll let the prismaQuery extension handle the highlightStyle
+          width,
+          height,
+        }),
+
+        PrismaQuery.gutter(),
+        behaviour({
+          lineNumbers: false, // We'll let the prismaQuery extension handle line numbers
+          onChange: params.onChange,
+        }),
+        defaultKeymap(),
+        PrismaQuery.lineNumbers(),
+
+        typescript(),
+        PrismaQuery.state({ onExecute: params.onExecuteQuery }),
+        PrismaQuery.highlightStyle(),
+        PrismaQuery.keymap(),
+      ],
+    });
+  }
+
   constructor(params: TSEditorParams) {
     super(params);
 
-    const { width, height } = params.domElement.getBoundingClientRect();
-
     this.view = new EditorView({
       parent: params.domElement,
-      state: EditorState.create({
-        doc: params.code,
-
-        extensions: [
-          EditorView.editable.of(!params.readonly),
-
-          appearance({
-            theme: params.theme,
-            highlightStyle: "none", // We'll let the prismaQuery extension handle the highlightStyle
-            width,
-            height,
-          }),
-
-          PrismaQuery.gutter(),
-          behaviour({
-            lineNumbers: false, // We'll let the prismaQuery extension handle line numbers
-            onChange: params.onChange,
-          }),
-          defaultKeymap(),
-          PrismaQuery.lineNumbers(),
-
-          typescript({
-            code: params.code,
-          }),
-          PrismaQuery.state({ onExecute: params.onExecuteQuery }),
-          PrismaQuery.highlightStyle(),
-          PrismaQuery.keymap(),
-        ],
-      }),
+      state: TSEditor.state(params),
     });
 
     log("Initialized");

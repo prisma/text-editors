@@ -189,8 +189,20 @@ export function injectTypes(types: FileMap): TransactionSpec {
   };
 }
 
+/**
+ * A (throttled) function that updates the view of the currently open "file" on TSServer
+ */
+const updateTSFileThrottled = throttle((code: string, view: EditorView) => {
+  log("Commit file change");
+
+  const ts = view.state.field(tsStateField);
+
+  // Don't `await` because we do not want to block
+  ts.env().then(env => env.updateFile(ts.entrypoint, code || " ")); // tsserver deletes the file if the text content is empty; we can't let that happen
+}, 100);
+
 // Export a function that will build & return an Extension
-export function typescript(config: { code: string }): Extension {
+export function typescript(): Extension {
   return [
     tsStateField,
     javascript({ typescript: true, jsx: false }),

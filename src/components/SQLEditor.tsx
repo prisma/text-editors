@@ -58,5 +58,5 @@ export function Editor({
     theme && editor?.setTheme(theme);
   }, [theme]);
 
-  return <div ref={ref} style={style} className={className} />;
+  return <div ref={ref} id="sql-editor" style={style} className={className} />;
 }
