@@ -1,7 +1,7 @@
 name: Tests
-on: [push, pull_request]
+on: [push]
 jobs:
-  Explore-GitHub-Actions:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
