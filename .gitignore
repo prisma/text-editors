@@ -7,5 +7,5 @@ yarn-error.log
 .vercel
 .env
 
-src/editor/extensions/typescript/types
+src/extensions/typescript/types
 demo/public
