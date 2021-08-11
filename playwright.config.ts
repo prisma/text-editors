@@ -6,6 +6,7 @@ export default {
   timeout: 10_000,
   retries: isCI ? 2 : 0,
   forbidOnly: isCI,
+  reporter: "list",
   use: {
     baseURL: "http://localhost:3000/demo/",
     headless: true, // Change to `false` for debugging

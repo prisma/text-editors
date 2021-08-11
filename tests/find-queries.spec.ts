@@ -287,7 +287,7 @@ test.describe("findQueries", () => {
   });
 });
 
-test.describe.only("findQueries", () => {
+test.describe("findQueries", () => {
   test("can find aggregate queries", () => {
     const query = `prisma.user.aggregate({ _count: true })`;
     const state = EditorState.create({

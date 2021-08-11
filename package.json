@@ -5,13 +5,14 @@
   "scripts": {
     "prepare": "yarn build:types",
     "dev": "vite",
-    "test": "yarn playwright test",
-    "test:watch": "yarn chokidar \"**/*.ts\" -c \"clear && yarn test\" --silent --initial",
+    "test": "playwright test",
+    "test:watch": "chokidar \"**/*.ts\" -c \"clear && yarn test\" --silent --initial",
     "build:types": "node ./scripts/build-types.mjs",
     "build:lib": "./scripts/build-lib.sh",
     "build": "yarn build:types && yarn build:lib",
     "serve": "vite preview",
     "format": "prettier -w . --ignore-path=.gitignore",
+    "format:check": "prettier -c . --ignore-path=.gitignore",
     "prepublishOnly": "yarn build"
   },
   "files": [
