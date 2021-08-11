@@ -194,7 +194,6 @@ export function findQueries(state: EditorState): RangeSet<PrismaQuery> {
         queries.add(
           callExpression.from,
           callExpression.to,
-
           new PrismaQuery(
             state.doc.sliceString(callExpression.from, callExpression.to)
           )
