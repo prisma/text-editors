@@ -14,7 +14,7 @@ import {
 } from "@codemirror/state";
 import { hoverTooltip, Tooltip } from "@codemirror/tooltip";
 import { EditorView } from "@codemirror/view";
-import { debounce } from "lodash-es";
+import { throttle } from "lodash-es";
 import {
   DiagnosticCategory,
   displayPartsToString,
@@ -31,13 +31,13 @@ export type { FileMap };
  * This file exports an extension that makes Typescript language services work. This includes:
  *
  * 1. A StateField that holds an instance of a `TypescriptProject` (used to communicate with tsserver)
- * 1. A StateField that stores ranges for lint diagostics (used to cancel hover tooltips if a lint diagnistic is also present at the position)
- * 2. A `javascript` extension, that provides syntax highlighting and other simple JS features.
- * 3. An `autocomplete` extension that provides tsserver-backed completions, powered by the `completionSource` function
- * 4. A `linter` extension that provides tsserver-backed type errors, powered by the `lintDiagnostics` function
- * 5. A `hoverTooltip` extension that provides tsserver-backed type information on hover, powered by the `hoverTooltip` function
- * 6. An `updateListener` (facet) extension, that ensures that the editor's view is kept in sync with tsserver's view of the file
- * 7. A StateEffect that lets a consumer inject custom types into the `TypescriptProject`
+ * 2. A StateField that stores ranges for lint diagostics (used to cancel hover tooltips if a lint diagnistic is also present at the position)
+ * 3. A `javascript` extension, that provides syntax highlighting and other simple JS features.
+ * 4. An `autocomplete` extension that provides tsserver-backed completions, powered by the `completionSource` function
+ * 5. A `linter` extension that provides tsserver-backed type errors, powered by the `lintDiagnostics` function
+ * 6. A `hoverTooltip` extension that provides tsserver-backed type information on hover, powered by the `hoverTooltip` function
+ * 7. An `updateListener` (facet) extension, that ensures that the editor's view is kept in sync with tsserver's view of the file
+ * 8. A StateEffect that lets a consumer inject custom types into the `TypescriptProject`
  *
  * The "correct" way to read this file is from bottom to top.
  */
@@ -54,6 +54,7 @@ const tsStateField = StateField.define<TypescriptProject>({
     // For all transactions that run, this state field's value will only "change" if a `injectTypesEffect` StateEffect is attached to the transaction
     transaction.effects.forEach(e => {
       if (e.is(injectTypesEffect)) {
+        log("Injecting additional types: ", Object.keys(e.value).join(", "));
         ts.injectTypes(e.value);
       }
     });
@@ -74,8 +75,6 @@ const completionSource = async (
   ctx: CompletionContext
 ): Promise<CompletionResult | null> => {
   const { state, pos } = ctx;
-  log("called");
-
   const ts = state.field(tsStateField);
   try {
     const completions = (await ts.lang()).getCompletionsAtPosition(
@@ -168,18 +167,6 @@ const hoverTooltipSource = async (
 };
 
 /**
- * A (debounced) function that updates the view of the currently open "file" on TSServer
- */
-const updateTSFileDebounced = debounce((code: string, view: EditorView) => {
-  log("Commit file change");
-
-  const ts = view.state.field(tsStateField);
-
-  // Don't `await` because we do not want to block
-  ts.env().then(env => env.updateFile(ts.entrypoint, code));
-}, 100);
-
-/**
  * A StateEffect that can be dispatched to forcefully re-compute lint diagnostics
  */
 const injectTypesEffect = StateEffect.define<FileMap>();
@@ -215,13 +202,18 @@ export function typescript(): Extension {
     hoverTooltip(hoverTooltipSource, {
       hideOnChange: true,
     }),
-    onChangeCallback((code: string, view: EditorView) => {
+    EditorView.updateListener.of(({ view, docChanged }) => {
+      // We're not doing this in the `onChangeCallback` extension because we do not want TS file updates to be debounced
+
+      if (docChanged) {
+        // Update tsserver's view of this file
+        updateTSFileThrottled(view.state.sliceDoc(0), view);
+      }
+    }),
+    onChangeCallback((_code, view) => {
       // No need to debounce here because this callback is already debounced
 
-      // Update tsserver's view of this file
-      updateTSFileDebounced(code, view);
-
-      // Then re-compute lint diagnostics via tsserver
+      // Re-compute lint diagnostics via tsserver
       lintDiagnostics(view).then(diagnostics => {
         view.dispatch(setDiagnostics(view.state, diagnostics));
       });
