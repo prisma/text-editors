@@ -2,34 +2,49 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "dev",
+      "detail": "Start development server",
       "type": "npm",
       "script": "dev",
-      "problemMatcher": [],
-      "label": "dev",
-      "detail": "Start development server"
+      "isBackground": true,
+      "problemMatcher": []
     },
     {
+      "label": "test",
+      "detail": "Run tests",
+      "type": "npm",
+      "script": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "tdd",
+      "detail": "Start TDD session",
+      "type": "npm",
+      "script": "test:watch",
+      "dependsOn": ["dev"],
+      "problemMatcher": []
+    },
+    {
+      "label": "build:lib",
+      "detail": "Build library",
       "type": "npm",
       "script": "build:lib",
-      "problemMatcher": [],
-      "label": "build:lib",
-      "detail": "Build library"
+      "problemMatcher": []
     },
     {
+      "label": "build:demo",
+      "detail": "Build demo",
       "type": "npm",
       "script": "build",
       "path": "demo",
-      "problemMatcher": [],
-      "label": "build:demo",
-      "detail": "Build demo"
+      "problemMatcher": []
     },
     {
+      "label": "deploy",
+      "detail": "Deploy demo",
       "type": "npm",
       "script": "deploy",
-      "path": "",
-      "problemMatcher": [],
-      "label": "deploy",
-      "detail": "Deploy demo"
+      "problemMatcher": []
     }
   ]
 }
