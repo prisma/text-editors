@@ -1,6 +1,8 @@
 import { Extension, Facet } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { debounce, noop, over } from "lodash-es";
+import debounce from "lodash-es/debounce";
+import noop from "lodash-es/noop";
+import over from "lodash-es/over";
 
 /**
  * A Facet that stores all registered `onChange` callbacks

@@ -14,7 +14,7 @@ import {
 } from "@codemirror/state";
 import { hoverTooltip, Tooltip } from "@codemirror/tooltip";
 import { EditorView } from "@codemirror/view";
-import { throttle } from "lodash-es";
+import throttle from "lodash-es/throttle";
 import {
   DiagnosticCategory,
   displayPartsToString,
