@@ -12,6 +12,7 @@
     "build": "yarn build:types && yarn build:lib",
     "serve": "vite preview",
     "format": "prettier -w . --ignore-path=.gitignore",
+    "format:check": "prettier -c . --ignore-path=.gitignore",
     "prepublishOnly": "yarn build"
   },
   "files": [
