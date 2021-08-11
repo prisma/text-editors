@@ -1,12 +1,12 @@
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
+import { appearance, setTheme, ThemeName } from "../extensions/appearance";
+import { behaviour } from "../extensions/behaviour";
+import { keymap as defaultKeymap } from "../extensions/keymap";
+import * as PrismaQuery from "../extensions/prisma-query";
+import { FileMap, injectTypes, typescript } from "../extensions/typescript";
 import { logger } from "../logger";
 import { BaseEditor } from "./base-editor";
-import { appearance, setTheme, ThemeName } from "./extensions/appearance";
-import { behaviour } from "./extensions/behaviour";
-import { keymap as defaultKeymap } from "./extensions/keymap";
-import * as PrismaQuery from "./extensions/prisma-query";
-import { FileMap, injectTypes, typescript } from "./extensions/typescript";
 
 const log = logger("ts-editor", "limegreen");
 

@@ -5,7 +5,7 @@ import {
   setHighlightStyle,
   setTheme,
   ThemeName,
-} from "./extensions/appearance";
+} from "../extensions/appearance";
 
 type BaseEditorParams = {
   domElement: Element;

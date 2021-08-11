@@ -1,7 +1,7 @@
 import { javascript } from "@codemirror/lang-javascript";
 import { EditorState } from "@codemirror/state";
 import { expect, test } from "@playwright/test";
-import { findQueries } from "../src/editor/extensions/prisma-query/find-queries";
+import { findQueries } from "../src/extensions/prisma-query/find-queries";
 
 const prismaClientImport = `import { PrismaClient } from '@prisma/client'\nconst prisma = new PrismaClient()\n`;
 const modelQuery = `prisma.user.findUnique({ where: { id: 1 } })`;

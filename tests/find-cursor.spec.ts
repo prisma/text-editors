@@ -8,7 +8,7 @@ import { expect, test } from "@playwright/test";
 import {
   findFirstCursor,
   isCursorInRange,
-} from "../src/editor/extensions/prisma-query/find-cursor";
+} from "../src/extensions/prisma-query/find-cursor";
 
 function editorState(extensions: Extension = []) {
   return EditorState.create({

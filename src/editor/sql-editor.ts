@@ -9,11 +9,11 @@ import {
 } from "@codemirror/lang-sql";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
+import { appearance, ThemeName } from "../extensions/appearance";
+import { behaviour } from "../extensions/behaviour";
+import { keymap } from "../extensions/keymap";
 import { logger } from "../logger";
 import { BaseEditor } from "./base-editor";
-import { appearance, ThemeName } from "./extensions/appearance";
-import { behaviour } from "./extensions/behaviour";
-import { keymap } from "./extensions/keymap";
 
 const log = logger("sql-editor", "aquamarine");
 
