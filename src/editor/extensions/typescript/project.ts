@@ -30,7 +30,7 @@ export class TypescriptProject {
 
   constructor(entrypointFileContent: string) {
     this.fs = new TSFS();
-    this.fs.fs.set(TS_PROJECT_ENTRYPOINT, entrypointFileContent);
+    this.fs.fs.set(TS_PROJECT_ENTRYPOINT, entrypointFileContent || " "); // tsserver ignores files with empty content, so give it something in case `entrypointFileContent` is empty
     this.state = "procrastinating";
     this.initPromise = undefined;
   }
