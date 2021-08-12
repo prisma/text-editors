@@ -1,9 +1,20 @@
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
+import React, {
+  CSSProperties,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { JSONEditor as Editor, ThemeName } from "../editor";
 
 export type JSONEditorProps = {
-  /** (Controlled) Value of the editor */
-  value: string;
+  /** Initial value of the editor when it is first loaded */
+  initialValue: string;
+  /** (Controlled) Value of the editor.
+   * Be careful when using this, this will force the editor to be redrawn from scratch.
+   * Typically, you should only react to changes to the value by subscribing to `onChange`, and let the editor own the `value`.
+   */
+  value?: string;
   /** Controls if the editor is readonly */
   readonly?: boolean;
   /** Theme for the editor */
@@ -17,6 +28,7 @@ export type JSONEditorProps = {
 };
 
 export function JSONEditor({
+  initialValue,
   value,
   readonly,
   theme,
@@ -31,7 +43,7 @@ export function JSONEditor({
   useEffect(() => {
     const jsonEditor = new Editor({
       domElement: ref.current!, // `!` is fine because this will run after the component has mounted
-      code: value,
+      code: initialValue,
       readonly,
       theme,
       onChange,
@@ -55,7 +67,7 @@ export function JSONEditor({
   }, [theme]);
 
   // Ensures `dimensions` given to this component are always reflected in the editor
-  useEffect(() => {
+  useLayoutEffect(() => {
     editor?.setDimensions();
   }, [className, style]);
 

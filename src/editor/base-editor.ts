@@ -32,7 +32,7 @@ export abstract class BaseEditor {
     this.view.dispatch(setHighlightStyle(theme));
   };
 
-  public forceUpdate = (code: string) => {
+  public forceUpdate = (code: string = "") => {
     this.view.dispatch({
       changes: [
         { from: 0, to: this.view.state.doc.length },
