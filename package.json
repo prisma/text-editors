@@ -1,6 +1,6 @@
 {
   "name": "@prisma/text-editors",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
     "prepare": "yarn build:types",
@@ -17,12 +17,7 @@
   "files": [
     "dist"
   ],
-  "exports": {
-    ".": {
-      "import": "./dist/editors.es.js",
-      "require": "./dist/editors.umd.js"
-    }
-  },
+  "exports": "./dist/editors.es.js",
   "types": "./dist/types/lib.d.ts",
   "dependencies": {},
   "devDependencies": {
