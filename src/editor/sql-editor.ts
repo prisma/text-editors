@@ -36,7 +36,6 @@ export class SQLEditor extends BaseEditor {
    * Returns a state-only version of the editor, without mounting the actual view anywhere. Useful for testing.
    */
   static state(params: SQLEditorParams) {
-    const { width, height } = params.domElement?.getBoundingClientRect();
     const sqlDialect = getSqlDialect(params.dialect);
 
     return EditorState.create({
@@ -51,7 +50,7 @@ export class SQLEditor extends BaseEditor {
         }),
         keywordCompletion(sqlDialect, true),
 
-        appearance({ theme: params.theme, width, height }),
+        appearance({ domElement: params.domElement, theme: params.theme }),
         behaviour({ onChange: params.onChange }),
         keymap(),
       ],

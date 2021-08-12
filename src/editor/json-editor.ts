@@ -25,7 +25,6 @@ export class JSONEditor extends BaseEditor {
    * Returns a state-only version of the editor, without mounting the actual view anywhere. Useful for testing.
    */
   static state(params: JSONEditorParams) {
-    const { width, height } = params.domElement?.getBoundingClientRect();
     return EditorState.create({
       doc: params.code,
 
@@ -34,7 +33,7 @@ export class JSONEditor extends BaseEditor {
         json(),
         linter(jsonParseLinter()),
 
-        appearance({ theme: params.theme, width, height }),
+        appearance({ domElement: params.domElement, theme: params.theme }),
         behaviour({ onChange: params.onChange }),
         keymap(),
       ],

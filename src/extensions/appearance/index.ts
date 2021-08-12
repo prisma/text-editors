@@ -4,6 +4,7 @@ import {
   highlightActiveLine,
   highlightSpecialChars,
 } from "@codemirror/view";
+import merge from "lodash/merge";
 import {
   highlightStyle as darkHighlightStyle,
   theme as darkTheme,
@@ -68,16 +69,19 @@ export const setDimensions = (
 };
 
 export const appearance = ({
+  domElement,
   theme,
   highlightStyle,
-  width,
-  height,
 }: {
+  domElement?: Element;
   theme?: ThemeName;
   highlightStyle?: HighlightStyle;
-  width?: number;
-  height?: number;
 }): Extension => {
+  const { width, height } = merge(
+    { width: 300, height: 300 },
+    domElement?.getBoundingClientRect()
+  );
+
   return [
     dimensionsCompartment.of(
       EditorView.editorAttributes.of({

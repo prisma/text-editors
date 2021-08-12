@@ -23,15 +23,13 @@ export class PrismaSchemaEditor extends BaseEditor {
    * Returns a state-only version of the editor, without mounting the actual view anywhere. Useful for testing.
    */
   static state(params: PrismaSchemaEditorParams) {
-    const { width, height } = params.domElement?.getBoundingClientRect();
-
     return EditorState.create({
       doc: params.code || "",
 
       extensions: [
         EditorView.editable.of(!params.readonly),
 
-        appearance({ theme: params.theme, width, height }),
+        appearance({ domElement: params.domElement, theme: params.theme }),
         behaviour({ onChange: params.onChange }),
         keymap(),
       ],

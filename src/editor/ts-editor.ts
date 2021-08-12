@@ -27,8 +27,6 @@ export class TSEditor extends BaseEditor {
    * Returns a state-only version of the editor, without mounting the actual view anywhere. Useful for testing.
    */
   static state(params: TSEditorParams) {
-    const { width, height } = params.domElement?.getBoundingClientRect();
-
     return EditorState.create({
       doc: params.code || "",
 
@@ -36,10 +34,9 @@ export class TSEditor extends BaseEditor {
         EditorView.editable.of(!params.readonly),
 
         appearance({
+          domElement: params.domElement,
           theme: params.theme,
           highlightStyle: "none", // We'll let the prismaQuery extension handle the highlightStyle
-          width,
-          height,
         }),
 
         PrismaQuery.gutter(),
