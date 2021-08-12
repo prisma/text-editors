@@ -22,7 +22,7 @@ export abstract class BaseEditor {
     window.addEventListener("resize", onResizeThrottled);
   }
 
-  protected setDimensions = () => {
+  public setDimensions = () => {
     const dimensions = this.domElement.getBoundingClientRect();
     this.view.dispatch(setDimensions(dimensions.width, dimensions.height));
   };

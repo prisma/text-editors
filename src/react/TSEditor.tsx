@@ -67,5 +67,12 @@ export function TSEditor({
     editor?.setTheme(theme);
   }, [theme]);
 
-  return <div ref={ref} id="ts-editor" style={style} className={className} />;
+  // Ensures `dimensions` given to this component are always reflected in the editor
+  useEffect(() => {
+    editor?.setDimensions();
+  }, [className, style]);
+
+  return (
+    <section ref={ref} id="ts-editor" style={style} className={className} />
+  );
 }

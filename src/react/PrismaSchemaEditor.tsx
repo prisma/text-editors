@@ -54,8 +54,13 @@ export function PrismaSchemaEditor({
     editor?.setTheme(theme);
   }, [theme]);
 
+  // Ensures `dimensions` given to this component are always reflected in the editor
+  useEffect(() => {
+    editor?.setDimensions();
+  }, [className, style]);
+
   return (
-    <div
+    <section
       ref={ref}
       id="prisma-schema-editor"
       style={style}
