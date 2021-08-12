@@ -1,5 +1,5 @@
 import { EditorView } from "@codemirror/view";
-import { throttle } from "lodash-es";
+import throttle from "lodash/throttle";
 import {
   setDimensions,
   setHighlightStyle,
