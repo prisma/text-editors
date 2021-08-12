@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useRef, useState } from "react";
-import { SQLEditor, ThemeName } from "../editor";
+import { SQLEditor as Editor, ThemeName } from "../editor";
 
-type EditorProps = {
+export type SQLEditorProps = {
   /** (Controlled) Value of the editor */
   value: string;
   /** Controls if the editor is readonly */
@@ -18,7 +18,7 @@ type EditorProps = {
   onExecuteQuery?: (query: string) => void;
 };
 
-export function Editor({
+export function SQLEditor({
   value,
   readonly,
   theme,
@@ -26,13 +26,13 @@ export function Editor({
   className,
   onChange,
   onExecuteQuery,
-}: EditorProps) {
+}: SQLEditorProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [editor, setEditor] = useState<SQLEditor>();
+  const [editor, setEditor] = useState<Editor>();
 
   // Handles editor lifecycle
   useEffect(() => {
-    const sqlEditor = new SQLEditor({
+    const sqlEditor = new Editor({
       domElement: ref.current!, // `!` is fine because this will run after the component has mounted
       code: value,
       readonly,

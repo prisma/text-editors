@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useRef, useState } from "react";
-import { FileMap, ThemeName, TSEditor } from "../editor";
+import { FileMap, ThemeName, TSEditor as Editor } from "../editor";
 
-type EditorProps = {
+export type TSEditorProps = {
   /** (Controlled) Value of the editor */
   value: string;
   /** Controls if the editor is readonly */
@@ -20,7 +20,7 @@ type EditorProps = {
   onExecuteQuery?: (query: string) => void;
 };
 
-export function Editor({
+export function TSEditor({
   value,
   readonly,
   types,
@@ -29,13 +29,13 @@ export function Editor({
   className,
   onChange,
   onExecuteQuery,
-}: EditorProps) {
+}: TSEditorProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [editor, setEditor] = useState<TSEditor>();
+  const [editor, setEditor] = useState<Editor>();
 
   // Handles editor lifecycle
   useEffect(() => {
-    const tsEditor = new TSEditor({
+    const tsEditor = new Editor({
       domElement: ref.current!, // `!` is fine because this will run after the component has mounted
       code: value,
       readonly,

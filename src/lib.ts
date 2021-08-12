@@ -1,5 +1,9 @@
 export type { FileMap, SQLDialect, ThemeName } from "./editor";
-export { Editor as JSONEditor } from "./react/JSONEditor";
-export { Editor as PrismaSchemaEditor } from "./react/PrismaSchemaEditor";
-export { Editor as SQLEditor } from "./react/SQLEditor";
-export { Editor as TSEditor } from "./react/TSEditor";
+export { JSONEditor } from "./react/JSONEditor";
+export type { JSONEditorProps } from "./react/JSONEditor";
+export { PrismaSchemaEditor } from "./react/PrismaSchemaEditor";
+export type { PrismaSchemaEditorProps } from "./react/PrismaSchemaEditor";
+export { SQLEditor } from "./react/SQLEditor";
+export type { SQLEditorProps } from "./react/SQLEditor";
+export { TSEditor } from "./react/TSEditor";
+export type { TSEditorProps } from "./react/TSEditor";

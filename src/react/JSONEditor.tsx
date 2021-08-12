@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useRef, useState } from "react";
-import { JSONEditor, ThemeName } from "../editor";
+import { JSONEditor as Editor, ThemeName } from "../editor";
 
-type EditorProps = {
+export type JSONEditorProps = {
   /** (Controlled) Value of the editor */
   value: string;
   /** Controls if the editor is readonly */
@@ -16,20 +16,20 @@ type EditorProps = {
   onChange?: (value: string) => void;
 };
 
-export function Editor({
+export function JSONEditor({
   value,
   readonly,
   theme,
   style,
   className,
   onChange,
-}: EditorProps) {
+}: JSONEditorProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [editor, setEditor] = useState<JSONEditor>();
+  const [editor, setEditor] = useState<Editor>();
 
   // Handles editor lifecycle
   useEffect(() => {
-    const jsonEditor = new JSONEditor({
+    const jsonEditor = new Editor({
       domElement: ref.current!, // `!` is fine because this will run after the component has mounted
       code: value,
       readonly,
