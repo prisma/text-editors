@@ -17,7 +17,12 @@
   "files": [
     "dist"
   ],
-  "exports": "./dist/editors.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/editors.es.js",
+      "require": "./dist/editors.cjs.js"
+    }
+  },
   "types": "./dist/types/lib.d.ts",
   "dependencies": {},
   "devDependencies": {

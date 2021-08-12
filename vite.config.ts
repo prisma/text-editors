@@ -7,8 +7,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, "src/lib.ts"),
-      name: "PrismaEditors",
-      formats: ["es"],
+      formats: ["es", "cjs"],
       fileName: format => `editors.${format}.js`,
     },
     rollupOptions: {
