@@ -27,7 +27,7 @@ export abstract class BaseEditor {
     this.view.dispatch(setDimensions(dimensions.width, dimensions.height));
   };
 
-  public setTheme = (theme: ThemeName) => {
+  public setTheme = (theme?: ThemeName) => {
     this.view.dispatch(setTheme(theme));
     this.view.dispatch(setHighlightStyle(theme));
   };

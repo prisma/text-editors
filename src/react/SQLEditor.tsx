@@ -55,7 +55,7 @@ export function SQLEditor({
 
   // Ensures `theme` given to this component is always reflected in the editor
   useEffect(() => {
-    theme && editor?.setTheme(theme);
+    editor?.setTheme(theme);
   }, [theme]);
 
   return <div ref={ref} id="sql-editor" style={style} className={className} />;

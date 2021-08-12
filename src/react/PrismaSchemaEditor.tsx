@@ -51,7 +51,7 @@ export function PrismaSchemaEditor({
 
   // Ensures `theme` given to this component is always reflected in the editor
   useEffect(() => {
-    theme && editor?.setTheme(theme);
+    editor?.setTheme(theme);
   }, [theme]);
 
   return (

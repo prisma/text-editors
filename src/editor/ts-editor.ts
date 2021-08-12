@@ -67,7 +67,7 @@ export class TSEditor extends BaseEditor {
   }
 
   /** @override */
-  public setTheme = (theme: ThemeName) => {
+  public setTheme = (theme?: ThemeName) => {
     // Override the `setTheme` method to make sure `highlightStyle` never changes from "none"
     this.view.dispatch(setTheme(theme));
   };

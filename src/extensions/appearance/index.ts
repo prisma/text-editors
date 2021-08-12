@@ -21,7 +21,7 @@ const dimensionsCompartment = new Compartment();
 const themeCompartment = new Compartment();
 const highlightStyleCompartment = new Compartment();
 
-const getThemeExtension = (t: ThemeName): Extension => {
+const getThemeExtension = (t: ThemeName = "light"): Extension => {
   if (t === "light") {
     return lightTheme;
   } else {
@@ -29,7 +29,7 @@ const getThemeExtension = (t: ThemeName): Extension => {
   }
 };
 
-const getHighlightStyleExtension = (h: HighlightStyle): Extension => {
+const getHighlightStyleExtension = (h: HighlightStyle = "light"): Extension => {
   if (h === "light") {
     return lightHighlightStyle;
   } else if (h === "dark") {
@@ -39,14 +39,14 @@ const getHighlightStyleExtension = (h: HighlightStyle): Extension => {
   }
 };
 
-export const setTheme = (theme: ThemeName): TransactionSpec => {
+export const setTheme = (theme?: ThemeName): TransactionSpec => {
   return {
     effects: themeCompartment.reconfigure(getThemeExtension(theme)),
   };
 };
 
 export const setHighlightStyle = (
-  highlightStyle: HighlightStyle
+  highlightStyle?: HighlightStyle
 ): TransactionSpec => {
   return {
     effects: highlightStyleCompartment.reconfigure(
@@ -88,9 +88,9 @@ export const appearance = ({
         style: `width: ${width || 300}px; height: ${height || 300}px`,
       })
     ),
-    themeCompartment.of(getThemeExtension(theme || "light")),
+    themeCompartment.of(getThemeExtension(theme)),
     highlightStyleCompartment.of(
-      getHighlightStyleExtension(highlightStyle || theme || "light")
+      getHighlightStyleExtension(highlightStyle || theme)
     ),
     highlightSpecialChars(),
     highlightActiveLine(),
