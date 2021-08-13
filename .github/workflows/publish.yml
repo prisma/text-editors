@@ -1,7 +1,7 @@
 name: Publish NPM Package
 on:
   workflow_run:
-    workflows: ["CI", "Code Style"]
+    workflows: ["CI"]
     branches: [main]
     types:
       - completed
@@ -21,6 +21,6 @@ jobs:
       - name: Install dependencies
         run: yarn
       - name: Publish
-        run: yarn publish --patch
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
