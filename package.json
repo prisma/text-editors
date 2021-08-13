@@ -1,6 +1,10 @@
 {
   "name": "@prisma/text-editors",
   "version": "0.0.3",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/prisma/text-editors.git"
+  },
   "license": "MIT",
   "scripts": {
     "prepare": "yarn build:types",
