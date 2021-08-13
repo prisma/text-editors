@@ -801,11 +801,6 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.172.tgz#aad774c28e7bfd7a67de25408e03ee5a8c3d028a"
   integrity sha512-/BHF5HAx3em7/KkzVKm3LrsD6HZAXuXO1AJZQ3cRRBZj4oHZDviWPYu0aEplAqDFNHZPW6d3G7KN+ONcCCC7pw==
 
-"@types/lz-string@1.3.34":
-  version "1.3.34"
-  resolved "https://registry.yarnpkg.com/@types/lz-string/-/lz-string-1.3.34.tgz#69bfadde419314b4a374bf2c8e58659c035ed0a5"
-  integrity sha512-j6G1e8DULJx3ONf6NdR5JiR2ZY3K3PaaqiEuKYkLQO0Czfi1AzrtjfnfCROyWGeDd5IVMKCwsgSmMip9OWijow==
-
 "@types/node@*":
   version "16.4.10"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.4.10.tgz#e57e2a54fc6da58da94b3571b1cb456d39f88597"
@@ -1543,6 +1538,11 @@ https-proxy-agent@^5.0.0:
     agent-base "6"
     debug "4"
 
+immediate@~3.0.5:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
+  integrity sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=
+
 import-lazy@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/import-lazy/-/import-lazy-2.1.0.tgz#05698e3d45c88e8d7e9d92cb0584e77f096f3e43"
@@ -1769,6 +1769,20 @@ lezer@^0.13.0, lezer@^0.13.4:
   dependencies:
     lezer-tree "^0.13.2"
 
+lie@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/lie/-/lie-3.1.1.tgz#9a436b2cc7746ca59de7a41fa469b3efb76bd87e"
+  integrity sha1-mkNrLMd0bKWd56QfpGmz77dr2H4=
+  dependencies:
+    immediate "~3.0.5"
+
+localforage@1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.9.0.tgz#f3e4d32a8300b362b4634cc4e066d9d00d2f09d1"
+  integrity sha512-rR1oyNrKulpe+VM9cYmcFn6tsHuokyVHFaCM3+osEmxaHTbEk8oQu6eGDfS6DQLWi/N67XRmB8ECG37OES368g==
+  dependencies:
+    lie "3.1.1"
+
 locate-path@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/locate-path/-/locate-path-3.0.0.tgz#dbec3b3ab759758071b58fe59fc41871af21400e"
@@ -1808,11 +1822,6 @@ lowercase-keys@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/lowercase-keys/-/lowercase-keys-2.0.0.tgz#2603e78b7b4b0006cbca2fbcc8a3202558ac9479"
   integrity sha512-tqNXrS78oMOE73NMxK4EMLQsQowWf8jKooH9g7xPavRT706R6bkQJ6DY2Te7QukaZsulxa30wQ7bk0pm4XiHmA==
-
-lz-string@1.4.4:
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/lz-string/-/lz-string-1.4.4.tgz#c0d8eaf36059f705796e1e344811cf4c498d3a26"
-  integrity sha1-wNjq82BZ9wV5bh40SBHPTEmNOiY=
 
 make-dir@^3.0.0:
   version "3.1.0"

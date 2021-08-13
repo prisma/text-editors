@@ -1,4 +1,4 @@
-import { compressToUTF16, decompressFromUTF16 } from "lz-string";
+import localforage from "localforage";
 import { log } from "./log";
 
 type LibName = "typescript" | "@types/node";
@@ -34,7 +34,7 @@ export class TSFS {
 
     // The metadata tells us the version of the library, and gives us a list of file names in the library.
     // If our cache already has this version of the library:
-    // 1. We iterate over the file names in that library and fetch file contents from `localStorage` (compressed).
+    // 1. We iterate over the file names in that library and fetch file contents from DB (compressed).
     // 2. We iterate over the file names in taht library and call the callback function for every (fileName, fileContent) pair
     //
     // If our cache does not have this version of the library:
@@ -44,29 +44,23 @@ export class TSFS {
     // 4. We iterate over the files we just fetched and call the callback for every (fileName, fileContent) pair
 
     const isCached =
-      localStorage.getItem(`ts-lib/${libName}/_version`) === meta.version;
+      (await localforage.getItem(`ts-lib/${libName}/_version`)) ===
+      meta.version;
 
     // TODO:: Integrity checks?
     if (isCached) {
       log(`Injecting ${libName} ${meta.version} from cache`);
-      meta.files.forEach(f => {
-        cb(
-          f,
-          decompressFromUTF16(
-            localStorage.getItem(`ts-lib/${libName}/${meta.version}/${f}`)!
-          )!
-        );
-      });
+      const fileNames = meta.files;
+      const fileContents = (await Promise.all(
+        fileNames.map(f =>
+          localforage.getItem<string>(`ts-lib/${libName}/${meta.version}/${f}`)
+        )
+      )) as string[]; // type-cast is olay because we know this file should exist
+
+      fileNames.forEach((name, i) => cb(name, fileContents[i]));
     } else {
-      // Remove anything that isn't from this version
-      Object.keys(localStorage).forEach(function (key) {
-        if (
-          key.startsWith(`ts-lib/${libName}`) &&
-          !key.startsWith(`ts-lib/${libName}/${meta.version}`)
-        ) {
-          localStorage.removeItem(key);
-        }
-      });
+      // Remove everything, we'll download types and cache them
+      await localforage.clear();
 
       log(`Downloading & Injecting ${libName} ${meta.version}`);
 
@@ -76,15 +70,22 @@ export class TSFS {
           ? await import("./types/typescript/data.js")
           : await import("./types/@types/node/data.js");
 
-      // Add new things to `localStorage`
-      localStorage.setItem(`ts-lib/${libName}/_version`, meta.version);
-      Object.entries(data.files).forEach(([name, content]) => {
-        localStorage.setItem(
-          `ts-lib/${libName}/${data.version}/${name}`,
-          compressToUTF16(content)
-        );
-        cb(name, content);
-      });
+      // Add new things to DB
+      const files = Object.entries(data.files);
+
+      // First, call the callback for all these files to unblock the caller
+      files.forEach(([name, content]) => cb(name, content));
+
+      // Then, persist these file contents in DB
+      await Promise.all([
+        localforage.setItem(`ts-lib/${libName}/_version`, meta.version),
+        ...files.map(([name, content]) =>
+          localforage.setItem(
+            `ts-lib/${libName}/${data.version}/${name}`,
+            content
+          )
+        ),
+      ]);
     }
   };
 

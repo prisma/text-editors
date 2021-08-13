@@ -81,7 +81,6 @@ export function TSEditor({
 
   // Ensures `dimensions` given to this component are always reflected in the editor
   useLayoutEffect(() => {
-    console.log("setting dimensions");
     editor?.setDimensions();
   }, [className, style]);
 
