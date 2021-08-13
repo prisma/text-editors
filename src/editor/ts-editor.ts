@@ -4,7 +4,12 @@ import { appearance, setTheme, ThemeName } from "../extensions/appearance";
 import { behaviour } from "../extensions/behaviour";
 import { keymap as defaultKeymap } from "../extensions/keymap";
 import * as PrismaQuery from "../extensions/prisma-query";
-import { FileMap, injectTypes, typescript } from "../extensions/typescript";
+import {
+  FileMap,
+  injectTypes,
+  setDiagnostics,
+  typescript,
+} from "../extensions/typescript";
 import { logger } from "../logger";
 import { BaseEditor } from "./base-editor";
 
@@ -72,7 +77,8 @@ export class TSEditor extends BaseEditor {
     this.view.dispatch(setTheme(theme));
   };
 
-  public injectTypes = (types: FileMap) => {
+  public injectTypes = async (types: FileMap) => {
     this.view.dispatch(injectTypes(types));
+    this.view.dispatch(await setDiagnostics(this.view.state));
   };
 }

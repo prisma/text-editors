@@ -58,18 +58,13 @@ export class TypescriptProject {
     this.state = "ready";
   }
 
-  public injectTypes(types: FileMap) {
-    Object.entries(types).forEach(([name, content]) => {
-      if (this.tsserver) {
-        log("Injecting types to tsserver");
-        // if tsserver has initialized, we must add files to it, modifying the FS will do nothing
-        this.tsserver.createFile(name, content);
-      } else {
-        log("Injecting types to fs");
-        // If tsserver has not initialized yet, we can add these types to the FS directly
-        this.fs.fs.set(name, content);
-      }
-    });
+  public async injectTypes(types: FileMap) {
+    const ts = await this.env();
+    for (const [name, content] of Object.entries(types)) {
+      log(`Injecting types for ${name} to tsserver`);
+      // if tsserver has initialized, we must add files to it, modifying the FS will do nothing
+      ts.createFile(name, content);
+    }
   }
 
   public async env(): Promise<VirtualTypeScriptEnvironment> {

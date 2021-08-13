@@ -5,8 +5,13 @@ import {
   CompletionResult,
 } from "@codemirror/autocomplete";
 import { javascript } from "@codemirror/lang-javascript";
-import { Diagnostic, linter, setDiagnostics } from "@codemirror/lint";
 import {
+  Diagnostic,
+  linter,
+  setDiagnostics as cmSetDiagnostics,
+} from "@codemirror/lint";
+import {
+  EditorState,
   Extension,
   StateEffect,
   StateField,
@@ -54,7 +59,6 @@ const tsStateField = StateField.define<TypescriptProject>({
     // For all transactions that run, this state field's value will only "change" if a `injectTypesEffect` StateEffect is attached to the transaction
     transaction.effects.forEach(e => {
       if (e.is(injectTypesEffect)) {
-        log("Injecting additional types: ", Object.keys(e.value).join(", "));
         ts.injectTypes(e.value);
       }
     });
@@ -107,8 +111,8 @@ const completionSource = async (
 /**
  * A LintSource that returns lint diagnostics across the current editor view (via tsserver)
  */
-const lintDiagnostics = async (view: EditorView): Promise<Diagnostic[]> => {
-  const ts = view.state.field(tsStateField);
+const lintDiagnostics = async (state: EditorState): Promise<Diagnostic[]> => {
+  const ts = state.field(tsStateField);
   const diagnostics = (await ts.lang()).getSemanticDiagnostics(ts.entrypoint);
 
   return diagnostics
@@ -134,10 +138,10 @@ const lintDiagnostics = async (view: EditorView): Promise<Diagnostic[]> => {
  * A HoverTooltipSource that returns a Tooltip to show at a given cursor position (via tsserver)
  */
 const hoverTooltipSource = async (
-  view: EditorView,
+  state: EditorState,
   pos: number
 ): Promise<Tooltip | null> => {
-  const ts = view.state.field(tsStateField);
+  const ts = state.field(tsStateField);
 
   const quickInfo = (await ts.lang()).getQuickInfoAtPosition(
     ts.entrypoint,
@@ -167,13 +171,23 @@ const hoverTooltipSource = async (
 };
 
 /**
- * A StateEffect that can be dispatched to forcefully re-compute lint diagnostics
+ * A TransactionSpec that can be dispatched to add new types to the underlying tsserver instance
  */
 const injectTypesEffect = StateEffect.define<FileMap>();
 export function injectTypes(types: FileMap): TransactionSpec {
   return {
     effects: [injectTypesEffect.of(types)],
   };
+}
+
+/**
+ * A TransactionSpec that can be dispatched to force re-calculation of lint diagnostics
+ */
+export async function setDiagnostics(
+  state: EditorState
+): Promise<TransactionSpec> {
+  const diagnostics = await lintDiagnostics(state);
+  return cmSetDiagnostics(state, diagnostics);
 }
 
 /**
@@ -198,25 +212,23 @@ export function typescript(): Extension {
       maxRenderedOptions: 30,
       override: [completionSource],
     }),
-    linter(lintDiagnostics),
-    hoverTooltip(hoverTooltipSource, {
+    linter(view => lintDiagnostics(view.state)),
+    hoverTooltip((view, pos) => hoverTooltipSource(view.state, pos), {
       hideOnChange: true,
     }),
     EditorView.updateListener.of(({ view, docChanged }) => {
-      // We're not doing this in the `onChangeCallback` extension because we do not want TS file updates to be debounced
+      // We're not doing this in the `onChangeCallback` extension because we do not want TS file updates to be debounced (we want them throttled)
 
       if (docChanged) {
         // Update tsserver's view of this file
         updateTSFileThrottled(view.state.sliceDoc(0), view);
       }
     }),
-    onChangeCallback((_code, view) => {
+    onChangeCallback(async (_code, view) => {
       // No need to debounce here because this callback is already debounced
 
       // Re-compute lint diagnostics via tsserver
-      lintDiagnostics(view).then(diagnostics => {
-        view.dispatch(setDiagnostics(view.state, diagnostics));
-      });
+      view.dispatch(await setDiagnostics(view.state));
     }),
   ];
 }
