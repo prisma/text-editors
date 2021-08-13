@@ -12,10 +12,6 @@ const allowedOrigins = [
 ];
 
 export default async function types(req: VercelRequest, res: VercelResponse) {
-  console.log(
-    req.headers.origin,
-    allowedOrigins.includes(req.headers.origin || "")
-  );
   if (allowedOrigins.includes(req.headers.origin || "")) {
     res.setHeader("Access-Control-Allow-Origin", req.headers.origin!);
   }

@@ -13,7 +13,7 @@ type QueryMode = "typescript" | "sql";
 const tsCode: string = `import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
-await prisma.artist.findMany()
+await prisma.artist.findMany({})
 
 await prisma.artist.findMany({
   where: {
@@ -23,26 +23,17 @@ await prisma.artist.findMany({
   }
 })
 
-await prisma.$queryRaw(\`SELECT * FROM "Album"\`)
-
-const result = await prisma.invoice.create({
-	data: {}
-})
-
-function irrelevant() {
-  const obj = {
-    name: "something"
-  }
-
-  obj["foo"] = "bar"
-
-  let x = 1;
-  x += 1
-
-  assert(x, 3)
+const fn = async (value: string) => {
+\tconst x = 1
+\tawait prisma.album.findUnique({ where: { id: 1 } })
 }
 
-await prisma.$queryRaw(\`SELECT * FROM "Artist" WHERE Name = "Accept"\`)
+await prisma.$executeRaw(\`SELECT * FROM "Album"\`)
+
+async function fn(value: string) {
+\tconst x = 1
+
+}
 `;
 
 const sqlCode: string = `SELECT * FROM Users;
@@ -94,7 +85,7 @@ const ReactDemo = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ query, variables: { prisma: "prisma" } }),
     }).then(r => r.json());
 
     console.log("Received response", res.response);
@@ -132,7 +123,7 @@ const ReactDemo = () => {
         <TSEditor
           types={types}
           theme={theme}
-          value={tsCode}
+          initialValue={tsCode}
           style={{
             gridColumn: "2 / 3",
             boxShadow: "2px 0px 8px #0001",
@@ -145,7 +136,7 @@ const ReactDemo = () => {
       {queryMode === "sql" && (
         <SQLEditor
           theme={theme}
-          value={sqlCode}
+          initialValue={sqlCode}
           onExecuteQuery={runSqlQuery}
           style={{
             gridColumn: "2 / 3",
@@ -172,7 +163,7 @@ const ReactDemo = () => {
       <JSONEditor
         theme={theme}
         readonly
-        value={response}
+        initialValue={response}
         style={{ gridColumn: "3 / -1", gridRow: "1 / -1" }}
       />
 
