@@ -54,7 +54,6 @@ for (const [dep, { version, src }] of Object.entries(dependencies)) {
   metaStream.write("export const files = [");
   files.forEach(f => {
     const name = path.basename(f);
-    // const name = path.relative(`./node_modules/${dep}`, f);
     metaStream.write(`\n  "${name}",`);
   });
   metaStream.write("\n]\n");
@@ -72,7 +71,6 @@ for (const [dep, { version, src }] of Object.entries(dependencies)) {
   dataStream.write("export const files = {");
   files.forEach(f => {
     const name = path.basename(f);
-    // const name = path.relative(`./node_modules/${dep}`, f);
     const content = fs.readFileSync(path.resolve(f), "utf8");
     dataStream.write(`\n"${name}": `);
     dataStream.write(`${JSON.stringify(content)},`);

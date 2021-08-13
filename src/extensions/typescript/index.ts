@@ -97,7 +97,7 @@ const completionSource = async (
         label: c.name,
         detail: "detail",
         info: "info",
-        // boost: 1 / distance(c.name, "con"),
+        boost: 1 / Number(c.sortText),
       }))
     )(ctx);
 
