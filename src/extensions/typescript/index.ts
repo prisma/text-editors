@@ -80,6 +80,7 @@ const completionSource = async (
 ): Promise<CompletionResult | null> => {
   const { state, pos } = ctx;
   const ts = state.field(tsStateField);
+
   try {
     const completions = (await ts.lang()).getCompletionsAtPosition(
       ts.entrypoint,
@@ -91,17 +92,13 @@ const completionSource = async (
       return null;
     }
 
-    const completionResults = completeFromList(
-      completions.entries.map(c => ({
+    return completeFromList(
+      completions.entries.map((c, i) => ({
         type: c.kind,
         label: c.name,
-        detail: "detail",
-        info: "info",
         boost: 1 / Number(c.sortText),
       }))
     )(ctx);
-
-    return completionResults;
   } catch (e) {
     log("Unable to get completions", { pos, error: e });
     return null;
