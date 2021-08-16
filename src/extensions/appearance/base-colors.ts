@@ -3,10 +3,12 @@ import { EditorView } from "@codemirror/view";
 
 export const base: Extension = [
   EditorView.theme({
-    "&": {
+    "&": {},
+    ".cm-scroller": { overflow: "auto" },
+    ".cm-content": {
+      fontFamily: "JetBrains Mono",
       fontSize: "14px",
     },
-    ".cm-scroller": { overflow: "auto" },
     ".cm-gutters": { border: "none" },
     ".cm-lineNumbers": {
       "& .cm-gutterElement": {
@@ -61,7 +63,7 @@ export const base: Extension = [
     // Diagnostics (Lint issues) & Quickinfo (Hover tooltips)
     ".cm-diagnostic, .cm-quickinfo-tooltip": {
       padding: "0.5rem",
-      fontFamily: "monospace",
+      fontFamily: "JetBrains Mono",
     },
   }),
 ];

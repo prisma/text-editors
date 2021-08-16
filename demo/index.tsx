@@ -104,7 +104,6 @@ const ReactDemo = () => {
       style={{
         display: "grid",
         gridTemplateColumns: "40px 50% 22px 50%",
-        // gridTemplateRows: "calc(50vh - 11px) 22px calc(50vh - 11px)",
         width: "100%",
         height: "100%",
         position: "relative",

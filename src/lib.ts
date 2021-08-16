@@ -1,3 +1,4 @@
+import "@fontsource/jetbrains-mono";
 import localforage from "localforage";
 
 localforage.config({

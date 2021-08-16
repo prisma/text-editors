@@ -22,12 +22,7 @@
     "dist"
   ],
   "main": "./dist/editors.cjs.js",
-  "exports": {
-    ".": {
-      "import": "./dist/editors.es.js",
-      "require": "./dist/editors.cjs.js"
-    }
-  },
+  "module": "./dist/editors.es.js",
   "types": "./dist/types/lib.d.ts",
   "dependencies": {},
   "devDependencies": {
@@ -49,6 +44,7 @@
     "@codemirror/state": "0.18.7",
     "@codemirror/theme-one-dark": "0.18.1",
     "@codemirror/view": "0.18.19",
+    "@fontsource/jetbrains-mono": "4.5.0",
     "@playwright/test": "1.13.1",
     "@types/lodash": "4.14.172",
     "@types/node": "16.4.13",
