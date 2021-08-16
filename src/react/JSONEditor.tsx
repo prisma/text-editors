@@ -43,7 +43,7 @@ export function JSONEditor({
   useEffect(() => {
     const jsonEditor = new Editor({
       domElement: ref.current!, // `!` is fine because this will run after the component has mounted
-      code: JSON.stringify(initialValue),
+      code: JSON.stringify(initialValue, null, 2),
       readonly,
       theme,
       onChange,
@@ -58,7 +58,7 @@ export function JSONEditor({
 
   // Ensures `value` given to this component is always reflected in the editor
   useEffect(() => {
-    editor?.forceUpdate(JSON.stringify(value));
+    editor?.forceUpdate(JSON.stringify(value, null, 2));
   }, [value]);
 
   // Ensures `theme` given to this component is always reflected in the editor
