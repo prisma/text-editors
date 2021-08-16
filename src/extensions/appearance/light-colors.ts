@@ -61,7 +61,7 @@ export const highlightStyle: Extension = [
       },
       {
         tag: tags.escape,
-        color: "#10B981" /* green-500 */,
+        color: "#22C55E" /* green-500 */,
       },
 
       // Variables

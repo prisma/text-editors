@@ -63,19 +63,29 @@ export function SQLEditor({
   // Ensures `value` given to this component is always reflected in the editor
   useEffect(() => {
     editor?.forceUpdate(value);
-  }, [value]);
+  }, [editor, value]);
 
   // Ensures `theme` given to this component is always reflected in the editor
   useEffect(() => {
     editor?.setTheme(theme);
-  }, [theme]);
+  }, [editor, theme]);
 
   // Ensures `dimensions` given to this component are always reflected in the editor
   useLayoutEffect(() => {
-    editor?.setDimensions();
-  });
+    const ro = new ResizeObserver(() => editor?.setDimensions());
+
+    ro.observe(ref.current!);
+    return () => {
+      ro.unobserve(ref.current!);
+    };
+  }, [editor]);
 
   return (
-    <section ref={ref} id="sql-editor" style={style} className={className} />
+    <section
+      ref={ref}
+      id="sql-editor"
+      style={{ width: "100%", height: "100%", ...style }}
+      className={className}
+    />
   );
 }
