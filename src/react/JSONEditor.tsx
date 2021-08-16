@@ -69,7 +69,7 @@ export function JSONEditor({
   // Ensures `dimensions` given to this component are always reflected in the editor
   useLayoutEffect(() => {
     editor?.setDimensions();
-  }, [className, style]);
+  });
 
   return (
     <section ref={ref} id="json-editor" style={style} className={className} />

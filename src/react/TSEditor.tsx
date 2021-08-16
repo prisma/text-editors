@@ -82,7 +82,7 @@ export function TSEditor({
   // Ensures `dimensions` given to this component are always reflected in the editor
   useLayoutEffect(() => {
     editor?.setDimensions();
-  }, [className, style]);
+  });
 
   return (
     <section ref={ref} id="ts-editor" style={style} className={className} />
