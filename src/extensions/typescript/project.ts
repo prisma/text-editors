@@ -61,6 +61,9 @@ export class TypescriptProject {
   public async injectTypes(types: FileMap) {
     const ts = await this.env();
     for (const [name, content] of Object.entries(types)) {
+      if (!content.trim()) {
+        continue;
+      }
       log(`Injecting types for ${name} to tsserver`);
       // if tsserver has initialized, we must add files to it, modifying the FS will do nothing
       ts.createFile(name, content);

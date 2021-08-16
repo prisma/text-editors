@@ -76,9 +76,9 @@ const ReactDemo = () => {
     else setTheme("dark");
   };
 
-  const [response, setResponse] = useState("[]");
+  const [response, setResponse] = useState<Record<string, any>[]>([]);
   const runPrismaClientQuery = async (query: string) => {
-    setResponse(JSON.stringify({ loading: true }, null, 2));
+    setResponse([{ loading: true }]);
 
     const res = await fetch("https://qc.prisma-adp.vercel.app/api/run", {
       method: "POST",
@@ -90,9 +90,9 @@ const ReactDemo = () => {
 
     console.log("Received response", res.response);
     if (res.response.error) {
-      setResponse(JSON.stringify({ error: res.response.error }, null, 2));
+      setResponse([{ error: res.response.error }]);
     } else {
-      setResponse(JSON.stringify(res.response.data, null, 2));
+      setResponse(res.response.data);
     }
   };
 

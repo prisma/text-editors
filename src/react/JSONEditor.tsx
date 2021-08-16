@@ -9,12 +9,12 @@ import { JSONEditor as Editor, ThemeName } from "../editor";
 
 export type JSONEditorProps = {
   /** Initial value of the editor when it is first loaded */
-  initialValue: string;
+  initialValue: Record<string, any> | Record<any, any>[];
   /** (Controlled) Value of the editor.
    * Be careful when using this, this will force the editor to be redrawn from scratch.
    * Typically, you should only react to changes to the value by subscribing to `onChange`, and let the editor own the `value`.
    */
-  value?: string;
+  value?: Record<string, any> | Record<string, any>[];
   /** Controls if the editor is readonly */
   readonly?: boolean;
   /** Theme for the editor */
@@ -43,7 +43,7 @@ export function JSONEditor({
   useEffect(() => {
     const jsonEditor = new Editor({
       domElement: ref.current!, // `!` is fine because this will run after the component has mounted
-      code: initialValue,
+      code: JSON.stringify(initialValue),
       readonly,
       theme,
       onChange,
@@ -58,7 +58,7 @@ export function JSONEditor({
 
   // Ensures `value` given to this component is always reflected in the editor
   useEffect(() => {
-    editor?.forceUpdate(value);
+    editor?.forceUpdate(JSON.stringify(value));
   }, [value]);
 
   // Ensures `theme` given to this component is always reflected in the editor
