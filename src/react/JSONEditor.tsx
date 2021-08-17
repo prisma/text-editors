@@ -58,12 +58,12 @@ export function JSONEditor({
 
   // Ensures `value` given to this component is always reflected in the editor
   useEffect(() => {
-    editor?.forceUpdate(JSON.stringify(value, null, 2));
+    value && editor?.forceUpdate(JSON.stringify(value, null, 2));
   }, [editor, value]);
 
   // Ensures `theme` given to this component is always reflected in the editor
   useEffect(() => {
-    editor?.setTheme(theme);
+    theme && editor?.setTheme(theme);
   }, [editor, theme]);
 
   // Ensures `dimensions` given to this component are always reflected in the editor

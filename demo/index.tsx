@@ -163,6 +163,7 @@ const ReactDemo = () => {
         theme={theme}
         readonly
         initialValue={response}
+        value={response}
         style={{ gridColumn: "3 / -1", gridRow: "1 / -1" }}
       />
 
