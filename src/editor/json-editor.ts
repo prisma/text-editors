@@ -26,7 +26,7 @@ export class JSONEditor extends BaseEditor {
    */
   static state(params: JSONEditorParams) {
     return EditorState.create({
-      doc: params.code,
+      doc: params.code || "[]",
 
       extensions: [
         EditorView.editable.of(!params.readonly),

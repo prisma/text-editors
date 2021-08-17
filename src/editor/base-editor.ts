@@ -6,6 +6,9 @@ import {
   setTheme,
   ThemeName,
 } from "../extensions/appearance";
+import { logger } from "../logger";
+
+const log = logger("base-editor", "black");
 
 type BaseEditorParams = {
   domElement: Element;
@@ -33,6 +36,7 @@ export abstract class BaseEditor {
   };
 
   public forceUpdate = (code: string = "") => {
+    log("Force updating", { code });
     this.view.dispatch({
       changes: [
         { from: 0, to: this.view.state.doc.length },

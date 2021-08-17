@@ -21,7 +21,7 @@ export type SQLDialect = "postgresql" | "mysql" | "sqlserver";
 
 type SQLEditorParams = {
   domElement: Element;
-  code: string;
+  code?: string;
   dialect?: SQLDialect;
   readonly?: boolean;
   theme?: ThemeName;
@@ -39,7 +39,7 @@ export class SQLEditor extends BaseEditor {
     const sqlDialect = getSqlDialect(params.dialect);
 
     return EditorState.create({
-      doc: params.code,
+      doc: params.code || "",
 
       extensions: [
         EditorView.editable.of(!params.readonly),

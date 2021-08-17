@@ -3,11 +3,12 @@ import { EditorView } from "@codemirror/view";
 
 export const base: Extension = [
   EditorView.theme({
-    "&": {},
+    "&": {
+      fontSize: "14px",
+    },
     ".cm-scroller": { overflow: "auto" },
     ".cm-content": {
       fontFamily: "JetBrains Mono",
-      fontSize: "14px",
     },
     ".cm-gutters": { border: "none" },
     ".cm-lineNumbers": {
@@ -25,6 +26,11 @@ export const base: Extension = [
       },
     },
     ".cm-foldPlaceholder": { background: "transparent", border: "none" },
+
+    ".cm-tooltip": {
+      maxWidth: "800px",
+      zIndex: "999",
+    },
 
     // Autocomplete
     ".cm-tooltip-autocomplete": {},
