@@ -23,6 +23,8 @@ type TSEditorParams = {
   theme?: ThemeName;
   onChange?: (value: string) => void;
   onExecuteQuery?: (query: string) => void;
+  onEnterQuery?: (query: string) => void;
+  onLeaveQuery?: () => void;
 };
 
 export class TSEditor extends BaseEditor {
@@ -53,7 +55,11 @@ export class TSEditor extends BaseEditor {
         PrismaQuery.lineNumbers(),
 
         typescript(),
-        PrismaQuery.state({ onExecute: params.onExecuteQuery }),
+        PrismaQuery.state({
+          onExecute: params.onExecuteQuery,
+          onEnterQuery: params.onEnterQuery,
+          onLeaveQuery: params.onLeaveQuery,
+        }),
         PrismaQuery.highlightStyle(),
         PrismaQuery.keymap(),
       ],

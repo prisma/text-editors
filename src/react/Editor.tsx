@@ -37,6 +37,10 @@ export type EditorProps = {
       types?: FileMap;
       /** Callback called when the user requests a query to be run */
       onExecuteQuery?: (query: string) => void;
+      /** Callback called every time the user's cursor moves inside a query */
+      onEnterQuery?: (query: string) => void;
+      /** Callback called every time the user's cursor moves outside a query */
+      onLeaveQuery?: () => void;
     }
   | {
       lang: "json";
@@ -67,6 +71,8 @@ export class Editor extends React.Component<EditorProps> {
           types: this.props.types,
           onChange: this.props.onChange,
           onExecuteQuery: this.props.onExecuteQuery,
+          onEnterQuery: this.props.onEnterQuery,
+          onLeaveQuery: this.props.onLeaveQuery,
         });
         break;
 

@@ -30,7 +30,7 @@ export const queryHighlightStyle = [
     "&light": {
       // Dim everything first, then selectively add colors to tokens
       "& .cm-line": {
-        color: "#52525B55" /* blueGray-600 */,
+        color: "#94A3B8" /* blueGray-400 */,
       },
 
       "& .cm-prismaQuery": {

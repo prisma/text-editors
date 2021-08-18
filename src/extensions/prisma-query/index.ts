@@ -4,7 +4,9 @@
  * STATE:
  * 1. A StateField that will hold ranges and values of PrismaClient queries
  * 2. A Facet that will be used to register one or more `onExecute` handlers. This facet's value will be accessible by the StateField
- * 3. A `state` extension that tracks Prisma Client queries in the editor
+ * 3. A Facet that will be used to register one or more `onEnterQuery` handlers. This facet's value will be accessible by the StateField
+ * 4. A Facet that will be used to register one or more `onLeaveQuery` handlers. This facet's value will be accessible by the StateField
+ * 5. A `state` extension that tracks Prisma Client queries in the editor
  *
  * KEYMAP:
  * 1. A keyMap that finds the query under the user's cursor and runs it
