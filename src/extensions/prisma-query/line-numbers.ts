@@ -1,5 +1,5 @@
 import { gutter, GutterMarker } from "@codemirror/gutter";
-import { Extension } from "@codemirror/state";
+import { EditorSelection, Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { isCursorInRange } from "./find-cursor";
 import { log } from "./log";
@@ -119,12 +119,17 @@ export function lineNumbers(): Extension {
       },
       domEventHandlers: {
         click: (view, line, event) => {
-          // TODO :: Make cursor jump to this line
-          // if (!isCursorInRange(view.state, line.from, line.to)) {
-          // }
           if (event.target?.parentNode?.classList?.contains("cm-lineNumbers")) {
             // Clicking on a line number should not execute the query
             return false;
+          }
+
+          // Make cursor jump to this line
+          if (!isCursorInRange(view.state, line.from, line.to)) {
+            console.log("not in range");
+            view.dispatch({
+              selection: EditorSelection.single(line.from, line.from),
+            });
           }
 
           const onExecute = view.state.facet(OnExecuteFacet);
@@ -155,15 +160,25 @@ export function lineNumbers(): Extension {
 
     // Gutter line marker styles
     EditorView.baseTheme({
-      ".cm-lineNumbers": {},
+      ".cm-lineNumbers": {
+        display: "flex",
+
+        "& .cm-gutterElement": {
+          padding: "0 8px 0 0",
+        },
+      },
+      ".cm-gutterElement": { userSelect: "none" },
       ".cm-prismaQueryRunButton": {
         cursor: "pointer",
         width: "24px",
         height: "24",
         color: "#E2E8F0" /* blueGray-200 */,
 
+        "&:hover": {
+          color: "#34D399" /* green-400 */,
+        },
         "&.active": {
-          color: "#059669" /* green-600 */,
+          color: "#10B981" /* green-500 */,
         },
       },
     }),
