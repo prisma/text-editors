@@ -25,6 +25,10 @@ export abstract class BaseEditor {
     window.addEventListener("resize", onResizeThrottled);
   }
 
+  public get state() {
+    return this.view.state;
+  }
+
   public setDimensions = () => {
     const dimensions = this.domElement.getBoundingClientRect();
     this.view.dispatch(setDimensions(dimensions.width, dimensions.height));

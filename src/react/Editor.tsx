@@ -1,10 +1,6 @@
-import React, {
-  CSSProperties,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import isEqual from "lodash/isEqual";
+import isEqualWith from "lodash/isEqualWith";
+import React, { CSSProperties } from "react";
 import {
   FileMap,
   JSONEditor,
@@ -13,6 +9,8 @@ import {
   ThemeName,
   TSEditor,
 } from "../editor";
+
+type LangEditor = TSEditor | JSONEditor | SQLEditor | PrismaSchemaEditor;
 
 export type EditorProps = {
   /** (Controlled) Value of the editor.
@@ -51,68 +49,54 @@ export type EditorProps = {
     }
 );
 
-type LangEditor = TSEditor | JSONEditor | SQLEditor | PrismaSchemaEditor;
+// This component is deliberately not a function component because hooks complicate the logic we need for it
 
-export function Editor(props: EditorProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [cmInstance, setCmInstance] = useState<LangEditor>();
-  const [code, setCode] = useState(props.value); // Save a copy of the value from props for optimization purposes
+export class Editor extends React.Component<EditorProps> {
+  private ref = React.createRef<HTMLDivElement>();
+  private editor?: LangEditor;
+  private resizeObserver?: ResizeObserver;
 
-  // Handles editor lifecycle
-  useEffect(() => {
-    let cm: LangEditor;
-    switch (props.lang) {
+  componentDidMount() {
+    switch (this.props.lang) {
       case "ts":
-        cm = new TSEditor({
-          domElement: ref.current!, // `!` is fine because this will run after the component has mounted
-          code: props.value,
-          readonly: props.readonly,
-          theme: props.theme,
-          types: props.types,
-          onChange: c => {
-            setCode(c);
-            props.onChange?.(c);
-          },
-          onExecuteQuery: props.onExecuteQuery,
+        this.editor = new TSEditor({
+          domElement: this.ref.current!, // `!` is fine because this will run after the component has mounted
+          code: this.props.value,
+          readonly: this.props.readonly,
+          theme: this.props.theme,
+          types: this.props.types,
+          onChange: this.props.onChange,
+          onExecuteQuery: this.props.onExecuteQuery,
         });
         break;
 
       case "json":
-        cm = new JSONEditor({
-          domElement: ref.current!, // `!` is fine because this will run after the component has mounted
-          code: props.value,
-          readonly: props.readonly,
-          theme: props.theme,
-          onChange: c => {
-            setCode(c);
-            props.onChange?.(c);
-          },
+        this.editor = new JSONEditor({
+          domElement: this.ref.current!, // `!` is fine because this will run after the component has mounted
+          code: this.props.value,
+          readonly: this.props.readonly,
+          theme: this.props.theme,
+          onChange: this.props.onChange,
         });
         break;
 
       case "sql":
-        cm = new SQLEditor({
-          domElement: ref.current!, // `!` is fine because this will run after the component has mounted
-          code: props.value,
-          readonly: props.readonly,
-          theme: props.theme,
-          onChange: c => {
-            setCode(c);
-            props.onChange?.(c);
-          },
+        this.editor = new SQLEditor({
+          domElement: this.ref.current!, // `!` is fine because this will run after the component has mounted
+          code: this.props.value,
+          readonly: this.props.readonly,
+          theme: this.props.theme,
+          onChange: this.props.onChange,
         });
         break;
 
       case "prisma":
-        cm = new PrismaSchemaEditor({
-          domElement: ref.current!, // `!` is fine because this will run after the component has mounted
-          code: props.value,
-          readonly: props.readonly,
-          theme: props.theme,
-          onChange: c => {
-            setCode(c);
-            props.onChange?.(c);
-          },
+        this.editor = new PrismaSchemaEditor({
+          domElement: this.ref.current!, // `!` is fine because this will run after the component has mounted
+          code: this.props.value,
+          readonly: this.props.readonly,
+          theme: this.props.theme,
+          onChange: this.props.onChange,
         });
         break;
 
@@ -120,57 +104,61 @@ export function Editor(props: EditorProps) {
         throw new Error("Unknown `lang` prop provided to Editor");
     }
 
-    setCmInstance(cm);
+    this.resizeObserver = new ResizeObserver(() =>
+      this.editor?.setDimensions()
+    );
+    this.resizeObserver.observe(this.ref.current!);
+  }
 
-    return () => {
-      cm?.destroy();
-      setCmInstance(undefined);
-    };
-  }, []);
+  shouldComponentUpdate(nextProps: EditorProps) {
+    // Do a deep comparison check for props
+    // We need this because `types` is an object
+    return !isEqualWith(this.props, nextProps, (a, b) => {
+      if (typeof a === "function" || typeof b === "function") {
+        // Do not compare functions
+        return true;
+      }
 
-  // Ensures `value` given to this component is always reflected in the editor
-  useEffect(() => {
-    // To prevent unnecessary `forceUpdate`s (since they're very expensive), we make sure the incoming value has actually changed
-    if (props.value === code) {
+      // Let lodash handle comparing the rest
+      return undefined;
+    });
+  }
+
+  componentDidUpdate(prevProps: EditorProps) {
+    if (!this.editor) {
       return;
     }
 
-    cmInstance?.forceUpdate(props.value);
-    setCode(props.value);
-  }, [cmInstance, props.value]);
+    // Ensures `value` given to this component is always reflected in the editor
+    if (this.props.value !== this.editor.state.sliceDoc(0)) {
+      this.editor.forceUpdate(this.props.value);
+    }
 
-  // Ensures `types` given to this component is always reflected in the editor
-  // Conditional hook is fine because we do not expect `lang` to change across renders
-  props.lang === "ts" &&
-    useEffect(() => {
-      if (!props.types) {
-        return;
+    // Ensures `types` given to this component are always reflected in the editor
+    if (prevProps.lang === "ts" && this.props.lang === "ts") {
+      if (this.props.types && !isEqual(prevProps.types, this.props.types)) {
+        (this.editor as TSEditor).injectTypes(this.props.types);
       }
+    }
 
-      (cmInstance as TSEditor)?.injectTypes(props.types);
-    }, [cmInstance, props.types]);
+    // Ensures `theme` given to this component is always reflected in the editor
+    if (this.props.theme && prevProps.theme !== this.props.theme) {
+      this.editor.setTheme(this.props.theme);
+    }
+  }
 
-  // Ensures `theme` given to this component is always reflected in the editor
-  useEffect(() => {
-    cmInstance?.setTheme(props.theme);
-  }, [cmInstance, props.theme]);
+  componentWillUnmount() {
+    this.resizeObserver?.disconnect();
+  }
 
-  // Ensures `dimensions` given to this component are always reflected in the editor
-  useLayoutEffect(() => {
-    const ro = new ResizeObserver(() => cmInstance?.setDimensions());
-
-    ro.observe(ref.current!);
-    return () => {
-      ro.unobserve(ref.current!);
-    };
-  }, [cmInstance]);
-
-  return (
-    <section
-      ref={ref}
-      id={`${props.lang}-editor`}
-      style={{ width: "100%", height: "100%", ...props.style }}
-      className={props.className}
-    />
-  );
+  render() {
+    return (
+      <section
+        ref={this.ref}
+        id={`${this.props.lang}-editor`}
+        style={{ width: "100%", height: "100%", ...this.props.style }}
+        className={this.props.className}
+      />
+    );
+  }
 }
