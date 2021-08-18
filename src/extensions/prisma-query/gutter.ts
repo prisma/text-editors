@@ -48,10 +48,15 @@ export function gutter(): Extension {
         view.state
           .field(prismaQueryStateField)
           .between(line.from, line.to, (from, to) => {
-            marker = new QueryGutterMarker("inactive");
-            if (isCursorInRange(view.state, from, to)) {
-              marker = new QueryGutterMarker("active");
-            }
+            const queryLineStart = view.state.doc.lineAt(from); // Get line where this range starts
+            const queryLineEnd = view.state.doc.lineAt(to); // Get line where this range ends
+
+            // If the cursor is anywhere between the lines that the query starts and ends at, then the green bar should be "active"
+            marker = new QueryGutterMarker(
+              isCursorInRange(view.state, queryLineStart.from, queryLineEnd.to)
+                ? "active"
+                : "inactive"
+            );
           });
 
         return marker;

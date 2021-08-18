@@ -106,11 +106,11 @@ export function lineNumbers(): Extension {
           .field(prismaQueryStateField)
           .between(line.from, line.to, (from, to) => {
             // If this is the first line of a query, change the line number to a button
-            const l = view.state.doc.lineAt(from);
-            if (l.number === line.number) {
+            const queryLineStart = view.state.doc.lineAt(from);
+            if (queryLineStart.number === line.number) {
               marker = new RunQueryMarker(
-                l.number,
-                isCursorInRange(view.state, from, to) // If the cursor is inside a query, change the button to `active`
+                queryLineStart.number,
+                isCursorInRange(view.state, line.from, to) // If the cursor is inside a query, change the button to `active`
               );
             }
           });
@@ -126,7 +126,6 @@ export function lineNumbers(): Extension {
 
           // Make cursor jump to this line
           if (!isCursorInRange(view.state, line.from, line.to)) {
-            console.log("not in range");
             view.dispatch({
               selection: EditorSelection.single(line.from, line.from),
             });
@@ -175,10 +174,14 @@ export function lineNumbers(): Extension {
         color: "#E2E8F0" /* blueGray-200 */,
 
         "&:hover": {
-          color: "#34D399" /* green-400 */,
+          color: "#16A34A" /* green-600 */,
         },
         "&.active": {
-          color: "#10B981" /* green-500 */,
+          color: "#22C55E" /* green-500 */,
+
+          "&:hover": {
+            color: "#16A34A" /* green-600 */,
+          },
         },
       },
     }),
