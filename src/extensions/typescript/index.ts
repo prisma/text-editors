@@ -191,8 +191,6 @@ export async function setDiagnostics(
  * A (throttled) function that updates the view of the currently open "file" on TSServer
  */
 const updateTSFileThrottled = throttle((code: string, view: EditorView) => {
-  log("Commit file change");
-
   const ts = view.state.field(tsStateField);
 
   // Don't `await` because we do not want to block
