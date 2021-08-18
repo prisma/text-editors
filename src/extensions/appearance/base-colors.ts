@@ -10,11 +10,6 @@ export const base: Extension = [
     ".cm-scroller": { overflow: "auto" },
     ".cm-content": {},
     ".cm-gutters": { border: "none" },
-    ".cm-lineNumbers": {
-      "& .cm-gutterElement": {
-        padding: "0 8px 0 0",
-      },
-    },
     ".cm-foldMarker": {
       width: "12px",
       height: "12px",
@@ -105,6 +100,7 @@ export const base: Extension = [
           },
         },
       "&.cm-completionIcon-keyword": {
+        // 'keyword' icon from https://code.visualstudio.com/docs/editor/intellisense#_types-of-completions
         backgroundImage:
           "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15 4H10V3H15V4ZM14 7H12V8H14V7ZM10 7H1V8H10V7ZM12 13H1V14H12V13ZM7 10H1V11H7V10ZM15 10H10V11H15V10ZM8 2V5H1V2H8ZM7 3H2V4H7V3Z' fill='%23424242' /%3E%3C/svg%3E\")",
         "&:after": {
@@ -113,6 +109,7 @@ export const base: Extension = [
       },
       "&.cm-completionIcon-class, &.cm-completionIcon-interface, &.cm-completionIcon-alias":
         {
+          // 'class' icon from https://code.visualstudio.com/docs/editor/intellisense#_types-of-completions
           backgroundImage:
             "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M3.35356 6.64642L2.06066 5.35353L5.35356 2.06065L6.64645 3.35354L3.35356 6.64642ZM5 1L1 4.99998V5.70708L3 7.70707H3.70711L4.85355 6.56063V12.3535L5.35355 12.8535H10.0097V13.3741L11.343 14.7074H12.0501L14.7168 12.0407V11.3336L13.3835 10.0003H12.6763L10.8231 11.8535H5.85355V7.89355H10.0097V8.37401L11.343 9.70734H12.0501L14.7168 7.04068V6.33357L13.3835 5.00024H12.6763L10.863 6.81356H5.85355V5.56064L7.70711 3.70709V2.99999L5.70711 1H5ZM11.0703 8.02046L11.6966 8.64668L13.6561 6.68713L13.0299 6.0609L11.0703 8.02046ZM11.0703 13.0205L11.6966 13.6467L13.6561 11.6872L13.0299 11.061L11.0703 13.0205Z' fill='%23DD6B20' /%3E%3C/svg%3E\")",
           "&:after": {

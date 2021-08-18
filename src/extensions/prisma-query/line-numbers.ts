@@ -122,6 +122,10 @@ export function lineNumbers(): Extension {
           // TODO :: Make cursor jump to this line
           // if (!isCursorInRange(view.state, line.from, line.to)) {
           // }
+          if (event.target?.parentNode?.classList?.contains("cm-lineNumbers")) {
+            // Clicking on a line number should not execute the query
+            return false;
+          }
 
           const onExecute = view.state.facet(OnExecuteFacet);
           if (!onExecute) {
