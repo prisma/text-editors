@@ -22,7 +22,13 @@ export const theme: Extension = [
       },
 
       // Autocomplete
-      ".cm-tooltip-autocomplete": {},
+      ".cm-tooltip-autocomplete": {
+        background: "#E2E8F0" /* blueGray-200 */,
+      },
+      ".cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected]": {
+        background: "#CBD5E1" /* blueGray-300 */,
+        color: "#1E293B" /* blueGray-800 */,
+      },
       ".cm-completionLabel": {}, // Unmatched text
       ".cm-completionMatchedText": {
         color: "#00B4D4",
@@ -30,7 +36,6 @@ export const theme: Extension = [
       ".cm-completionDetail": {
         color: "#ABABAB",
       }, // Text to the right of tooltip
-      ".cm-completionInfo": {}, // "Additional" text that shows up in a panel on the right of the tolltip
 
       // Diagnostics (Lint issues) & Quickinfo (Hover tooltips)
       ".cm-diagnostic, .cm-quickinfo-tooltip": {
