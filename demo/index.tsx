@@ -61,7 +61,7 @@ const ReactDemo = () => {
     if (res.response.error) {
       setResponse(JSON.stringify([{ error: res.response.error }], null, 2));
     } else {
-      setResponse(res.response.data);
+      setResponse(JSON.stringify(res.response.data, null, 2));
     }
   };
 
