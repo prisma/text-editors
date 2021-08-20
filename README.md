@@ -35,3 +35,7 @@ return (
 ---
 ⚠️ This section is currently incomplete. Please look at the implementation of this package on https://github.com/prisma/cloud to learn more about usage.
 ---
+
+### Contributing
+
+Please read through the [Wiki](https://github.com/prisma/text-editors/wiki) to learn more about how this package works, and how to contribute.
