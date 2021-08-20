@@ -17,23 +17,18 @@ yarn add @prisma/text-editors
 The editors are currently only exported as a React component, but support for other frameworks should be trivial to implement.
 
 ```typescript
-import React, { useState } from 'react'
-import { Editor } from '@prisma/text-editors'
+import React, { useState } from "react";
+import { Editor } from "@prisma/text-editors";
 
 // ..snip
 
 const [code, setCode] = useState("");
 
-return (
-  <Editor
-    value={code}
-    onChange={setCode}
-  />
-)
+return <Editor value={code} onChange={setCode} />;
 ```
 
----
-⚠️ This section is currently incomplete. Please look at the implementation of this package on https://github.com/prisma/cloud to learn more about usage.
+⚠️ This section is currently incomplete. Please look at the usage of this package on https://github.com/prisma/cloud to learn more.
+
 ---
 
 ### Contributing
