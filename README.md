@@ -29,7 +29,7 @@ const [code, setCode] = useState("");
 return <Editor lang="ts" value={code} onChange={setCode} />;
 ```
 
-This gives you an editor that is includes Typescript syntax highlighting, typechecking, auto-complete & quickinfo on token hover.
+This gives you an editor that includes Typescript syntax highlighting, typechecking, auto-complete & quickinfo on token hover.
 
 **Editor props**
 
