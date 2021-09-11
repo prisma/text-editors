@@ -5,7 +5,7 @@
     "type": "git",
     "url": "git://github.com/prisma/text-editors.git"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "scripts": {
     "prepare": "yarn build:types",
     "dev": "vite",
