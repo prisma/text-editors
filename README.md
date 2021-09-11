@@ -4,6 +4,10 @@
 
 This package exports a bunch of batteries-included code editors for Typescript, JSON, SQL & Prisma Schemas. The goal is to be a zero-configuration component that is quick to load and that you just dump into your codebase so it "just works".
 
+### Demo
+
+A demo of the editors is [here](https://qc.prisma-adp.vercel.app). Note that these editors were built for the [Prisma Data Platform](https://cloud.prisma.io)'s Query Console, so head over there to see them in action in a real app.
+
 ### Installation
 
 ```
