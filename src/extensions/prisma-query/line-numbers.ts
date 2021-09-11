@@ -119,7 +119,9 @@ export function lineNumbers(): Extension {
       },
       domEventHandlers: {
         click: (view, line, event) => {
-          if (event.target?.parentNode?.classList?.contains("cm-lineNumbers")) {
+          const targetParentElement = (event.target as HTMLDivElement)
+            .parentNode as HTMLDivElement;
+          if (targetParentElement?.classList?.contains("cm-lineNumbers")) {
             // Clicking on a line number should not execute the query
             return false;
           }

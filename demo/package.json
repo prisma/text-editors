@@ -9,12 +9,12 @@
     "preview": "yarn build && serve public"
   },
   "dependencies": {
-    "@prisma/client": "2.28.0"
+    "@prisma/client": "3.0.2"
   },
   "devDependencies": {
-    "@vercel/node": "1.11.1",
-    "prisma": "2.28.0",
-    "serve": "12.0.0",
-    "vercel": "23.0.1"
+    "@vercel/node": "1.12.1",
+    "prisma": "3.0.2",
+    "serve": "12.0.1",
+    "vercel": "23.1.2"
   }
 }

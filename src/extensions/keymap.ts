@@ -1,6 +1,6 @@
 import { completionKeymap } from "@codemirror/autocomplete";
 import { closeBracketsKeymap } from "@codemirror/closebrackets";
-import { defaultKeymap, defaultTabBinding } from "@codemirror/commands";
+import { defaultKeymap, indentWithTab } from "@codemirror/commands";
 import { commentKeymap } from "@codemirror/comment";
 import { foldKeymap } from "@codemirror/fold";
 import { undo } from "@codemirror/history";
@@ -9,7 +9,7 @@ import { keymap as keymapFacet } from "@codemirror/view";
 
 export const keymap = (): Extension => [
   keymapFacet.of([
-    defaultTabBinding,
+    indentWithTab,
     ...defaultKeymap,
     ...closeBracketsKeymap,
     ...commentKeymap,

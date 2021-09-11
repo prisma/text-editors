@@ -1,0 +1,47 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "semanticCommits": "enabled",
+  "dependencyDashboard": true,
+  "rebaseWhen": "behind-base-branch",
+  "ignoreDeps": ["react", "react-dom"],
+  "timezone": "Europe/Berlin",
+  "schedule": ["before 3am on Monday"],
+  "packageRules": [
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "devDependencies",
+      "groupSlug": "dev-dependencies",
+      "schedule": ["before 3am on Monday"]
+    },
+    {
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "dependencies",
+      "groupSlug": "dependencies",
+      "schedule": ["before 3am on Monday"]
+    },
+    {
+      "matchPackagePatterns": ["@codemirror/*"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "CodeMirror",
+      "groupSlug": "codemirror",
+      "schedule": ["before 3am on Monday"]
+    },
+    {
+      "matchPackagePatterns": ["@types/*"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Types",
+      "groupSlug": "types",
+      "schedule": ["before 3am on Monday"]
+    },
+    {
+      "matchPackagePatterns": ["@prisma/*"],
+      "matchPackageNames": ["prisma"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Prisma Dependencies",
+      "groupSlug": "prisma",
+      "schedule": ["after 6pm on Tuesday"]
+    }
+  ]
+}
