@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { Editor, FileMap } from "../src/lib";
+import { Editor, FileMap, PrismaQuery } from "../src/lib";
 
 const tsCode: string = `import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
-await prisma.artist.findMany({})
+await prisma.artist.findMany()
 
 await prisma.artist.findMany({
   where: {
@@ -46,10 +46,11 @@ const ReactDemo = () => {
   }, []);
 
   const [response, setResponse] = useState("");
-  const runPrismaClientQuery = async (query: string) => {
+  const runPrismaClientQuery = async (query: PrismaQuery) => {
     setResponse(JSON.stringify([{ loading: true }], null, 2));
 
-    const res = await fetch("https://qc.prisma-adp.vercel.app/api/run", {
+    // If ever changing the backend, run `yarn dev:api` to launch the backend in development mode, and replace the URL here with `http://localhost:3001/api/run`
+    const res = await fetch("http://localhost:3001/api/run", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

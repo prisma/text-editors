@@ -1,9 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { brotliCompressSync, deflateSync, gzipSync } from "zlib";
+import { PrismaQuery } from "../../src/lib";
 
 type RequestBody = {
-  query: string;
+  query: PrismaQuery;
 };
 
 const allowedOrigins = [
@@ -31,8 +32,7 @@ export default async function types(req: VercelRequest, res: VercelResponse) {
   }
 
   const { query } = req.body as RequestBody;
-
-  const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
+  console.log(query);
 
   const queryResponse = {
     error: null,
@@ -41,10 +41,20 @@ export default async function types(req: VercelRequest, res: VercelResponse) {
 
   const prisma = new PrismaClient();
   try {
-    queryResponse.data = await new AsyncFunction(
-      "prisma",
-      `return await ${query}`
-    )(prisma);
+    if (query.modelName) {
+      queryResponse.data = await prisma[query.modelName][query.operation](
+        query.args
+      );
+    } else if (
+      query.operation === "$queryRaw" ||
+      query.operation === "$executeRaw"
+    ) {
+      queryResponse.data = await prisma[query.operation]`
+        ${query.args}
+      `;
+    } else {
+      queryResponse.data = await prisma[query.operation](query.args);
+    }
   } catch (e) {
     console.error("Error executing query", e.message);
     queryResponse.error = e.message;

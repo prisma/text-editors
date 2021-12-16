@@ -1,6 +1,7 @@
 import { syntaxTree } from "@codemirror/language";
 import { RangeSet, RangeSetBuilder, RangeValue } from "@codemirror/rangeset";
 import { EditorState } from "@codemirror/state";
+import RJSON from "relaxed-json";
 
 export type PrismaQuery = {
   modelName?: string;
@@ -12,7 +13,7 @@ export type PrismaQuery = {
 export class PrismaQueryRangeValue extends RangeValue {
   public query: PrismaQuery;
 
-  constructor({ modelName, operation, args }: PrismaQuery) {
+  constructor({ modelName, operation, args }: PrismaQuery & { args?: string }) {
     super();
 
     this.query = {
@@ -20,6 +21,13 @@ export class PrismaQueryRangeValue extends RangeValue {
       operation,
       args,
     };
+
+    if (args) {
+      // Try to parse arguments (they will be an object for `prisma.user.findMany({ ... }))`-type queries
+      try {
+        this.query.args = RJSON.parse(args); // Need a more relaxed JSON.parse (read `https://github.com/phadej/relaxed-json` to understand why)
+      } catch (_) {}
+    }
   }
 }
 
