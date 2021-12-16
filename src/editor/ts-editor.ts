@@ -22,8 +22,8 @@ type TSEditorParams = {
   types?: FileMap;
   theme?: ThemeName;
   onChange?: (value: string) => void;
-  onExecuteQuery?: (query: string) => void;
-  onEnterQuery?: (query: string) => void;
+  onExecuteQuery?: (query: PrismaQuery.PrismaQuery) => void;
+  onEnterQuery?: (query: PrismaQuery.PrismaQuery) => void;
   onLeaveQuery?: () => void;
 };
 

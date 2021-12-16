@@ -4,6 +4,7 @@ import React, { CSSProperties } from "react";
 import {
   FileMap,
   JSONEditor,
+  PrismaQuery,
   PrismaSchemaEditor,
   SQLEditor,
   ThemeName,
@@ -36,9 +37,9 @@ export type EditorProps = {
       /** Additional Typescript types to load into the editor */
       types?: FileMap;
       /** Callback called when the user requests a query to be run */
-      onExecuteQuery?: (query: string) => void;
+      onExecuteQuery?: (query: PrismaQuery) => void;
       /** Callback called every time the user's cursor moves inside a query */
-      onEnterQuery?: (query: string) => void;
+      onEnterQuery?: (query: PrismaQuery) => void;
       /** Callback called every time the user's cursor moves outside a query */
       onLeaveQuery?: () => void;
     }
