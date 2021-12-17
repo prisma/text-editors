@@ -17,7 +17,7 @@ await prisma.artist.findMany({
 
 const fn = async (value: string) => {
 \tconst x = 1
-\tawait prisma.album.findUnique({ where: { id: 1 } })
+\tawait prisma.album.findUnique({ where: { error: 1 } })
 }
 
 await prisma.$executeRaw(\`SELECT * FROM "Album"\`)
@@ -26,6 +26,8 @@ async function fn(value: string) {
 \tconst x = 1
 
 }
+
+await prisma.$disconnect()
 `;
 
 const ReactDemo = () => {

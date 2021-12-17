@@ -6,27 +6,35 @@ import RJSON from "relaxed-json";
 export type PrismaQuery = {
   model?: string;
   operation: string;
-  args?: string | Record<string, any>;
+  args: (string | Record<string, any>)[];
 };
 
 /** A Range representing a single PrismaClient query */
 export class PrismaQueryRangeValue extends RangeValue {
   public query: PrismaQuery;
 
-  constructor({ model, operation, args }: PrismaQuery & { args?: string }) {
+  constructor({
+    model,
+    operation,
+    args,
+  }: Omit<PrismaQuery, "args"> & { args?: string[] }) {
     super();
 
     this.query = {
       model,
       operation,
-      args,
+      args: [],
     };
 
     if (args) {
       // Try to parse arguments (they will be an object for `prisma.user.findMany({ ... }))`-type queries
-      try {
-        this.query.args = RJSON.parse(args); // Need a more relaxed JSON.parse (read `https://github.com/phadej/relaxed-json` to understand why)
-      } catch (_) {}
+      this.query.args = args.map(a => {
+        try {
+          return RJSON.parse(a.trim()); // Need a more relaxed JSON.parse (read `https://github.com/phadej/relaxed-json` to understand why)
+        } catch (_) {
+          return a.trim();
+        }
+      });
     }
   }
 }
@@ -116,7 +124,7 @@ export function findQueries(
         // A Prisma Client query has three parts:
         let model: string | undefined = undefined; // A model (self explanatory) if it is of the form `prisma.user.findMany()`. Optional.
         let operation: string | undefined = undefined; // Like `findMany` / `count` / `$queryRaw` etc. Required.
-        let args: string | undefined = undefined; // Arguments passed to the operation function call. Optional.
+        let args: string[] = []; // Arguments passed to the operation function call. Optional.
 
         // First, make sure this UnaryExpression is an AwaitExpression
         // This bails if this syntax node does not have an `await` keyword
@@ -135,15 +143,23 @@ export function findQueries(
         if (callExpression?.name !== "CallExpression") return;
 
         if (callExpression.lastChild) {
-          const argsExpression =
-            callExpression.lastChild.getChild("ObjectExpression") || // For `prisma.user.findMany({})`-type queries
-            callExpression.lastChild.getChild("TemplateString") || // For `prisma.$queryRaw(`...`)`-type queries
-            callExpression.lastChild.getChild("String"); // For `prisma.$queryRaw("...")`-type queries
+          // const argsExpression =
+          //   callExpression.lastChild.getChild("ObjectExpression") || // For `prisma.user.findMany({})`-type queries
+          //   callExpression.lastChild.getChild("TemplateString") || // For `prisma.$queryRaw(`...`)`-type queries
+          //   callExpression.lastChild.getChild("String"); // For `prisma.$queryRaw("...")`-type queries
+          const argsExpression = callExpression.getChild("ArgList");
 
           if (argsExpression) {
-            args = state.sliceDoc(argsExpression.from, argsExpression.to);
-            if (argsExpression.type.name === "TemplateString")
-              args = args.slice(1, -1); // Trim away the backticks
+            let arg = argsExpression.firstChild;
+            while (arg) {
+              // Skip over unnecessary tokens
+              if (arg.type.name !== ",")
+                args.push(state.sliceDoc(arg.from, arg.to));
+
+              arg = arg.nextSibling;
+            }
+
+            args = args.slice(1, -1); // Ignore away the parenthesis (first and last child of `argsExpression`)
           }
         }
 
@@ -180,7 +196,7 @@ export function findQueries(
             return;
 
           // Add query of form `prisma.$queryRaw(...)`
-          if (operation && args) {
+          if (operation) {
             queries.add(
               callExpression.from,
               callExpression.to,
