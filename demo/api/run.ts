@@ -42,16 +42,18 @@ export default async function types(req: VercelRequest, res: VercelResponse) {
   const prisma = new PrismaClient();
   try {
     if (query.model) {
-      queryResponse.data = await prisma[query.model][query.operation](
+      queryResponse.data = await prisma[query.model][query.operation].apply(
+        null,
         query.args
       );
     } else if (
       query.operation === "$queryRaw" ||
       query.operation === "$executeRaw"
     ) {
-      queryResponse.data = await prisma[query.operation]`
-        ${query.args}
-      `;
+      queryResponse.data = await prisma[query.operation].apply(
+        null,
+        query.args
+      );
     } else {
       queryResponse.data = await prisma[query.operation](query.args);
     }
