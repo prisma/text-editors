@@ -41,8 +41,8 @@ export default async function types(req: VercelRequest, res: VercelResponse) {
 
   const prisma = new PrismaClient();
   try {
-    if (query.modelName) {
-      queryResponse.data = await prisma[query.modelName][query.operation](
+    if (query.model) {
+      queryResponse.data = await prisma[query.model][query.operation](
         query.args
       );
     } else if (

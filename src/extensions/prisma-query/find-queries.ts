@@ -4,7 +4,7 @@ import { EditorState } from "@codemirror/state";
 import RJSON from "relaxed-json";
 
 export type PrismaQuery = {
-  modelName?: string;
+  model?: string;
   operation: string;
   args?: string | Record<string, any>;
 };
@@ -13,11 +13,11 @@ export type PrismaQuery = {
 export class PrismaQueryRangeValue extends RangeValue {
   public query: PrismaQuery;
 
-  constructor({ modelName, operation, args }: PrismaQuery & { args?: string }) {
+  constructor({ model, operation, args }: PrismaQuery & { args?: string }) {
     super();
 
     this.query = {
-      modelName,
+      model,
       operation,
       args,
     };
@@ -37,7 +37,8 @@ export class PrismaQueryRangeValue extends RangeValue {
 export function findQueries(
   state: EditorState
 ): RangeSet<PrismaQueryRangeValue> {
-  // JS grammar: https://github.com/lezer-parser/javascript/blob/main/src/javascript.grammar
+  // Terminology here is a mix of JS grammar from ASTExplorer and CodeMirror's Lezer grammar: https://github.com/lezer-parser/javascript/blob/main/src/javascript.grammar
+  // It is worth it to get familiar with JS grammar and the tree structure before attempting to understand this function
   const syntax = syntaxTree(state);
 
   let prismaVariableName: string;
@@ -112,11 +113,8 @@ export function findQueries(
         // `await prisma.$connect()`
         // Over the course of this function, we'll try to aggresively return early as soon as we discover that the syntax node is not of interest to us
 
-        // Terminology here is a mix of JS grammar from ASTExplorer and CodeMirror's Lezer grammar: https://github.com/lezer-parser/javascript/blob/master/src/javascript.grammar
-        // It is worth it to get familiar with JS grammar and the tree structure before attempting to understand this function
-
         // A Prisma Client query has three parts:
-        let modelName: string | undefined = undefined; // A modelName (self explanatory) if it is of the form `prisma.user.findMany()`. Optional.
+        let model: string | undefined = undefined; // A model (self explanatory) if it is of the form `prisma.user.findMany()`. Optional.
         let operation: string | undefined = undefined; // Like `findMany` / `count` / `$queryRaw` etc. Required.
         let args: string | undefined = undefined; // Arguments passed to the operation function call. Optional.
 
@@ -136,17 +134,19 @@ export function findQueries(
         const callExpression = awaitKeyword.nextSibling;
         if (callExpression?.name !== "CallExpression") return;
 
-        if (
-          callExpression.lastChild // The arguments
-        ) {
+        if (callExpression.lastChild) {
           const argsExpression =
             callExpression.lastChild.getChild("ObjectExpression") || // For `prisma.user.findMany({})`-type queries
             callExpression.lastChild.getChild("TemplateString") || // For `prisma.$queryRaw(`...`)`-type queries
             callExpression.lastChild.getChild("String"); // For `prisma.$queryRaw("...")`-type queries
 
-          if (argsExpression)
+          if (argsExpression) {
             args = state.sliceDoc(argsExpression.from, argsExpression.to);
+            if (argsExpression.type.name === "TemplateString")
+              args = args.slice(1, -1); // Trim away the backticks
+          }
         }
+
         // Next, make sure the CallExpression's first child is a MemberExpression
         // This bails if the function call expression does not have a member expression inside it.
         // We want this because both kinds of queries we're trying to parse have a member expression inside a call expression.
@@ -184,7 +184,7 @@ export function findQueries(
             queries.add(
               callExpression.from,
               callExpression.to,
-              new PrismaQueryRangeValue({ modelName, operation, args })
+              new PrismaQueryRangeValue({ model, operation, args })
             );
           }
 
@@ -213,19 +213,19 @@ export function findQueries(
           return;
 
         if (maybeVariableNameInsideMemberExpression.lastChild) {
-          modelName = state.sliceDoc(
+          model = state.sliceDoc(
             maybeVariableNameInsideMemberExpression.lastChild.from,
             maybeVariableNameInsideMemberExpression.lastChild.to
           );
         }
 
         // Add query of form `prisma.user.findMany({ ... })`
-        if (modelName && operation) {
+        if (model && operation) {
           queries.add(
             callExpression.from,
             callExpression.to,
             new PrismaQueryRangeValue({
-              modelName,
+              model,
               operation,
               args,
             })
