@@ -1,0 +1,26 @@
+name: Bump version
+
+on: workflow_dispatch
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # The default Github token will not trigger other workflows (https://github.community/t/commit-generated-in-one-workflow-does-not-trigger-pull-request-workflow/147696)
+          # So we will use a PAT to do git operations. This PAT currently belongs to `prisma-bot`
+          token: ${{ secrets.GH_PAT }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+          cache: "yarn"
+      - name: Install dependencies
+        run: yarn
+      - name: Bump version
+        # Only bump up the version and push the git tag. That will trigger main.yml, which will run tests and publish
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git reset --hard
+          yarn version --patch
