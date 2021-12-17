@@ -13,6 +13,6 @@ interface ExtendedWindow extends Window {
 }
 declare const window: ExtendedWindow;
 
-export type { FileMap, SQLDialect, ThemeName } from "./editor";
+export type { FileMap, PrismaQuery, SQLDialect, ThemeName } from "./editor";
 export { Editor } from "./react/Editor";
 export type { EditorProps } from "./react/Editor";

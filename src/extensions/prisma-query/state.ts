@@ -4,12 +4,16 @@ import { EditorView } from "@codemirror/view";
 import noop from "lodash/noop";
 import over from "lodash/over";
 import { findFirstCursor } from "./find-cursor";
-import { findQueries, PrismaQuery } from "./find-queries";
+import {
+  findQueries,
+  PrismaQuery,
+  PrismaQueryRangeValue,
+} from "./find-queries";
 
 /**
  * Facet to allow configuring query execution callback
  */
-export type OnExecute = (query: string) => void;
+export type OnExecute = (query: PrismaQuery) => void;
 export const OnExecuteFacet = Facet.define<OnExecute, OnExecute>({
   combine: input => {
     // If multiple `onExecute` callbacks are registered, chain them (call them one after another)
@@ -20,7 +24,7 @@ export const OnExecuteFacet = Facet.define<OnExecute, OnExecute>({
 /**
  * Facet to allow configuring query enter callback
  */
-export type OnEnterQuery = (query: string) => void;
+export type OnEnterQuery = (query: PrismaQuery) => void;
 export const OnEnterQueryFacet = Facet.define<OnEnterQuery, OnEnterQuery>({
   combine: input => {
     // If multiple `onEnterQuery` callbacks are registered, chain them (call them one after another)
@@ -43,7 +47,9 @@ export const OnLeaveQueryFacet = Facet.define<OnLeaveQuery, OnLeaveQuery>({
  * State field that tracks which ranges are PrismaClient queries.
  * We don't store a DecorationSet directly in the StateField because we need to be able to find the `text` of a query
  */
-export const prismaQueryStateField = StateField.define<RangeSet<PrismaQuery>>({
+export const prismaQueryStateField = StateField.define<
+  RangeSet<PrismaQueryRangeValue>
+>({
   create(state) {
     return findQueries(state);
   },
@@ -82,7 +88,7 @@ export function state(config: {
         .field(prismaQueryStateField)
         .between(line.from, line.to, (from, to, value) => {
           lineHasQuery = true;
-          onEnterQuery(value.text);
+          onEnterQuery(value.query);
         });
 
       if (!lineHasQuery) {

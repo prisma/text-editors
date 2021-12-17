@@ -1,6 +1,7 @@
 import { EditorState, Extension } from "@codemirror/state";
 import { keymap as keymapFacet } from "@codemirror/view";
 import { findFirstCursor } from "./find-cursor";
+import { PrismaQuery } from "./find-queries";
 import { log } from "./log";
 import { OnExecuteFacet, prismaQueryStateField } from "./state";
 
@@ -17,11 +18,11 @@ export function runQueryUnderCursor(state: EditorState) {
     return true;
   }
 
-  let query: string | null = null;
+  let query: PrismaQuery | null = null;
   state
     .field(prismaQueryStateField)
     .between(firstCursor.pos, firstCursor.pos, (from, to, q) => {
-      query = q.text;
+      query = q.query;
       return false;
     });
 

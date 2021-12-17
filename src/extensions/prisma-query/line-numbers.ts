@@ -2,6 +2,7 @@ import { gutter, GutterMarker } from "@codemirror/gutter";
 import { EditorSelection, Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { isCursorInRange } from "./find-cursor";
+import { PrismaQuery } from "./find-queries";
 import { log } from "./log";
 import { OnExecuteFacet, prismaQueryStateField } from "./state";
 
@@ -139,11 +140,11 @@ export function lineNumbers(): Extension {
             return false;
           }
 
-          let query: string | null = null;
+          let query: PrismaQuery | null = null;
           view.state
             .field(prismaQueryStateField)
             .between(line.from, line.to, (from, to, q) => {
-              query = q.text;
+              query = q.query;
               return false;
             });
 

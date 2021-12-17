@@ -26,6 +26,7 @@
  * The "correct" way to read these files is in the order they're mentioned up above
  */
 
+export type { PrismaQuery } from "./find-queries";
 export { gutter } from "./gutter";
 export { highlightStyle } from "./highlight";
 export { keymap } from "./keymap";

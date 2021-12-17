@@ -4,8 +4,16 @@ import { expect, test } from "@playwright/test";
 import { findQueries } from "../src/extensions/prisma-query/find-queries";
 
 const prismaClientImport = `import { PrismaClient } from '@prisma/client'\nconst prisma = new PrismaClient()\n`;
+
 const modelQuery = `prisma.user.findUnique({ where: { id: 1 } })`;
+const modelQueryModel = "user";
+const modelQueryOperation = "findUnique";
+const modelQueryArgs = [{ where: { id: 1 } }];
+
 const genericQuery = `prisma.$executeRaw(\`SELECT * FROM "Album"\`)`;
+const genericQueryModel = undefined;
+const genericQueryOperation = "$executeRaw";
+const genericQueryArgs = ['`SELECT * FROM "Album"`'];
 
 test.describe("findQueries", () => {
   test("does not include the `await` keyword in model query ranges", () => {
@@ -18,7 +26,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + modelQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", modelQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: modelQueryModel,
+      operation: modelQueryOperation,
+      args: modelQueryArgs,
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -33,7 +45,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + genericQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", genericQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: genericQueryModel,
+      operation: genericQueryOperation,
+      args: genericQueryArgs,
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -49,13 +65,21 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + modelQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", modelQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: modelQueryModel,
+      operation: modelQueryOperation,
+      args: modelQueryArgs,
+    });
 
     queries.next();
     expect(queries).toHaveProperty("from", 139);
     expect(queries).toHaveProperty("to", 139 + modelQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", modelQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: modelQueryModel,
+      operation: modelQueryOperation,
+      args: modelQueryArgs,
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -70,13 +94,21 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + genericQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", genericQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: genericQueryModel,
+      operation: genericQueryOperation,
+      args: genericQueryArgs,
+    });
 
     queries.next();
     expect(queries).toHaveProperty("from", 138);
     expect(queries).toHaveProperty("to", 138 + genericQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", genericQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: genericQueryModel,
+      operation: genericQueryOperation,
+      args: genericQueryArgs,
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -92,13 +124,21 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 136);
     expect(queries).toHaveProperty("to", 136 + modelQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", modelQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: modelQueryModel,
+      operation: modelQueryOperation,
+      args: modelQueryArgs,
+    });
 
     queries.next();
     expect(queries).toHaveProperty("from", 188);
     expect(queries).toHaveProperty("to", 188 + modelQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", modelQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: modelQueryModel,
+      operation: modelQueryOperation,
+      args: modelQueryArgs,
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -113,13 +153,21 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 136);
     expect(queries).toHaveProperty("to", 136 + genericQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", genericQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: genericQueryModel,
+      operation: genericQueryOperation,
+      args: genericQueryArgs,
+    });
 
     queries.next();
     expect(queries).toHaveProperty("from", 187);
     expect(queries).toHaveProperty("to", 187 + genericQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", genericQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: genericQueryModel,
+      operation: genericQueryOperation,
+      args: genericQueryArgs,
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -135,13 +183,21 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 139);
     expect(queries).toHaveProperty("to", 139 + modelQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", modelQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: modelQueryModel,
+      operation: modelQueryOperation,
+      args: modelQueryArgs,
+    });
 
     queries.next();
     expect(queries).toHaveProperty("from", 191);
     expect(queries).toHaveProperty("to", 191 + modelQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", modelQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: modelQueryModel,
+      operation: modelQueryOperation,
+      args: modelQueryArgs,
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -156,13 +212,21 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 139);
     expect(queries).toHaveProperty("to", 139 + genericQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", genericQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: genericQueryModel,
+      operation: genericQueryOperation,
+      args: genericQueryArgs,
+    });
 
     queries.next();
     expect(queries).toHaveProperty("from", 190);
     expect(queries).toHaveProperty("to", 190 + genericQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", genericQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: genericQueryModel,
+      operation: genericQueryOperation,
+      args: genericQueryArgs,
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -179,17 +243,26 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "findMany",
+      args: [{ where: { id: 1 } }],
+    });
 
     queries.next();
     expect(queries).toHaveProperty("from", 140);
     expect(queries).toHaveProperty("to", 140 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "findMany",
+      args: [{ where: { id: 1 } }],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
   });
+
   test("can mark correct ranges when generic queries span multiple lines", () => {
     const query = `prisma.$queryRaw(\n\t\`SELECT * FROM "User"\`\n)`;
     const state = EditorState.create({
@@ -201,13 +274,21 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: undefined,
+      operation: "$queryRaw",
+      args: ['`SELECT * FROM "User"`'],
+    });
 
     queries.next();
     expect(queries).toHaveProperty("from", 137);
     expect(queries).toHaveProperty("to", 137 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: undefined,
+      operation: "$queryRaw",
+      args: ['`SELECT * FROM "User"`'],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -223,11 +304,16 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 100);
     expect(queries).toHaveProperty("to", 100 + modelQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", modelQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: modelQueryModel,
+      operation: modelQueryOperation,
+      args: modelQueryArgs,
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
   });
+
   test("does not include variable assignments in generic query ranges", () => {
     const state = EditorState.create({
       doc: `${prismaClientImport}\nlet result = await ${genericQuery}`,
@@ -238,7 +324,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 100);
     expect(queries).toHaveProperty("to", 100 + genericQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", genericQuery);
+    expect(queries.value).toHaveProperty("query", {
+      model: genericQueryModel,
+      operation: genericQueryOperation,
+      args: genericQueryArgs,
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -287,7 +377,7 @@ test.describe("findQueries", () => {
   });
 });
 
-test.describe("findQueries", () => {
+test.describe("[operations]", () => {
   test("can find aggregate queries", () => {
     const query = `prisma.user.aggregate({ _count: true })`;
     const state = EditorState.create({
@@ -299,7 +389,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "aggregate",
+      args: [{ _count: true }],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -316,7 +410,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "count",
+      args: [{ where: { id: 3 } }],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -333,7 +431,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "create",
+      args: [{ data: { id: 1, name: "test" } }],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -350,7 +452,18 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "createMany",
+      args: [
+        {
+          data: [
+            { id: 1, name: "test1" },
+            { id: 2, name: "test2" },
+          ],
+        },
+      ],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -367,7 +480,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "delete",
+      args: [{ where: { id: 2 } }],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -384,7 +501,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "deleteMany",
+      args: [{ where: { name: { contains: "S" } } }],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -401,7 +522,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "findFirst",
+      args: [{ where: { name: { contains: "S" } } }],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -418,7 +543,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "findMany",
+      args: [{ where: { name: { contains: "S" } } }],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -435,7 +564,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "findUnique",
+      args: [{ where: { name: { contains: "S" } } }],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -452,7 +585,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "groupBy",
+      args: [{ by: ["id", "name"] }],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -469,7 +606,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "update",
+      args: [{ where: { id: 1 }, data: { name: "updated" } }],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -486,7 +627,13 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "updateMany",
+      args: [
+        { where: { name: { startsWith: "A" } }, data: { name: "updated" } },
+      ],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -503,7 +650,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "upsert",
+      args: [{ where: { id: 1 }, data: { name: "test" } }],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -520,7 +671,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: undefined,
+      operation: "$connect",
+      args: [],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -537,7 +692,11 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: undefined,
+      operation: "$disconnect",
+      args: [],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -554,7 +713,32 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: undefined,
+      operation: "$executeRaw",
+      args: ["`SELECT 1;`"],
+    });
+
+    queries.next();
+    expect(queries.value).toBe(null);
+  });
+
+  test("can find $queryRaw queries", () => {
+    const query = `prisma.$queryRaw(\`SELECT 1;\`)`;
+    const state = EditorState.create({
+      doc: `${prismaClientImport}\nawait ${query}`,
+      extensions: [javascript({ typescript: true })],
+    });
+
+    const queries = findQueries(state).iter(0);
+    expect(queries).toHaveProperty("from", 87);
+    expect(queries).toHaveProperty("to", 87 + query.length);
+    expect(queries.value).not.toBe(null);
+    expect(queries.value).toHaveProperty("query", {
+      model: undefined,
+      operation: "$queryRaw",
+      args: ["`SELECT 1;`"],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -572,30 +756,21 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: undefined,
+      operation: "$on",
+      args: ["beforeExit", "async (e) => { await prisma.user.deleteMany() }"],
+    });
 
     queries.next();
     expect(queries).toHaveProperty("from", 133);
     expect(queries).toHaveProperty("to", 133 + internalQuery.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", internalQuery);
-
-    queries.next();
-    expect(queries.value).toBe(null);
-  });
-
-  test("can find $queryRaw queries", () => {
-    const query = `prisma.$queryRaw(\`SELECT 1;\`)`;
-    const state = EditorState.create({
-      doc: `${prismaClientImport}\nawait ${query}`,
-      extensions: [javascript({ typescript: true })],
+    expect(queries.value).toHaveProperty("query", {
+      model: "user",
+      operation: "deleteMany",
+      args: [],
     });
-
-    const queries = findQueries(state).iter(0);
-    expect(queries).toHaveProperty("from", 87);
-    expect(queries).toHaveProperty("to", 87 + query.length);
-    expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -612,7 +787,13 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: undefined,
+      operation: "$transaction",
+      args: [
+        '[\nprisma.user.create({ data: { id: 1 } }),\nprisma.post.create({ data: { title: "test" } })\n]',
+      ],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
@@ -629,7 +810,13 @@ test.describe("findQueries", () => {
     expect(queries).toHaveProperty("from", 87);
     expect(queries).toHaveProperty("to", 87 + query.length);
     expect(queries.value).not.toBe(null);
-    expect(queries.value).toHaveProperty("text", query);
+    expect(queries.value).toHaveProperty("query", {
+      model: undefined,
+      operation: "$use",
+      args: [
+        "(params, next) => {\n\tconsole.log(params)\n\treturn next(params)}",
+      ],
+    });
 
     queries.next();
     expect(queries.value).toBe(null);
