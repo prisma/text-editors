@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: yarn
       - name: Bump version
-        # Only bump up the version and push the git tag. That will trigger main.yml, which will run tests and publish
+        # Only bump up the version and push the git tag. That will trigger tests.yml & publish.yml, which will run tests and publish
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"

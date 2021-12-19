@@ -27,7 +27,7 @@ export class PrismaQueryRangeValue extends RangeValue {
     };
 
     if (args) {
-      // Try to parse arguments (they will be an object for `prisma.user.findMany({ ... }))`-type queries
+      // Try to parse arguments (they will be an object for `prisma.user.findMany({ ... }))`-type queries)
       this.query.args = args.map(a => {
         try {
           return RJSON.parse(a.trim()); // Need a more relaxed JSON.parse (read `https://github.com/phadej/relaxed-json` to understand why)
@@ -143,10 +143,6 @@ export function findQueries(
         if (callExpression?.name !== "CallExpression") return;
 
         if (callExpression.lastChild) {
-          // const argsExpression =
-          //   callExpression.lastChild.getChild("ObjectExpression") || // For `prisma.user.findMany({})`-type queries
-          //   callExpression.lastChild.getChild("TemplateString") || // For `prisma.$queryRaw(`...`)`-type queries
-          //   callExpression.lastChild.getChild("String"); // For `prisma.$queryRaw("...")`-type queries
           const argsExpression = callExpression.getChild("ArgList");
 
           if (argsExpression) {
