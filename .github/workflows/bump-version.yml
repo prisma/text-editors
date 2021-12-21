@@ -21,4 +21,4 @@ jobs:
           git config user.email "<>"
           git reset --hard
           yarn version --patch
-          git push
+          git push --follow-tags
