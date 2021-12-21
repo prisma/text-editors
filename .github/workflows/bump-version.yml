@@ -13,10 +13,7 @@ jobs:
           token: ${{ secrets.GH_PAT }}
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
-          cache: "yarn"
-      - name: Install dependencies
-        run: yarn
+          node-version: 14.x
       - name: Bump version
         # Only bump up the version and push the git tag. That will trigger tests.yml & publish.yml, which will run tests and publish
         run: |
