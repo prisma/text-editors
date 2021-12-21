@@ -43,10 +43,7 @@ jobs:
           yarn
           git reset --hard
       - name: Publish
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         # The version bump has already happened at this point (via bump-version.yml), so we just publish
-        run: |
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-          echo "Logged into NPM as: $(npm whoami)"
-          yarn publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
