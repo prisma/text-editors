@@ -5,6 +5,7 @@ import {
 } from "@codemirror/highlight";
 import { RangeSetBuilder } from "@codemirror/rangeset";
 import { Extension } from "@codemirror/state";
+import { Line } from "@codemirror/text";
 import {
   Decoration,
   DecorationSet,
@@ -13,6 +14,11 @@ import {
   ViewUpdate,
 } from "@codemirror/view";
 import { prismaQueryStateField } from "./state";
+
+type Range = {
+  start: Line;
+  length: number;
+};
 
 /**
  * This is a custom highlight style that only highlights Prisma Queries
@@ -89,27 +95,38 @@ const queryHighlightPlugin = ViewPlugin.fromClass(
 
     buildDecorations(view: EditorView) {
       let decorations = new RangeSetBuilder<Decoration>();
+      const ranges: Range[] = [];
+
       view.state
         .field(prismaQueryStateField)
         .between(view.viewport.from, view.viewport.to, (from, to) => {
-          const lineStart = view.state.doc.lineAt(from);
-          const lineEnd = view.state.doc.lineAt(to);
-
-          new Array(lineEnd.number - lineStart.number + 1)
-            .fill(undefined)
-            .forEach((_, i) => {
-              const line = view.state.doc.line(lineStart.number + i);
-              decorations.add(
-                line.from,
-                line.from,
-                Decoration.line({
-                  attributes: {
-                    class: "cm-prismaQuery",
-                  },
-                })
-              );
-            });
+          const start = view.state.doc.lineAt(from);
+          const end = view.state.doc.lineAt(to);
+          ranges.push({
+            start,
+            length: end.number - start.number + 1,
+          });
         });
+
+      // `between` does not guarantee the order of the ranges,
+      // but `decorations.add` requires the correct order, so
+      // we need to manually sort the ranges.
+      ranges.sort((a, b) => a.start.number - b.start.number);
+
+      ranges.forEach(range => {
+        for (let x = 0; x < range.length; x += 1) {
+          const line = view.state.doc.line(range.start.number + x);
+          decorations.add(
+            line.from,
+            line.from,
+            Decoration.line({
+              attributes: {
+                class: "cm-prismaQuery",
+              },
+            })
+          );
+        }
+      });
 
       return decorations.finish();
     }
