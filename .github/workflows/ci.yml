@@ -1,0 +1,52 @@
+name: CI
+on: [push]
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+          cache: "yarn"
+      - name: Install dependencies
+        run: yarn
+      - name: Run Prettier
+        run: yarn format:check
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+          cache: "yarn"
+      - name: Install dependencies
+        run: yarn
+      - name: Run tests
+        run: yarn test
+
+  publish:
+    needs: [prettier, tests]
+    if: startsWith(github.ref, 'refs/tags') # Only run this job for tags, and after tests pass
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+          cache: "yarn"
+      - name: Install dependencies
+        run: |
+          yarn
+          git reset --hard
+      - name: Publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        # The version bump has already happened at this point (via bump-version.yml), so we just publish
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          echo "Logged into NPM as: $(npm whoami)"
+          yarn publish

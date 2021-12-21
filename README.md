@@ -1,6 +1,6 @@
 # @prisma/text-editors
 
-![tests](https://github.com/prisma/text-editors/actions/workflows/tests.yml/badge.svg) ![npm-version](https://badgen.net/npm/v/@prisma/text-editors)
+![tests](https://github.com/prisma/text-editors/actions/workflows/ci.yml/badge.svg) ![npm-version](https://badgen.net/npm/v/@prisma/text-editors)
 
 This package exports a bunch of batteries-included code editors for Typescript, JSON, SQL & Prisma Schemas. The goal is to be a zero-configuration component that is quick to load and that you just dump into your codebase so it "just works".
 
