@@ -12,10 +12,10 @@ import path from "path";
 const dependencies = {
   // Core TS libs
   typescript: {
-    version: "4.3.5",
+    version: "4.5.4",
     src: ["lib/*.d.ts"],
   },
-  // Node lubs
+  // Node libs
   "@types/node": {
     version: "14", // Because this is the version of Node on Vercel
     src: ["*.d.ts"],
@@ -26,7 +26,7 @@ const DEST_ROOT = path.resolve("./src/extensions/typescript/types");
 const DISCLAIMER = "// This file was generated, do not edit manually\n\n";
 
 // Clean out the destination
-fs.rmdirSync(DEST_ROOT, { recursive: true, force: true });
+fs.rmSync(DEST_ROOT, { recursive: true, force: true });
 fs.mkdirSync(DEST_ROOT, { recursive: true });
 
 console.log("Prebuilding types");

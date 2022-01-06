@@ -2,7 +2,14 @@ import reactRefresh from "@vitejs/plugin-react-refresh";
 import path from "path";
 import { defineConfig } from "vite";
 
+const port = 3000;
+
 export default defineConfig({
+  server: {
+    port,
+    strictPort: true,
+  },
+  base: "./",
   plugins: [reactRefresh()],
   build: {
     lib: {
