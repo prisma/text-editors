@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-test.describe("Keymap", () => {
+test.describe.parallel("Keymap", () => {
   test("can move down a line using the down arrow", async ({ page }) => {
     test.fixme();
   });

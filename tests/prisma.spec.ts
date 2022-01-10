@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-test.describe("Prisma Query extension", () => {
+test.describe.parallel("Prisma Query extension", () => {
   test("dims all lines that aren't part of a query", async ({ page }) => {
     test.fixme();
   });

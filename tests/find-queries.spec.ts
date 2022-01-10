@@ -15,7 +15,7 @@ const genericQueryModel = undefined;
 const genericQueryOperation = "$executeRaw";
 const genericQueryArgs = ['`SELECT * FROM "Album"`'];
 
-test.describe("findQueries", () => {
+test.describe.parallel("findQueries", () => {
   test("does not include the `await` keyword in model query ranges", () => {
     const state = EditorState.create({
       doc: `${prismaClientImport}\nawait ${modelQuery}`,

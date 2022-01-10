@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-test.describe("Fold gutter", () => {
+test.describe.parallel("Fold gutter", () => {
   test("shows fold SVGs on lines that can be folded", async ({ page }) => {
     test.fixme();
   });
