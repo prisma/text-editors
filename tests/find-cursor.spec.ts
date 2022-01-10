@@ -16,7 +16,7 @@ function editorState(extensions: Extension = []) {
   });
 }
 
-test.describe("findFirstCursor", () => {
+test.describe.parallel("findFirstCursor", () => {
   test("can find cursor when there is none", () => {
     const state = EditorState.create();
     const cursor = findFirstCursor(state);

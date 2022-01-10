@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { TSEditor } from "../src/editor/ts-editor";
 
-test.describe("Typescript extension", () => {
+test.describe.parallel("Typescript extension", () => {
   test("does not crash when content is empty", async ({ page }) => {
     await page.goto("/demo/");
     const editor = await page.$("#ts-editor .cm-content");

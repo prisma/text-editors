@@ -46,7 +46,7 @@
     "@codemirror/theme-one-dark": "0.19.0",
     "@codemirror/view": "0.19.6",
     "@fontsource/jetbrains-mono": "4.5.0",
-    "@playwright/test": "1.17.1",
+    "@playwright/test": "1.17.2",
     "@types/lodash": "4.14.178",
     "@types/node": "17.0.8",
     "@types/react": "17.0.38",
@@ -55,7 +55,7 @@
     "@typescript/vfs": "1.3.5",
     "@vitejs/plugin-react-refresh": "1.3.6",
     "chokidar-cli": "3.0.0",
-    "fast-glob": "3.2.7",
+    "fast-glob": "3.2.10",
     "localforage": "1.10.0",
     "lodash": "4.17.21",
     "prettier": "2.5.1",
@@ -64,7 +64,8 @@
     "relaxed-json": "1.0.3",
     "typescript": "4.5.4",
     "vercel": "23.1.2",
-    "vite": "2.7.10"
+    "vite": "2.7.10",
+    "zx": "4.2.0"
   },
   "peerDependencies": {
     "react": "17.0.0",
