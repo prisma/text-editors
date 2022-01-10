@@ -13,7 +13,7 @@ test.describe("Typescript extension", () => {
     await page.waitForTimeout(3000); // Wait a few seconds to see if any errors show up in the console
   });
 
-  test.only("can autocomplete empty lines", async () => {
+  test("can autocomplete empty lines", async () => {
     test.fixme();
 
     const code = "const x = 1\n\n";
