@@ -1,6 +1,7 @@
 import glob from "fast-glob";
 import fs from "fs";
 import path from "path";
+import "zx/globals";
 
 // The goal of this build step is to generate two artifacts (per dependency):
 // 1. Metadata: version + file list of dependency (meta.js)
@@ -26,8 +27,8 @@ const DEST_ROOT = path.resolve("./src/extensions/typescript/types");
 const DISCLAIMER = "// This file was generated, do not edit manually\n\n";
 
 // Clean out the destination
-fs.rmSync(DEST_ROOT, { recursive: true, force: true });
-fs.mkdirSync(DEST_ROOT, { recursive: true });
+await $`rm -rf ${DEST_ROOT}`;
+await $`mkdir -p ${DEST_ROOT}`;
 
 console.log("Prebuilding types");
 
@@ -35,7 +36,7 @@ for (const [dep, { version, src }] of Object.entries(dependencies)) {
   console.log(`Using ${dep} version: ${version}`);
 
   // Prepare destination for this dependency
-  fs.mkdirSync(`${DEST_ROOT}/${dep}`, { recursive: true });
+  await $`mkdir -p ${DEST_ROOT}/${dep}`;
 
   // Get a list of files in this dependency
   const files = await glob(
@@ -44,10 +45,6 @@ for (const [dep, { version, src }] of Object.entries(dependencies)) {
   );
 
   // Generate artifact 1: Metadata
-  fs.writeFileSync(
-    `${DEST_ROOT}/${dep}/meta.js`,
-    `${DISCLAIMER}export const version = "${version}"`
-  );
   const metaStream = fs.createWriteStream(`${DEST_ROOT}/${dep}/meta.js`);
   metaStream.write(DISCLAIMER);
   metaStream.write(`export const version = "${version}"\n\n`);

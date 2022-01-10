@@ -13,8 +13,8 @@
     "test": "playwright test",
     "test:watch": "chokidar \"**/*.ts\" -c \"clear && yarn test --timeout 0\" --silent --initial",
     "build": "yarn build:types && yarn build:lib",
-    "build:types": "node ./scripts/build-types.mjs",
-    "build:lib": "./scripts/build-lib.sh",
+    "build:types": "zx ./scripts/build-types.mjs",
+    "build:lib": "zx ./scripts/build-lib.mjs",
     "format": "prettier -w . --ignore-path=.gitignore",
     "format:check": "prettier -c . --ignore-path=.gitignore",
     "prepublishOnly": "yarn build"
