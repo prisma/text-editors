@@ -137,7 +137,11 @@ export class Editor extends React.Component<EditorProps> {
     }
 
     // Ensures `value` given to this component is always reflected in the editor
-    if (this.props.value !== this.editor.state.sliceDoc(0)) {
+    // Only execute forceUpdate actions on readonly instances
+    if (
+      this.props.value !== this.editor.state.sliceDoc(0) &&
+      this.props.readonly
+    ) {
       this.editor.forceUpdate(this.props.value);
     }
 
