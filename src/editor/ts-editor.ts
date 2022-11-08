@@ -1,6 +1,12 @@
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { appearance, setTheme, ThemeName } from "../extensions/appearance";
+import {
+  appearance,
+  editable,
+  setReadOnly,
+  setTheme,
+  ThemeName,
+} from "../extensions/appearance";
 import { behaviour } from "../extensions/behaviour";
 import { keymap as defaultKeymap } from "../extensions/keymap";
 import * as PrismaQuery from "../extensions/prisma-query";
@@ -33,12 +39,13 @@ export class TSEditor extends BaseEditor {
   /**
    * Returns a state-only version of the editor, without mounting the actual view anywhere. Useful for testing.
    */
+
   static state(params: TSEditorParams) {
     return EditorState.create({
       doc: params.code || "",
 
       extensions: [
-        EditorView.editable.of(!params.readonly),
+        editable({ readOnly: !params.readonly }),
 
         appearance({
           domElement: params.domElement,
@@ -81,6 +88,11 @@ export class TSEditor extends BaseEditor {
   public setTheme = (theme?: ThemeName) => {
     // Override the `setTheme` method to make sure `highlightStyle` never changes from "none"
     this.view.dispatch(setTheme(theme));
+  };
+
+  /** @override */
+  public setReadOnly = (readOnly: boolean) => {
+    this.view.dispatch(setReadOnly(readOnly));
   };
 
   public injectTypes = async (types: FileMap) => {

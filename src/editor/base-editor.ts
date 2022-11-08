@@ -3,6 +3,7 @@ import throttle from "lodash/throttle";
 import {
   setDimensions,
   setHighlightStyle,
+  setReadOnly,
   setTheme,
   ThemeName,
 } from "../extensions/appearance";
@@ -37,6 +38,10 @@ export abstract class BaseEditor {
   public setTheme = (theme?: ThemeName) => {
     this.view.dispatch(setTheme(theme));
     this.view.dispatch(setHighlightStyle(theme));
+  };
+
+  public setReadOnly = (readOnly: boolean) => {
+    this.view.dispatch(setReadOnly(readOnly));
   };
 
   public forceUpdate = (code: string = "") => {

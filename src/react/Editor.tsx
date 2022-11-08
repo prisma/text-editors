@@ -135,6 +135,12 @@ export class Editor extends React.Component<EditorProps> {
     if (!this.editor) {
       return;
     }
+    if (
+      typeof this.props.readonly !== "undefined" &&
+      prevProps.readonly !== this.props.readonly
+    ) {
+      this.editor.setReadOnly(this.props.readonly);
+    }
 
     // Ensures `value` given to this component is always reflected in the editor
     // Only execute forceUpdate actions on readonly instances

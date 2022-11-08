@@ -20,6 +20,7 @@ export type HighlightStyle = "light" | "dark" | "none";
 const dimensionsCompartment = new Compartment();
 const themeCompartment = new Compartment();
 const highlightStyleCompartment = new Compartment();
+const editableCompartment = new Compartment();
 
 const getThemeExtension = (t: ThemeName = "light"): Extension => {
   if (t === "light") {
@@ -45,6 +46,12 @@ export const setTheme = (theme?: ThemeName): TransactionSpec => {
   };
 };
 
+export const setReadOnly = (readOnly: boolean): TransactionSpec => {
+  return {
+    effects: editableCompartment.reconfigure(EditorView.editable.of(!readOnly)),
+  };
+};
+
 export const setHighlightStyle = (
   highlightStyle?: HighlightStyle
 ): TransactionSpec => {
@@ -67,6 +74,9 @@ export const setDimensions = (
     ),
   };
 };
+
+export const editable = ({ readOnly }: { readOnly: boolean }): Extension =>
+  editableCompartment.of(EditorView.editable.of(readOnly));
 
 export const appearance = ({
   domElement,
