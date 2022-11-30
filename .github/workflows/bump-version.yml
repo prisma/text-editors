@@ -11,7 +11,7 @@ jobs:
           # The default Github token will not trigger other workflows (https://github.community/t/commit-generated-in-one-workflow-does-not-trigger-pull-request-workflow/147696)
           # So we will use a PAT to do git operations. This PAT currently belongs to `prisma-bot`
           token: ${{ secrets.GH_PAT }}
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
       - name: Bump version
