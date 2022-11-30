@@ -6,7 +6,7 @@ jobs:
   bump-version:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # The default Github token will not trigger other workflows (https://github.community/t/commit-generated-in-one-workflow-does-not-trigger-pull-request-workflow/147696)
           # So we will use a PAT to do git operations. This PAT currently belongs to `prisma-bot`
