@@ -9,14 +9,8 @@ export type PrismaQuery = {
   args: (string | Record<string, any>)[];
 };
 
-const maybeReplaceModelQueryBackticks = (
-  operation: PrismaQuery["operation"],
-  args: PrismaQuery["args"]
-): PrismaQuery["args"] => {
-  if (!operation.includes("$")) {
-    return args.map(arg => arg.replace(/`/g, '"'));
-  }
-  return args;
+const replaceBackticks = (args: PrismaQuery["args"]): PrismaQuery["args"] => {
+  return args.map(arg => arg.replace(/`/g, '"'));
 };
 
 /** A Range representing a single PrismaClient query */
@@ -37,8 +31,12 @@ export class PrismaQueryRangeValue extends RangeValue {
     };
 
     if (args) {
+      let formattedArgs: PrismaQuery["args"] = args;
       // Arguments may be sent inside back ticks which RJSON cannot handle properly
-      const formattedArgs = maybeReplaceModelQueryBackticks(operation, args);
+      // We only want to replace back ticks for top level model queries, not generic queries.
+      if (!operation.includes("$")) {
+        formattedArgs = replaceBackticks(args);
+      }
       // Try to parse arguments (they will be an object for `prisma.user.findMany({ ... }))`-type queries)
       this.query.args = formattedArgs.map(a => {
         try {
