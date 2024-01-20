@@ -64,7 +64,7 @@
     "relaxed-json": "1.0.3",
     "typescript": "4.5.4",
     "vercel": "23.1.2",
-    "vite": "2.7.10",
+    "vite": "2.9.17",
     "zx": "4.2.0"
   },
   "peerDependencies": {
