@@ -802,7 +802,12 @@
   dependencies:
     "@codemirror/state" "^0.19.0"
 
-"@codemirror/state@0.19.1", "@codemirror/state@^0.19.0":
+"@codemirror/state@6.4.1":
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/@codemirror/state/-/state-6.4.1.tgz#da57143695c056d9a3c38705ed34136e2b68171b"
+  integrity sha512-QkEyUiLhsJoZkbumGZlswmAhA7CBU02Wrz7zvH4SrcifbsqwlXShVXg65f3v/ts57W3dqyamEriMhij1Z3Zz4A==
+
+"@codemirror/state@^0.19.0":
   version "0.19.1"
   resolved "https://registry.yarnpkg.com/@codemirror/state/-/state-0.19.1.tgz#cf0ee90b4fb45c295f8bbe2d6196d890ec81d92a"
   integrity sha512-5NR6/h+pVp7d77F4rLpNWcYvARCvqXa1uayoNx06d1aEm6wy/K+3lxTg7taB/qaEKd+oCsSHjRL8oSE1Fm+nsw==

@@ -42,7 +42,7 @@
     "@codemirror/lint": "0.19.0",
     "@codemirror/matchbrackets": "0.19.1",
     "@codemirror/rangeset": "0.19.1",
-    "@codemirror/state": "0.19.1",
+    "@codemirror/state": "6.4.1",
     "@codemirror/theme-one-dark": "0.19.0",
     "@codemirror/view": "0.19.6",
     "@fontsource/jetbrains-mono": "4.5.0",
