@@ -12,7 +12,7 @@
     "@prisma/client": "3.0.2"
   },
   "devDependencies": {
-    "@vercel/node": "1.12.1",
+    "@vercel/node": "1.15.4",
     "prisma": "3.0.2",
     "serve": "12.0.1",
     "vercel": "23.1.2"

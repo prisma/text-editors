@@ -46,12 +46,27 @@
   resolved "https://registry.yarnpkg.com/@vercel/go/-/go-1.2.3.tgz#6f2bdba5681f9d64ee17060c5d63589e2d45e2d8"
   integrity sha512-BZCHRz43Qfr0DwZlZQCcofR+3cr+H+HK72/ZPkZy1Uq0NYjJMlmZ3ahuMgvJxT9lfC1RA6eOEUlUsZ+gqKcMCg==
 
+"@vercel/node-bridge@2.2.2":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@vercel/node-bridge/-/node-bridge-2.2.2.tgz#f63466ab6a2588afdc6262c2d060289bfe8baa6b"
+  integrity sha512-haGBC8noyA5BfjCRXRH+VIkHCDVW5iD5UX24P2nOdilwUxI4qWsattS/co8QBGq64XsNLRAMdM5pQUE3zxkF9Q==
+
 "@vercel/node@1.12.1":
   version "1.12.1"
   resolved "https://registry.yarnpkg.com/@vercel/node/-/node-1.12.1.tgz#15f42f64690f904f8a52a387123ce0958657060f"
   integrity sha512-NcawIY05BvVkWlsowaxF2hl/hJg475U8JvT2FnGykFPMx31q1/FtqyTw/awSrKfOSRXR0InrbEIDIelmS9NzPA==
   dependencies:
     "@types/node" "*"
+    ts-node "8.9.1"
+    typescript "4.3.4"
+
+"@vercel/node@1.15.4":
+  version "1.15.4"
+  resolved "https://registry.yarnpkg.com/@vercel/node/-/node-1.15.4.tgz#dd55b510492158873c773017ecd3d2bf75f67258"
+  integrity sha512-45fV7qVVw1cWCD6tWBXH0i4pSfYck4yF2qNKlJb1gmbO9JHWRqMYm0uxNWISD6E6Z69Pl1KDvfa+l48w/qEkaw==
+  dependencies:
+    "@types/node" "*"
+    "@vercel/node-bridge" "2.2.2"
     ts-node "8.9.1"
     typescript "4.3.4"
 
